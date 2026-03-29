@@ -24,7 +24,7 @@ export function SolutionsContent() {
             transition={{ duration: 0.6 }}
             className="max-w-3xl"
           >
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-blue mb-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-purple mb-4">
               Solutions
             </p>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight mb-6">
@@ -53,7 +53,7 @@ export function SolutionsContent() {
               <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
                 <div>
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-accent-blue/10 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-accent-purple/10 flex items-center justify-center">
                       <IconWrapper name={solution.icon} size={20} />
                     </div>
                     <Badge variant="accent">{solution.title}</Badge>

@@ -31,14 +31,14 @@ export function SolutionsPreview() {
             >
               <Card variant="interactive" glow className="h-full">
                 <CardContent className="flex flex-col h-full">
-                  <div className="mb-4 w-10 h-10 rounded-xl bg-accent-blue/10 flex items-center justify-center">
+                  <div className="mb-4 w-10 h-10 rounded-xl bg-accent-purple/10 flex items-center justify-center">
                     <IconWrapper name={sol.icon} size={20} />
                   </div>
                   <h3 className="text-base font-semibold text-white mb-1">{sol.title}</h3>
                   <p className="text-sm text-steel-400 leading-relaxed flex-1">{sol.subtitle}</p>
                   <Link
                     href={`/solutions#${sol.id}`}
-                    className="mt-4 inline-flex items-center gap-1.5 text-sm text-accent-blue hover:text-accent-cyan transition-colors"
+                    className="mt-4 inline-flex items-center gap-1.5 text-sm text-accent-purple hover:text-accent-cyan transition-colors"
                   >
                     Learn more <ArrowRight size={14} />
                   </Link>

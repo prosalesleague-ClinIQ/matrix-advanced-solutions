@@ -1,11 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  --color-navy-950: #0a0e1a;
-  --color-navy-900: #0f1629;
-  --color-navy-800: #162038;
-  --color-navy-700: #1e2d4d;
-  --color-navy-600: #2a3d66;
+  /* Matrix brand: deep navy/black foundations */
+  --color-navy-950: #0a0a14;
+  --color-navy-900: #0e1024;
+  --color-navy-800: #151835;
+  --color-navy-700: #1c224a;
+  --color-navy-600: #252e5e;
+
+  /* Steel/neutral text hierarchy */
   --color-steel-900: #1a1d24;
   --color-steel-800: #24282f;
   --color-steel-700: #2e333c;
@@ -13,12 +16,26 @@
   --color-steel-500: #4a515c;
   --color-steel-400: #6b7280;
   --color-steel-300: #9ca3af;
-  --color-accent-blue: #3b82f6;
+
+  /* Matrix brand purple — primary accent */
+  --color-accent-purple: #a855f7;
+  --color-accent-purple-light: #c084fc;
+  --color-accent-purple-dim: #7c3aed;
+  --color-accent-purple-deep: #6d28d9;
+
+  /* Matrix brand blue — secondary accent */
+  --color-accent-blue: #4f46e5;
+  --color-accent-blue-light: #818cf8;
+  --color-accent-blue-dim: #4338ca;
+
+  /* Cyan/teal — tertiary (DNA helix element) */
   --color-accent-cyan: #22d3ee;
-  --color-accent-blue-dim: #1e40af;
-  --color-surface-primary: #0a0e1a;
-  --color-surface-card: #111827;
-  --color-surface-elevated: #1f2937;
+
+  /* Keep legacy accent-blue mapping for components that use it */
+  /* Surfaces */
+  --color-surface-primary: #0a0a14;
+  --color-surface-card: #110f1f;
+  --color-surface-elevated: #1a1833;
 
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-display: 'Inter', system-ui, -apple-system, sans-serif;
@@ -59,7 +76,7 @@
   }
 
   ::selection {
-    background-color: rgba(59, 130, 246, 0.3);
+    background-color: rgba(168, 85, 247, 0.3);
     color: white;
   }
 }
@@ -80,22 +97,22 @@
   }
 
   .gradient-text-accent {
-    background: linear-gradient(to right, var(--color-accent-blue), var(--color-accent-cyan));
+    background: linear-gradient(135deg, var(--color-accent-blue), var(--color-accent-purple));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .glow-sm {
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.15);
   }
 
   .glow-md {
-    box-shadow: 0 0 40px rgba(59, 130, 246, 0.2);
+    box-shadow: 0 0 40px rgba(168, 85, 247, 0.2);
   }
 
   .glow-lg {
-    box-shadow: 0 0 60px rgba(59, 130, 246, 0.25);
+    box-shadow: 0 0 60px rgba(168, 85, 247, 0.25);
   }
 }
 

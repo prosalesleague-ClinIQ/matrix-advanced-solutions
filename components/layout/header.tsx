@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -19,12 +20,14 @@ export function Header() {
         <div className="flex h-16 lg:h-18 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-accent-blue to-accent-cyan flex items-center justify-center">
-              <span className="text-sm font-bold text-white">M</span>
-            </div>
-            <span className="text-lg font-bold text-white tracking-tight">
-              Matrix<span className="text-steel-400 font-normal ml-1 hidden sm:inline">Advanced Solutions</span>
-            </span>
+            <Image
+              src="/images/matrix-logo-horizontal.png"
+              alt="Matrix Advanced Solutions"
+              width={200}
+              height={45}
+              className="h-9 w-auto"
+              priority
+            />
           </Link>
 
           {/* Desktop Nav */}

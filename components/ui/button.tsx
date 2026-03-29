@@ -12,12 +12,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-accent-blue text-white hover:bg-blue-500 shadow-lg shadow-accent-blue/20 hover:shadow-accent-blue/30',
+    'bg-gradient-to-r from-accent-blue to-accent-purple text-white hover:from-accent-blue-light hover:to-accent-purple-light shadow-lg shadow-accent-purple/20 hover:shadow-accent-purple/30',
   secondary:
     'bg-white/10 text-white border border-white/20 hover:bg-white/15 hover:border-white/30',
   ghost: 'text-white hover:bg-white/8',
   outline: 'border border-white/20 text-white hover:bg-white/5 hover:border-white/30',
-  link: 'text-accent-blue hover:text-accent-cyan underline-offset-4 hover:underline p-0',
+  link: 'text-accent-purple hover:text-accent-purple-light underline-offset-4 hover:underline p-0',
 }
 
 const sizeStyles: Record<ButtonSize, string> = {
@@ -32,7 +32,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={cn(
-          'inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-blue focus-visible:ring-offset-2 focus-visible:ring-offset-navy-950 disabled:pointer-events-none disabled:opacity-50',
+          'inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-purple focus-visible:ring-offset-2 focus-visible:ring-offset-navy-950 disabled:pointer-events-none disabled:opacity-50',
           variantStyles[variant],
           variant !== 'link' && sizeStyles[size],
           className

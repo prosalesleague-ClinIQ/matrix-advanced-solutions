@@ -17,7 +17,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
           variant === 'interactive' &&
             'bg-surface-card border border-white/8 cursor-pointer hover:border-white/15 hover:bg-surface-elevated hover:-translate-y-1',
           variant === 'glass' && 'bg-white/5 backdrop-blur-md border border-white/10',
-          glow && 'hover:shadow-[0_0_30px_rgba(59,130,246,0.12)]',
+          glow && 'hover:shadow-[0_0_30px_rgba(168,85,247,0.12)]',
           className
         )}
         {...props}

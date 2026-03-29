@@ -10,7 +10,7 @@ export default function PrivacyPage() {
   return (
     <section className="pt-32 pb-24 lg:pt-40 lg:pb-32">
       <Container size="narrow">
-        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-blue mb-4">Legal</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-purple mb-4">Legal</p>
         <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-8">Privacy Policy</h1>
 
         <div className="prose prose-invert prose-sm max-w-none space-y-8 text-steel-400">
@@ -41,7 +41,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-lg font-semibold text-white">Your Rights</h2>
-            <p>You may request access to, correction of, or deletion of your personal information by contacting us through our <a href="/contact" className="text-accent-blue hover:text-accent-cyan transition-colors">Contact page</a>. We will respond to your request within a reasonable timeframe.</p>
+            <p>You may request access to, correction of, or deletion of your personal information by contacting us through our <a href="/contact" className="text-accent-purple hover:text-accent-purple-light transition-colors">Contact page</a>. We will respond to your request within a reasonable timeframe.</p>
           </section>
 
           <section>

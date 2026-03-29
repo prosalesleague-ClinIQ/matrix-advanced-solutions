@@ -26,7 +26,7 @@ export function ContactContent() {
       <section className="pt-32 pb-16 lg:pt-40 lg:pb-20">
         <Container>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-blue mb-4">Contact</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-purple mb-4">Contact</p>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight mb-6">
               Let&apos;s Talk About Your Clinic&apos;s Growth
             </h1>
@@ -48,8 +48,8 @@ export function ContactContent() {
                   <button onClick={() => setSelectedPath(path.id)} className="w-full text-left">
                     <Card variant="interactive" glow className="h-full">
                       <CardContent>
-                        <div className="mb-3 w-10 h-10 rounded-xl bg-accent-blue/10 flex items-center justify-center">
-                          <path.icon size={20} className="text-accent-blue" />
+                        <div className="mb-3 w-10 h-10 rounded-xl bg-accent-purple/10 flex items-center justify-center">
+                          <path.icon size={20} className="text-accent-purple" />
                         </div>
                         <h3 className="text-sm font-semibold text-white mb-1">{path.title}</h3>
                         <p className="text-sm text-steel-400 leading-relaxed">{path.description}</p>
@@ -68,7 +68,7 @@ export function ContactContent() {
         <section className="pb-24 lg:pb-32">
           <Container size="narrow">
             <div className="mb-8">
-              <button onClick={() => setSelectedPath(null)} className="text-sm text-accent-blue hover:text-accent-cyan transition-colors mb-4 inline-block">
+              <button onClick={() => setSelectedPath(null)} className="text-sm text-accent-purple hover:text-accent-purple-light transition-colors mb-4 inline-block">
                 &larr; Back to inquiry options
               </button>
               <h2 className="text-2xl font-bold text-white mb-2">{activePath.title}</h2>

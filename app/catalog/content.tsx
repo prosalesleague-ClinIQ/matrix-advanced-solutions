@@ -28,7 +28,7 @@ export function CatalogContent() {
       <section className="pt-32 pb-16 lg:pt-40 lg:pb-20">
         <Container>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-blue mb-4">Product Catalog</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-purple mb-4">Product Catalog</p>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight mb-6">
               Premium Clinical Products. Provider-Only Access.
             </h1>
@@ -50,7 +50,7 @@ export function CatalogContent() {
                 placeholder="Search products..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 rounded-xl border border-white/10 bg-white/5 text-sm text-white placeholder:text-steel-500 focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-white/10 bg-white/5 text-sm text-white placeholder:text-steel-500 focus:outline-none focus:ring-2 focus:ring-accent-purple"
               />
             </div>
           </div>
@@ -59,7 +59,7 @@ export function CatalogContent() {
           <div className="flex flex-wrap gap-2 mb-10">
             <button
               onClick={() => setActiveCategory(null)}
-              className={`px-4 py-2 rounded-full text-xs font-medium transition-all ${!activeCategory ? 'bg-accent-blue text-white' : 'bg-white/5 text-steel-400 hover:bg-white/10'}`}
+              className={`px-4 py-2 rounded-full text-xs font-medium transition-all ${!activeCategory ? 'bg-accent-purple text-white' : 'bg-white/5 text-steel-400 hover:bg-white/10'}`}
             >
               All Categories
             </button>
@@ -67,7 +67,7 @@ export function CatalogContent() {
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id === activeCategory ? null : cat.id)}
-                className={`px-4 py-2 rounded-full text-xs font-medium transition-all ${cat.id === activeCategory ? 'bg-accent-blue text-white' : 'bg-white/5 text-steel-400 hover:bg-white/10'}`}
+                className={`px-4 py-2 rounded-full text-xs font-medium transition-all ${cat.id === activeCategory ? 'bg-accent-purple text-white' : 'bg-white/5 text-steel-400 hover:bg-white/10'}`}
               >
                 {cat.name}
               </button>
@@ -95,7 +95,7 @@ export function CatalogContent() {
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-steel-500">{product.format}</span>
                       <Link href="/contact?type=catalog" onClick={() => trackCTA(`inquire_${product.id}`, 'catalog')}>
-                        <span className="text-xs text-accent-blue hover:text-accent-cyan transition-colors">
+                        <span className="text-xs text-accent-purple hover:text-accent-purple-light transition-colors">
                           Inquire <ArrowRight size={12} className="inline ml-0.5" />
                         </span>
                       </Link>

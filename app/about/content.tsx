@@ -24,7 +24,7 @@ export function AboutContent() {
       <section className="pt-32 pb-16 lg:pt-40 lg:pb-20">
         <Container>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-blue mb-4">About Matrix</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-purple mb-4">About Matrix</p>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight mb-6">
               The Infrastructure Behind Modern Clinic Growth
             </h1>
@@ -39,7 +39,7 @@ export function AboutContent() {
       <section className="py-20 lg:py-28 bg-navy-900/30">
         <Container size="narrow">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-blue mb-4">Our Mission</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-purple mb-4">Our Mission</p>
             <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-6">Help Clinics Launch, Expand, and Scale Advanced Treatment Categories</h2>
             <p className="text-base text-steel-400 leading-relaxed">
               We provide the premium products, provider support, operational systems, and growth infrastructure that enable qualified clinics to build thriving practices in the most advanced treatment categories available today.
@@ -65,7 +65,7 @@ export function AboutContent() {
               <ul className="space-y-3">
                 {['Premium clinical products across 8+ categories', 'Provider education and protocol support', 'Clinic onboarding and credentialing', 'Operational infrastructure and fulfillment', 'Marketing and patient acquisition support', 'Funding guidance and financial planning', 'Strategic account management', 'Multi-location scaling support'].map((item) => (
                   <li key={item} className="flex items-start gap-3 text-sm text-steel-400">
-                    <ArrowRight size={14} className="text-accent-blue flex-shrink-0 mt-1" />
+                    <ArrowRight size={14} className="text-accent-purple flex-shrink-0 mt-1" />
                     {item}
                   </li>
                 ))}
@@ -84,8 +84,8 @@ export function AboutContent() {
               <motion.div key={value.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06, duration: 0.5 }}>
                 <Card variant="default" className="h-full">
                   <CardContent>
-                    <div className="mb-3 w-10 h-10 rounded-xl bg-accent-blue/10 flex items-center justify-center">
-                      <value.icon size={20} className="text-accent-blue" />
+                    <div className="mb-3 w-10 h-10 rounded-xl bg-accent-purple/10 flex items-center justify-center">
+                      <value.icon size={20} className="text-accent-purple" />
                     </div>
                     <h3 className="text-sm font-semibold text-white mb-2">{value.title}</h3>
                     <p className="text-sm text-steel-400 leading-relaxed">{value.description}</p>
@@ -101,7 +101,7 @@ export function AboutContent() {
       <section className="py-20 lg:py-28">
         <Container size="narrow">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-blue mb-4">Leadership</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-purple mb-4">Leadership</p>
             <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-6">Built by Industry Operators</h2>
             <p className="text-base text-steel-400 leading-relaxed mb-8">
               Matrix is led by operators who understand the clinical landscape — the regulatory environment, the operational complexity, and the growth opportunities. Leadership profiles coming soon.

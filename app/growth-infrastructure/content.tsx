@@ -36,7 +36,7 @@ export function GrowthContent() {
       <section className="pt-32 pb-16 lg:pt-40 lg:pb-20">
         <Container>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-blue mb-4">Growth Infrastructure</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-purple mb-4">Growth Infrastructure</p>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight mb-6">
               More Than Supply. Matrix Builds the Infrastructure Around Clinic Growth.
             </h1>
@@ -56,8 +56,8 @@ export function GrowthContent() {
               <motion.div key={pillar.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06, duration: 0.5 }}>
                 <Card variant="interactive" glow className="h-full">
                   <CardContent>
-                    <div className="mb-3 w-10 h-10 rounded-xl bg-accent-blue/10 flex items-center justify-center">
-                      <pillar.icon size={20} className="text-accent-blue" />
+                    <div className="mb-3 w-10 h-10 rounded-xl bg-accent-purple/10 flex items-center justify-center">
+                      <pillar.icon size={20} className="text-accent-purple" />
                     </div>
                     <h3 className="text-sm font-semibold text-white mb-2">{pillar.title}</h3>
                     <p className="text-sm text-steel-400 leading-relaxed">{pillar.description}</p>
@@ -78,8 +78,8 @@ export function GrowthContent() {
               <motion.div key={stage.stage} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.5 }}
                 className="flex gap-4 p-5 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-all"
               >
-                <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-accent-blue/10 flex items-center justify-center">
-                  <stage.icon size={16} className="text-accent-blue" />
+                <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-accent-purple/10 flex items-center justify-center">
+                  <stage.icon size={16} className="text-accent-purple" />
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-white mb-1">{stage.stage}</h3>
@@ -95,7 +95,7 @@ export function GrowthContent() {
       <section className="py-20 lg:py-28">
         <Container size="narrow">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-blue mb-4">Scale With Confidence</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-purple mb-4">Scale With Confidence</p>
             <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-6">From Single Clinic to Multi-Location Enterprise</h2>
             <p className="text-base text-steel-400 leading-relaxed mb-8">
               Whether you operate one clinic or twenty, Matrix scales with you. Our infrastructure supports single-location practices, growing groups, and enterprise-level clinic networks.

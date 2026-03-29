@@ -35,7 +35,7 @@ export function Hero() {
             initial="hidden"
             animate="visible"
             custom={0}
-            className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-blue mb-6"
+            className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-purple mb-6"
           >
             Enterprise Clinic Infrastructure
           </motion.p>
@@ -49,7 +49,7 @@ export function Hero() {
             className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white tracking-tight leading-[1.08]"
           >
             The Infrastructure Behind{' '}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-accent-blue to-accent-cyan">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-accent-blue to-accent-purple">
               Modern Clinic Growth
             </span>
           </motion.h1>

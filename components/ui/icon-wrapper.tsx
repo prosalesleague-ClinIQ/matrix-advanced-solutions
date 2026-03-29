@@ -10,5 +10,5 @@ interface IconWrapperProps {
 export function IconWrapper({ name, className, size = 24 }: IconWrapperProps) {
   const Icon = (LucideIcons as Record<string, any>)[name]
   if (!Icon) return null
-  return <Icon className={cn('text-accent-blue', className)} size={size} />
+  return <Icon className={cn('text-accent-purple', className)} size={size} />
 }

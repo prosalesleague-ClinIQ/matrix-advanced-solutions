@@ -10,7 +10,7 @@ export default function CompliancePage() {
   return (
     <section className="pt-32 pb-24 lg:pt-40 lg:pb-32">
       <Container size="narrow">
-        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-blue mb-4">Legal</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-purple mb-4">Legal</p>
         <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-8">Compliance & Disclaimer</h1>
 
         <div className="prose prose-invert prose-sm max-w-none space-y-8 text-steel-400">
@@ -46,7 +46,7 @@ export default function CompliancePage() {
 
           <section>
             <h2 className="text-lg font-semibold text-white">Contact</h2>
-            <p>For compliance questions, credentialing inquiries, or regulatory concerns, please contact our team through the <a href="/contact" className="text-accent-blue hover:text-accent-cyan transition-colors">Contact page</a>.</p>
+            <p>For compliance questions, credentialing inquiries, or regulatory concerns, please contact our team through the <a href="/contact" className="text-accent-purple hover:text-accent-purple-light transition-colors">Contact page</a>.</p>
           </section>
         </div>
       </Container>

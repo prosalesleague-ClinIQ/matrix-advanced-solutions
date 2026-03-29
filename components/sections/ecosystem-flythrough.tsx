@@ -42,7 +42,7 @@ export function EcosystemFlythrough() {
   return (
     <section className="py-24 lg:py-32 relative overflow-hidden">
       {/* Background gradient accent */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-accent-blue/[0.03] blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-accent-purple/[0.03] blur-3xl pointer-events-none" />
 
       <Container>
         <SectionHeading
@@ -53,7 +53,7 @@ export function EcosystemFlythrough() {
 
         <div className="relative max-w-3xl mx-auto">
           {/* Vertical line */}
-          <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-accent-blue/30 via-accent-blue/10 to-transparent hidden sm:block" />
+          <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-accent-purple/30 via-accent-purple/10 to-transparent hidden sm:block" />
 
           <div className="space-y-8">
             {stages.map((stage, i) => (
@@ -65,8 +65,8 @@ export function EcosystemFlythrough() {
                 transition={{ delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                 className="relative flex gap-6 group"
               >
-                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-surface-card border border-white/10 flex items-center justify-center group-hover:border-accent-blue/30 group-hover:bg-accent-blue/5 transition-all duration-300 z-10">
-                  <span className="text-xs font-bold text-accent-blue">{stage.step}</span>
+                <div className="flex-shrink-0 w-12 h-12 rounded-full bg-surface-card border border-white/10 flex items-center justify-center group-hover:border-accent-purple/30 group-hover:bg-accent-purple/5 transition-all duration-300 z-10">
+                  <span className="text-xs font-bold text-accent-purple">{stage.step}</span>
                 </div>
                 <div className="flex-1 pb-8">
                   <h3 className="text-lg font-semibold text-white mb-1">{stage.title}</h3>

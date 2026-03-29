@@ -36,8 +36,8 @@ export function GrowthPreview() {
               transition={{ delay: i * 0.08, duration: 0.5 }}
               className="flex gap-4 p-5 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 hover:bg-white/[0.04] transition-all duration-300"
             >
-              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-accent-blue/10 flex items-center justify-center">
-                <pillar.icon size={20} className="text-accent-blue" />
+              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-accent-purple/10 flex items-center justify-center">
+                <pillar.icon size={20} className="text-accent-purple" />
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-white mb-1">{pillar.label}</h3>

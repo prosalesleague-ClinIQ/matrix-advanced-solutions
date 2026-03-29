@@ -11,7 +11,7 @@ export function FinalCTA() {
   return (
     <section className="py-24 lg:py-32 relative overflow-hidden">
       {/* Background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-accent-blue/[0.05] blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-accent-purple/[0.05] blur-3xl pointer-events-none" />
 
       <Container className="relative">
         <motion.div
@@ -21,7 +21,7 @@ export function FinalCTA() {
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="text-center max-w-2xl mx-auto"
         >
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-blue mb-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-purple mb-6">
             Get Started
           </p>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight mb-6">

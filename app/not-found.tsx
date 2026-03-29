@@ -12,7 +12,7 @@ export default function NotFound() {
   return (
     <section className="min-h-[80vh] flex items-center pt-20">
       <Container className="text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-blue mb-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-purple mb-4">
           404
         </p>
         <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-4">

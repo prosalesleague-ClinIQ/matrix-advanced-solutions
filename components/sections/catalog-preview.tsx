@@ -37,7 +37,7 @@ export function CatalogPreview() {
                   <p className="text-xs text-steel-500 leading-relaxed mb-3">{cat.description}</p>
                   <div className="flex items-center justify-between">
                     <Badge variant="outline">{cat.productCount} products</Badge>
-                    <ArrowRight size={14} className="text-steel-600 group-hover:text-accent-blue group-hover:translate-x-0.5 transition-all" />
+                    <ArrowRight size={14} className="text-steel-600 group-hover:text-accent-purple group-hover:translate-x-0.5 transition-all" />
                   </div>
                 </div>
               </Link>

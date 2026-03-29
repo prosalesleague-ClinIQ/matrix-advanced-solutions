@@ -27,7 +27,7 @@ export function TrustStandards() {
               className="flex gap-4"
             >
               <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-white/5 border border-white/8 flex items-center justify-center">
-                <IconWrapper name={item.icon} size={18} className="text-accent-blue" />
+                <IconWrapper name={item.icon} size={18} className="text-accent-purple" />
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-white mb-1">{item.title}</h3>

@@ -28,7 +28,7 @@ export function OnboardingContent() {
       <section className="pt-32 pb-16 lg:pt-40 lg:pb-20">
         <Container>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-blue mb-4">Clinic Onboarding</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-purple mb-4">Clinic Onboarding</p>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight mb-6">
               Start Your Partnership with Matrix
             </h1>
@@ -48,8 +48,8 @@ export function OnboardingContent() {
               <motion.div key={item.title} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.5 }}>
                 <Card variant="default" className="h-full">
                   <CardContent className="flex gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-accent-blue/10 flex items-center justify-center">
-                      <item.icon size={20} className="text-accent-blue" />
+                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-accent-purple/10 flex items-center justify-center">
+                      <item.icon size={20} className="text-accent-purple" />
                     </div>
                     <div>
                       <h3 className="text-sm font-semibold text-white mb-1">{item.title}</h3>
@@ -72,8 +72,8 @@ export function OnboardingContent() {
               <motion.div key={step.step} initial={{ opacity: 0, x: -15 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.5 }}
                 className="flex gap-5 items-start"
               >
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-accent-blue/10 border border-accent-blue/20 flex items-center justify-center">
-                  <span className="text-sm font-bold text-accent-blue">{step.step}</span>
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-accent-purple/10 border border-accent-purple/20 flex items-center justify-center">
+                  <span className="text-sm font-bold text-accent-purple">{step.step}</span>
                 </div>
                 <div>
                   <h3 className="text-base font-semibold text-white mb-1">{step.title}</h3>

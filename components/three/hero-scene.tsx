@@ -54,14 +54,14 @@ function NetworkNodes() {
       {nodes.map((node, i) => (
         <mesh key={`node-${i}`} position={node.position}>
           <sphereGeometry args={[node.scale, 8, 8]} />
-          <meshBasicMaterial color="#3b82f6" transparent opacity={0.6} />
+          <meshBasicMaterial color="#a855f7" transparent opacity={0.6} />
         </mesh>
       ))}
       {connections.map((conn, i) => (
         <Line
           key={`line-${i}`}
           points={[conn.start, conn.end]}
-          color="#3b82f6"
+          color="#a855f7"
           transparent
           opacity={0.08}
           lineWidth={1}
@@ -85,7 +85,7 @@ function CentralOrb() {
     <Float speed={reducedMotion ? 0 : 1.5} rotationIntensity={0.2} floatIntensity={0.3}>
       <mesh ref={meshRef} position={[2, 0, -1]}>
         <icosahedronGeometry args={[1.2, 2]} />
-        <meshBasicMaterial color="#1e40af" transparent opacity={0.12} wireframe />
+        <meshBasicMaterial color="#6d28d9" transparent opacity={0.12} wireframe />
       </mesh>
     </Float>
   )

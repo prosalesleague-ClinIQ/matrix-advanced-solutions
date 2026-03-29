@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { footerNav } from '@/data/navigation'
 
 export function Footer() {
@@ -67,10 +68,13 @@ export function Footer() {
         <div className="mt-16 pt-8 border-t border-white/5">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-accent-blue to-accent-cyan flex items-center justify-center">
-                <span className="text-xs font-bold text-white">M</span>
-              </div>
-              <span className="text-sm font-semibold text-white">Matrix Advanced Solutions</span>
+              <Image
+                src="/images/matrix-logo-horizontal.png"
+                alt="Matrix Advanced Solutions"
+                width={180}
+                height={40}
+                className="h-8 w-auto"
+              />
             </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 text-xs text-steel-500">
               <p>&copy; {new Date().getFullYear()} Matrix Advanced Solutions. All rights reserved.</p>

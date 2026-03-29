@@ -43,7 +43,7 @@ export function MuscleLockContent() {
         <Container className="relative">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-3xl">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-blue to-accent-cyan flex items-center justify-center">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-blue to-accent-purple flex items-center justify-center">
                 <Zap size={24} className="text-white" />
               </div>
               <Badge variant="accent">Flagship Product</Badge>
@@ -85,8 +85,8 @@ export function MuscleLockContent() {
               <motion.div key={benefit.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.5 }}>
                 <Card variant="interactive" glow className="h-full">
                   <CardContent className="flex gap-4">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-accent-blue/10 flex items-center justify-center">
-                      <benefit.icon size={20} className="text-accent-blue" />
+                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-accent-purple/10 flex items-center justify-center">
+                      <benefit.icon size={20} className="text-accent-purple" />
                     </div>
                     <div>
                       <h3 className="text-sm font-semibold text-white mb-1">{benefit.title}</h3>
@@ -109,7 +109,7 @@ export function MuscleLockContent() {
               <motion.div key={i} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06, duration: 0.4 }}
                 className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.02] border border-white/5"
               >
-                <CheckCircle2 size={16} className="text-accent-blue flex-shrink-0 mt-0.5" />
+                <CheckCircle2 size={16} className="text-accent-purple flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-steel-400">{app}</p>
               </motion.div>
             ))}
