@@ -17,8 +17,10 @@
     '<canvas id="ml-stars-canvas"></canvas>' +
     '<div id="ml-floor"></div>' +
     '<div id="ml-back-glow"></div>' +
-    '<div id="ml-bottle-wrap"><img src="/musclelock/assets/bottle-reveal.png" alt="" /></div>' +
-    '<div id="ml-label-orbit"><div id="ml-label-plane"><img src="/musclelock/assets/label-wrap.webp" alt="" /></div></div>' +
+    '<div id="ml-rim-left"></div>' +
+    '<div id="ml-rim-right"></div>' +
+    '<div id="ml-bottle-wrap"><img src="/musclelock/assets/bottle-studio.png" alt="" width="1024" height="1536" /></div>' +
+    '<div id="ml-label-orbit"><div id="ml-label-plane"><img src="/musclelock/assets/label-wrap.png" alt="" width="1980" height="756" /></div></div>' +
     '<div id="ml-brand-lockup"><h2>MuscleLock</h2><p>By Matrix Advanced Solutions</p></div>' +
     '<button id="ml-unveil-skip">Skip</button>';
 
@@ -122,8 +124,8 @@
   }
   var img1 = new Image(); img1.onload = img1.onerror = onImgLoad;
   var img2 = new Image(); img2.onload = img2.onerror = onImgLoad;
-  img1.src = '/musclelock/assets/bottle-reveal.png';
-  img2.src = '/musclelock/assets/label-wrap.webp';
+  img1.src = '/musclelock/assets/bottle-studio.png';
+  img2.src = '/musclelock/assets/label-wrap.png';
   setTimeout(function () { if (loaded < 2) { loaded = 2; startAnimation(); } }, 2500);
 
   var started = false;
@@ -253,6 +255,10 @@
         duration: 1,
         ease: 'power2.out'
       }, zoomTime);
+
+      // Rim lights
+      tl.to(document.getElementById('ml-rim-left'), { opacity: 0.8, duration: 1.2, ease: 'power2.out' }, zoomTime - 0.5);
+      tl.to(document.getElementById('ml-rim-right'), { opacity: 0.8, duration: 1.2, ease: 'power2.out' }, zoomTime - 0.3);
 
       // Brand lockup appears
       tl.to(brandLockup, {
