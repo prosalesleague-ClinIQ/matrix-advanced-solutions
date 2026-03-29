@@ -21,7 +21,7 @@
     '<div id="ml-rim-right"></div>' +
     '<div id="ml-bottle-wrap"><img src="/musclelock/assets/bottle-studio.png" alt="" width="1024" height="1536" /></div>' +
     '<div id="ml-label-orbit"><div id="ml-label-plane"><img src="/musclelock/assets/label-wrap.png" alt="" width="1980" height="756" /></div></div>' +
-    '<div id="ml-brand-lockup"><h2>MuscleLock</h2><p>By Matrix Advanced Solutions</p></div>' +
+    '' +
     '<button id="ml-unveil-skip">Skip</button>';
 
   document.body.prepend(overlay);
