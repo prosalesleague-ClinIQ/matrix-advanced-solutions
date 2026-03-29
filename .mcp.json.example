@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/.mcp.schema.json",
+  "mcpServers": {
+    "browser": {
+      "command": "npx",
+      "args": ["@anthropic-ai/mcp-browser"],
+      "description": "Browser automation for visual testing and Lighthouse audits"
+    },
+    "github": {
+      "command": "npx",
+      "args": ["@anthropic-ai/mcp-github"],
+      "env": {
+        "GITHUB_TOKEN": "your-github-token"
+      },
+      "description": "GitHub integration for PR management and issue tracking"
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["@anthropic-ai/mcp-filesystem", "--root", "."],
+      "description": "Advanced filesystem operations"
+    }
+  }
+}
