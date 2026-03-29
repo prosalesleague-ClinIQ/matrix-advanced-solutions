@@ -1,14 +1,19 @@
 'use client'
 
-import { Suspense } from 'react'
+import { Suspense, lazy } from 'react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
-import { ArrowRight, Play } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { HeroScene } from '@/components/three/hero-scene'
 import { SceneFallback } from '@/components/three/scene-fallback'
 import { Container } from '@/components/ui/container'
 import { trackCTA } from '@/lib/analytics/track'
+
+const HeroScene = dynamic(
+  () => import('@/components/three/hero-scene').then((mod) => ({ default: mod.HeroScene })),
+  { ssr: false, loading: () => <SceneFallback /> }
+)
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -22,9 +27,7 @@ const fadeUp = {
 export function Hero() {
   return (
     <section className="relative min-h-[100vh] flex items-center overflow-hidden">
-      <Suspense fallback={<SceneFallback />}>
-        <HeroScene />
-      </Suspense>
+      <HeroScene />
 
       <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/60 to-transparent z-10" />
 

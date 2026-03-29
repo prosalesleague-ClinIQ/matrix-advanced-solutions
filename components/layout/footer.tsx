@@ -69,7 +69,7 @@ export function Footer() {
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <Image
-                src="/images/matrix-logo-horizontal.png"
+                src="/images/matrix-logo-horizontal-sm.webp"
                 alt="Matrix Advanced Solutions"
                 width={180}
                 height={40}

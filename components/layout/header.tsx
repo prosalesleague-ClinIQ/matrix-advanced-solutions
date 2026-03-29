@@ -21,7 +21,7 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
             <Image
-              src="/images/matrix-logo-horizontal.png"
+              src="/images/matrix-logo-horizontal-sm.webp"
               alt="Matrix Advanced Solutions"
               width={200}
               height={45}
