@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
+import { IntroOverlay } from '@/components/intro/intro-overlay'
 import './globals.css'
 
 const inter = Inter({
@@ -52,6 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
       </head>
       <body className="min-h-screen bg-navy-950 text-steel-300 font-sans">
+        <IntroOverlay />
         <Header />
         <main>{children}</main>
         <Footer />
