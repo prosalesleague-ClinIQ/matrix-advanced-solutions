@@ -2,14 +2,15 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import Image from 'next/image'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 
 const SESSION_KEY = 'matrix-intro-played'
 
-function checkShouldPlay(): boolean {
-  if (typeof window === 'undefined') return false
-  return !sessionStorage.getItem(SESSION_KEY)
+// Check synchronously on first render to avoid flash
+function getInitialState() {
+  if (typeof window === 'undefined') return { shouldPlay: false, alreadyPlayed: true }
+  const played = sessionStorage.getItem(SESSION_KEY)
+  return { shouldPlay: !played, alreadyPlayed: !!played }
 }
 
 function markPlayed() {
@@ -18,7 +19,7 @@ function markPlayed() {
   }
 }
 
-// --- Particle canvas using 2D Canvas API for crisp rendering ---
+// --- 2D Canvas particle swirl ---
 
 function ParticleCanvas({ progress }: { progress: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -72,7 +73,7 @@ function ParticleCanvas({ progress }: { progress: number }) {
 
     for (const pt of particlesRef.current) {
       const swirlAngle = time * pt.speed + pt.phase + p * 5
-      const currentRadius = pt.radius * (1 - p * 0.92)
+      const currentRadius = pt.radius * Math.max(0.02, 1 - p * 0.95)
       const swirlX = Math.cos(swirlAngle) * currentRadius
       const swirlY = Math.sin(swirlAngle) * currentRadius * 0.7
 
@@ -80,7 +81,7 @@ function ParticleCanvas({ progress }: { progress: number }) {
       const x = cx + pt.ox * (1 - blendP) + swirlX * blendP
       const y = cy + pt.oy * (1 - blendP) + swirlY * blendP
 
-      const alpha = p < 0.55 ? 0.6 + Math.sin(time * pt.speed * 2) * 0.15 : Math.max(0, 0.75 - (p - 0.55) * 2.2)
+      const alpha = p < 0.5 ? 0.55 + Math.sin(time * pt.speed * 2) * 0.12 : Math.max(0, 0.67 - (p - 0.5) * 1.8)
       if (alpha <= 0) continue
 
       const size = pt.size * (1 + (1 - p) * 0.5)
@@ -94,21 +95,18 @@ function ParticleCanvas({ progress }: { progress: number }) {
   return <canvas ref={canvasRef} className="absolute inset-0" style={{ display: 'block' }} />
 }
 
-// --- Main intro overlay ---
+// --- Main overlay ---
 
 export function IntroOverlay() {
-  const [shouldPlay, setShouldPlay] = useState(false)
-  const [visible, setVisible] = useState(true)
+  const initial = useRef(getInitialState())
+  const [visible, setVisible] = useState(initial.current.shouldPlay)
   const [progress, setProgress] = useState(0)
   const reducedMotion = useReducedMotion()
   const rafRef = useRef<number>(0)
   const startRef = useRef<number>(0)
 
-  useEffect(() => {
-    const play = checkShouldPlay()
-    setShouldPlay(play)
-    if (!play) setVisible(false)
-  }, [])
+  // Don't render anything if already played
+  if (initial.current.alreadyPlayed) return null
 
   const handleComplete = useCallback(() => {
     markPlayed()
@@ -117,31 +115,29 @@ export function IntroOverlay() {
 
   // Reduced motion: quick fade
   useEffect(() => {
-    if (shouldPlay && reducedMotion) {
+    if (visible && reducedMotion) {
       const t = setTimeout(() => { markPlayed(); setVisible(false) }, 600)
       return () => clearTimeout(t)
     }
-  }, [shouldPlay, reducedMotion])
+  }, [visible, reducedMotion])
 
   // Main animation driver
   useEffect(() => {
-    if (!shouldPlay || reducedMotion || !visible) return
+    if (!visible || reducedMotion) return
 
     const isMobile = window.innerWidth < 768
     const totalMs = isMobile ? 2800 : 3500
-    const holdMs = 900
+    const holdMs = 1000
     startRef.current = performance.now()
 
     const tick = () => {
       const elapsed = performance.now() - startRef.current
       const raw = Math.min(1, elapsed / totalMs)
-      // Ease: slow start, fast middle, decelerate end
-      const eased = raw < 0.2
-        ? raw * raw * 25 * 0.04
-        : raw < 0.7
-          ? 0.04 + (raw - 0.2) * 1.92
-          : 1 - (1 - raw) * (1 - raw) * (1 / 0.09)
-      setProgress(Math.min(1, Math.max(0, eased)))
+      // Smooth ease-in-out
+      const eased = raw < 0.5
+        ? 2 * raw * raw
+        : 1 - Math.pow(-2 * raw + 2, 2) / 2
+      setProgress(eased)
 
       if (elapsed < totalMs + holdMs) {
         rafRef.current = requestAnimationFrame(tick)
@@ -151,22 +147,20 @@ export function IntroOverlay() {
     }
     rafRef.current = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(rafRef.current)
-  }, [shouldPlay, reducedMotion, visible, handleComplete])
+  }, [visible, reducedMotion, handleComplete])
 
   // Safety timeout
   useEffect(() => {
-    if (shouldPlay && visible) {
+    if (visible) {
       const t = setTimeout(() => { markPlayed(); setVisible(false) }, 7000)
       return () => clearTimeout(t)
     }
-  }, [shouldPlay, visible])
+  }, [visible])
 
-  if (!shouldPlay) return null
-
-  const logoOpacity = Math.max(0, Math.min(1, (progress - 0.4) / 0.3))
-  const logoScale = 0.85 + logoOpacity * 0.15
-  const glowOpacity = Math.max(0, Math.min(0.7, (progress - 0.35) / 0.4))
-  const textOpacity = Math.max(0, Math.min(1, (progress - 0.6) / 0.25))
+  const logoOpacity = Math.max(0, Math.min(1, (progress - 0.35) / 0.3))
+  const logoScale = 0.88 + logoOpacity * 0.12
+  const glowOpacity = Math.max(0, Math.min(0.7, (progress - 0.3) / 0.4))
+  const textOpacity = Math.max(0, Math.min(1, (progress - 0.65) / 0.2))
 
   return (
     <AnimatePresence>
@@ -179,21 +173,21 @@ export function IntroOverlay() {
           className="fixed inset-0 z-[9999] bg-[#040410]"
           aria-hidden="true"
         >
-          {/* Particle swirl — 2D Canvas, high-DPR */}
+          {/* Particle swirl */}
           {!reducedMotion && <ParticleCanvas progress={progress} />}
 
           {/* Ambient radial glow */}
           <div
             className="absolute top-1/2 left-1/2 pointer-events-none"
             style={{
-              width: 600, height: 600,
-              transform: `translate(-50%, -50%) scale(${0.5 + glowOpacity * 0.8})`,
-              background: 'radial-gradient(circle, rgba(109,40,217,0.45) 0%, rgba(79,70,229,0.15) 35%, transparent 65%)',
+              width: 800, height: 800,
+              transform: `translate(-50%, -50%) scale(${0.4 + glowOpacity * 0.9})`,
+              background: 'radial-gradient(circle, rgba(109,40,217,0.5) 0%, rgba(79,70,229,0.15) 30%, transparent 60%)',
               opacity: glowOpacity,
             }}
           />
 
-          {/* Crisp logo — rendered natively by the browser, not WebGL */}
+          {/* Logo — large, crisp, native img */}
           <div
             className="absolute top-1/2 left-1/2 pointer-events-none"
             style={{
@@ -201,30 +195,32 @@ export function IntroOverlay() {
               opacity: logoOpacity,
             }}
           >
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src="/musclelock/assets/matrix_logo_lock.png"
               alt=""
               width={1024}
               height={682}
-              className="w-[220px] sm:w-[300px] md:w-[360px] h-auto"
-              style={{ filter: `drop-shadow(0 0 30px rgba(109,40,217,0.6)) drop-shadow(0 0 60px rgba(79,70,229,0.3))` }}
-              priority
-              unoptimized
+              className="w-[320px] sm:w-[420px] md:w-[520px] lg:w-[580px] h-auto"
+              style={{
+                filter: 'drop-shadow(0 0 40px rgba(109,40,217,0.6)) drop-shadow(0 0 80px rgba(79,70,229,0.3))',
+                imageRendering: 'auto',
+              }}
             />
           </div>
 
-          {/* Brand text */}
+          {/* Brand text below logo */}
           <div
             className="absolute top-1/2 left-1/2 pointer-events-none"
             style={{
-              transform: 'translate(-50%, 75px)',
+              transform: 'translate(-50%, 110px)',
               opacity: textOpacity,
             }}
           >
-            <p className="text-center text-lg sm:text-xl font-bold tracking-[0.2em] bg-clip-text text-transparent bg-gradient-to-r from-accent-blue via-accent-purple to-accent-purple-light">
+            <p className="text-center text-xl sm:text-2xl font-bold tracking-[0.2em] bg-clip-text text-transparent bg-gradient-to-r from-accent-blue via-accent-purple to-accent-purple-light">
               MATRIX
             </p>
-            <p className="text-center text-[10px] sm:text-xs tracking-[0.3em] text-steel-500 mt-1">
+            <p className="text-center text-[10px] sm:text-xs tracking-[0.3em] text-steel-500 mt-1.5">
               ADVANCED SOLUTIONS
             </p>
           </div>
