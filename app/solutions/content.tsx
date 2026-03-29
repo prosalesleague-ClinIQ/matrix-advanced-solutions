@@ -22,7 +22,7 @@ export function SolutionsContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="max-w-3xl"
+            className="max-w-3xl mx-auto text-center"
           >
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-purple mb-4">
               Solutions

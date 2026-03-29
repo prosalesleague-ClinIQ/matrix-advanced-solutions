@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<base href="/musclelock/" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matrix Metabolic Atlas — MuscleLock</title>
+
+<style>
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+:root{
+  --cyan:   #00eaff;
+  --violet: #9b59ff;
+  --gold:   #ff9a00;
+  --green:  #00ffaa;
+  --indigo: #020617;
+}
+
+body{
+  background:var(--indigo);
+  font-family:'Inter', system-ui, -apple-system, sans-serif;
+  overflow:hidden;
+  color:white;
+}
+
+/* ── BRAND ─────────────────────────── */
+#brand{
+  position:fixed;
+  top:24px; left:32px;
+  z-index:20;
+  pointer-events:none;
+}
+#brand h1{
+  font-size:16px; font-weight:800;
+  letter-spacing:-.03em;
+  color:#fff;
+}
+#brand p{
+  font-size:9px; color:var(--cyan);
+  letter-spacing:.22em; text-transform:uppercase;
+  opacity:.7; margin-top:2px;
+}
+
+/* ── NODE LEGEND ────────────────────── */
+#legend{
+  position:fixed;
+  top:24px; left:50%;
+  transform:translateX(-50%);
+  z-index:20;
+  display:flex;
+  gap:16px;
+  background:rgba(2,6,23,.8);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:100px;
+  padding:8px 18px;
+  backdrop-filter:blur(12px);
+}
+.legend-item{
+  display:flex; align-items:center; gap:6px;
+  font-size:10px; font-weight:600;
+  letter-spacing:.08em; text-transform:uppercase;
+  opacity:.7;
+}
+.legend-dot{
+  width:7px; height:7px;
+  border-radius:50%;
+}
+
+/* ── BACK LINK ──────────────────────── */
+#back-link{
+  position:fixed;
+  top:24px; right:32px;
+  z-index:20;
+  font-size:11px; color:rgba(255,255,255,.4);
+  text-decoration:none;
+  letter-spacing:.08em;
+  transition:color .2s;
+}
+#back-link:hover{ color:var(--cyan); }
+
+/* ── TOOLTIP ────────────────────────── */
+#atlas-tooltip{
+  position:fixed;
+  pointer-events:none;
+  z-index:25;
+  font-size:11px; font-weight:600;
+  color:var(--cyan);
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  background:rgba(2,6,23,.88);
+  border:1px solid rgba(0,234,255,.25);
+  padding:5px 12px;
+  border-radius:100px;
+  opacity:0;
+  transition:opacity .2s;
+  backdrop-filter:blur(8px);
+  white-space:nowrap;
+}
+#atlas-tooltip.visible{ opacity:1; }
+
+/* ── XR BUTTON ──────────────────────── */
+#atlas-xr-btn{
+  position:fixed;
+  bottom:24px; right:32px;
+  z-index:30;
+}
+
+/* ── HINT TEXT ──────────────────────── */
+#hint{
+  position:fixed;
+  bottom:100px; left:50%;
+  transform:translateX(-50%);
+  z-index:20;
+  font-size:10px;
+  color:rgba(255,255,255,.28);
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  pointer-events:none;
+  transition:opacity .8s;
+}
+</style>
+  <script type="module" crossorigin src="/musclelock/assets/atlas-D-reteai.js"></script>
+  <link rel="modulepreload" crossorigin href="/musclelock/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="modulepreload" crossorigin href="/musclelock/assets/UnrealBloomPass-83pUnZ6S.js">
+</head>
+
+<body>
+
+<div id="brand">
+  <h1>MuscleLock</h1>
+  <p>Metabolic Atlas</p>
+</div>
+
+<div id="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#00eaff"></div>Nutrient Sensor</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#9b59ff"></div>Growth Regulator</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ff9a00"></div>Energy Regulator</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#00ffaa"></div>Structural System</div>
+</div>
+
+<a href="science.html" id="back-link">← Science Experience</a>
+
+<div id="atlas-tooltip"></div>
+<div id="atlas-xr-btn"></div>
+
+<div id="hint">Click any node to explore — drag to rotate — scroll to zoom</div>
+
+
+<script>
+  const tooltip = document.getElementById('atlas-tooltip')
+
+  // Position tooltip with cursor
+  document.addEventListener('mousemove', e => {
+    tooltip.style.left = (e.clientX + 14) + 'px'
+    tooltip.style.top  = (e.clientY - 8)  + 'px'
+  })
+
+  // Show/hide tooltip on node hover (fired by RaycastInteraction)
+  document.addEventListener('atlas:hover', e => {
+    const nodeId = e.detail
+    if (nodeId) {
+      // Lazy-import node label from PathwayGraph
+      import('/musclelock/assets/PathwayGraph--b1Ix3QD.js').then(({ NODES }) => {
+        tooltip.textContent = NODES[nodeId]?.label ?? nodeId
+        tooltip.classList.add('visible')
+      })
+    } else {
+      tooltip.classList.remove('visible')
+    }
+  })
+
+  // Fade out hint after 4s
+  setTimeout(() => {
+    const hint = document.getElementById('hint')
+    if (hint) hint.style.opacity = '0'
+  }, 4000)
+</script>
+
+</body>
+</html>

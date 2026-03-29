@@ -29,7 +29,7 @@ export function Hero() {
       <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/60 to-transparent z-10" />
 
       <Container className="relative z-20 py-32 lg:py-40">
-        <div className="max-w-3xl">
+        <div className="max-w-3xl mx-auto text-center">
           <motion.p
             variants={fadeUp}
             initial="hidden"
@@ -74,7 +74,7 @@ export function Hero() {
             initial="hidden"
             animate="visible"
             custom={3}
-            className="mt-10 flex flex-col sm:flex-row gap-4"
+            className="mt-10 flex flex-col sm:flex-row gap-4 justify-center"
           >
             <Link href="/contact?type=catalog">
               <Button size="lg" onClick={() => trackCTA('request_catalog', 'hero')}>
@@ -94,7 +94,7 @@ export function Hero() {
             initial="hidden"
             animate="visible"
             custom={4}
-            className="mt-6 text-xs text-steel-600"
+            className="mt-6 text-xs text-steel-600 text-center"
           >
             Professional use only. For qualified clinics and providers.
           </motion.p>

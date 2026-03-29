@@ -6,10 +6,10 @@ export type NavItem = {
 
 export const primaryNav: NavItem[] = [
   { label: 'Home', href: '/' },
+  { label: 'About', href: '/about' },
   { label: 'Solutions', href: '/solutions' },
   { label: 'Catalog', href: '/catalog' },
   { label: 'Growth Infrastructure', href: '/growth-infrastructure' },
-  { label: 'About', href: '/about' },
   { label: 'Peptide Map', href: '/peptide-map' },
   { label: 'MuscleLock', href: '/musclelock' },
   { label: 'Onboarding', href: '/clinic-onboarding' },

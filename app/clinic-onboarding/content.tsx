@@ -27,7 +27,7 @@ export function OnboardingContent() {
     <>
       <section className="pt-32 pb-16 lg:pt-40 lg:pb-20">
         <Container>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-3xl">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-3xl mx-auto text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-purple mb-4">Clinic Onboarding</p>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight mb-6">
               Start Your Partnership with Matrix

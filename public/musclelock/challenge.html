@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <base href="/musclelock/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Transformation Study — MuscleLock™</title>
+    <meta name="description"
+        content="Join the MuscleLock Transformation Project. Track your results, document your progress, become a featured transformation." />
+    <link rel="icon" type="image/png" href="/musclelock/assets/matrix_logo_lock.png" />
+
+  <script type="module" crossorigin src="/musclelock/assets/challenge-CN8jNaDw.js"></script>
+  <link rel="modulepreload" crossorigin href="/musclelock/assets/modulepreload-polyfill-B5Qt9EMX.js">
+  <link rel="stylesheet" crossorigin href="/musclelock/assets/challenge-CcNVnnkn.css">
+  <link rel="stylesheet" crossorigin href="/musclelock/assets/components-vadXQHEy.css">
+</head>
+
+<body>
+
+    <!-- ═══════ SIGN-IN MODAL (shown on demand) ═══════ -->
+    <div class="signin-modal-backdrop" id="signin-modal" style="display:none;">
+        <div class="auth-gate-card">
+            <button class="signin-modal-close" id="signin-modal-close" aria-label="Close">✕</button>
+            <img src="/musclelock/assets/logo.png" alt="MuscleLock Logo" class="auth-gate-logo" />
+            <h2 class="auth-gate-title">Sign In to Continue</h2>
+            <p class="auth-gate-desc">Sign in to save your progress, view your personal dashboard, and track your transformation.</p>
+            <button class="btn-google" id="btn-google-signin">
+                <svg width="20" height="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+                Continue with Google
+            </button>
+            <p class="auth-gate-fine">Your data is private. Only you can see your dashboard and results.</p>
+        </div>
+    </div>
+
+    <!-- ═══════ NAVIGATION ═══════ -->
+    <nav class="nav scrolled" id="main-nav">
+        <div class="nav-inner">
+            <a href="/" class="nav-logo">
+                <img src="/musclelock/assets/matrix_logo_lock.png" alt="MuscleLock Logo" />
+                <div class="nav-logo-text">
+                    <span class="nav-logo-name">MuscleLock</span>
+                    <span class="nav-logo-sub">by Matrix Advanced Solutions</span>
+                </div>
+            </a>
+            <ul class="nav-links" id="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="#submit">Submit Results</a></li>
+                <li><a href="#dashboard">Dashboard</a></li>
+                <li><a href="#featured">Featured</a></li>
+            </ul>
+            <!-- Sign in button (shown when signed out) -->
+            <button class="btn-google btn-google--nav" id="btn-nav-signin" style="display:flex;">
+                <svg width="16" height="16" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+                Sign In
+            </button>
+            <!-- User info (shown when signed in) -->
+            <div class="nav-user" id="nav-user" style="display:none;">
+                <img class="nav-user-avatar" id="nav-user-avatar" src="" alt="" />
+                <span class="nav-user-name" id="nav-user-name"></span>
+                <button class="btn btn-ghost" id="btn-signout" style="padding: 6px 14px; font-size: 13px;">Sign Out</button>
+            </div>
+            <button class="nav-mobile-toggle" id="nav-toggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ═══════ CHALLENGE HERO ═══════ -->
+    <section class="challenge-hero">
+        <div class="challenge-hero-content">
+            <div class="badge animate-fade-in">
+                <span class="badge-dot"></span>
+                Now Accepting Applications
+            </div>
+            <h1 class="headline-section animate-fade-in-up" style="margin-top: 20px; animation-delay: 0.2s;">
+                The <span class="text-gradient">MuscleLock</span><br />Transformation Project
+            </h1>
+            <p class="headline-sub animate-fade-in-up" style="animation-delay: 0.4s;">
+                Track your results. Document your progress.<br />Become a featured transformation.
+            </p>
+            <div class="challenge-steps animate-fade-in-up" style="animation-delay: 0.6s;">
+                <div class="challenge-step">
+                    <div class="challenge-step-number">1</div>
+                    <span class="challenge-step-text">Submit Baseline</span>
+                </div>
+                <div class="challenge-step">
+                    <div class="challenge-step-number">2</div>
+                    <span class="challenge-step-text">Track Weekly</span>
+                </div>
+                <div class="challenge-step">
+                    <div class="challenge-step-number">3</div>
+                    <span class="challenge-step-text">Get Featured</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════ MAIN CONTENT ═══════ -->
+    <section class="section" id="challenge-content">
+        <div class="container">
+            <!-- Tabs -->
+            <div class="tabs" role="tablist">
+                <button class="tab-btn active" data-tab="submit" role="tab" id="tab-submit">Submit Results</button>
+                <button class="tab-btn" data-tab="dashboard" role="tab" id="tab-dashboard">My Dashboard</button>
+                <button class="tab-btn" data-tab="media" role="tab" id="tab-media">Media Gallery</button>
+                <button class="tab-btn" data-tab="featured" role="tab" id="tab-featured">Featured</button>
+            </div>
+
+            <!-- ═══ TAB: Submit Results ═══ -->
+            <div class="tab-panel active" id="submit" role="tabpanel">
+                <!-- Progress Bar -->
+                <div class="progress-bar" id="form-progress">
+                    <div class="progress-step active" data-step="1"></div>
+                    <div class="progress-step" data-step="2"></div>
+                    <div class="progress-step" data-step="3"></div>
+                    <div class="progress-step" data-step="4"></div>
+                </div>
+
+                <div class="form-steps" id="form-steps">
+                    <!-- Step 1: Baseline Metrics -->
+                    <div class="step-panel active" data-step="1">
+                        <h3 class="step-title">Profile Setup</h3>
+                        <p class="step-desc">Enter your profile and starting measurements to establish your
+                            transformation baseline.</p>
+                        <form id="baseline-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="fullname">Full Name</label>
+                                    <input type="text" class="form-input" id="fullname" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="gender">Gender</label>
+                                    <select class="form-input" id="gender">
+                                        <option value="">Select gender</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other / Prefer not to say</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="age">Age</label>
+                                    <input type="number" class="form-input" id="age" min="18"
+                                        max="99" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="height">Height (inches)</label>
+                                    <input type="number" class="form-input" id="height" />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="weight">Weight (lbs)</label>
+                                    <input type="number" class="form-input" id="weight" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="bodyfat">Body Fat %</label>
+                                    <input type="number" class="form-input" id="bodyfat"
+                                        step="0.1" />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="leanmass">Lean Body Mass (lbs)</label>
+                                    <input type="number" class="form-input" id="leanmass"
+                                        step="0.1" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="water">Water %</label>
+                                    <input type="number" class="form-input" id="water"
+                                        step="0.1" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="dexa">DEXA Scan Upload (optional)</label>
+                                <input type="file" class="form-input" id="dexa" accept=".pdf,.png,.jpg,.jpeg" />
+                            </div>
+                        </form>
+                        <div class="form-actions">
+                            <span></span>
+                            <button type="button" class="btn btn-primary" onclick="nextStep(2)">Continue →</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Measurements -->
+                    <div class="step-panel" data-step="2">
+                        <h3 class="step-title">Body Measurements</h3>
+                        <p class="step-desc">Record your current body measurements in inches.</p>
+                        <form id="measurements-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="chest">Chest</label>
+                                    <input type="number" class="form-input" id="chest" placeholder="inches"
+                                        step="0.1" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="waist">Waist</label>
+                                    <input type="number" class="form-input" id="waist" placeholder="inches"
+                                        step="0.1" />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="hips">Hips</label>
+                                    <input type="number" class="form-input" id="hips" placeholder="inches" step="0.1" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="biceps">Biceps</label>
+                                    <input type="number" class="form-input" id="biceps" placeholder="inches"
+                                        step="0.1" />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="forearms">Forearms</label>
+                                    <input type="number" class="form-input" id="forearms" placeholder="inches"
+                                        step="0.1" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="thigh">Upper Thigh</label>
+                                    <input type="number" class="form-input" id="thigh" placeholder="inches"
+                                        step="0.1" />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="calf">Calf</label>
+                                    <input type="number" class="form-input" id="calf" placeholder="inches" step="0.1" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="neck">Neck</label>
+                                    <input type="number" class="form-input" id="neck" placeholder="inches" step="0.1" />
+                                </div>
+                            </div>
+                        </form>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-ghost" onclick="prevStep(1)">← Back</button>
+                            <button type="button" class="btn btn-primary" onclick="nextStep(3)">Continue →</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Lifestyle -->
+                    <div class="step-panel" data-step="3">
+                        <h3 class="step-title">Lifestyle Profile</h3>
+                        <p class="step-desc">Tell us about your current nutrition, training, and GLP regimen.</p>
+                        <form id="lifestyle-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="calories">Daily Caloric Intake</label>
+                                    <input type="number" class="form-input" id="calories" />
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="protein">Daily Protein (g)</label>
+                                    <input type="number" class="form-input" id="protein" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="training">Training Style</label>
+                                <select class="form-input" id="training">
+                                    <option value="">Select your primary training style</option>
+                                    <option value="resistance">Resistance Training</option>
+                                    <option value="cardio">Cardio Focused</option>
+                                    <option value="hybrid">Hybrid (Resistance + Cardio)</option>
+                                    <option value="hiit">HIIT</option>
+                                    <option value="minimal">Minimal / None</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="glp">GLP-1 Therapy</label>
+                                <select class="form-input" id="glp">
+                                    <option value="">Select your GLP treatment</option>
+                                    <option value="semaglutide">Semaglutide (Ozempic / Wegovy)</option>
+                                    <option value="tirzepatide">Tirzepatide (Mounjaro / Zepbound)</option>
+                                    <option value="liraglutide">Liraglutide (Saxenda)</option>
+                                    <option value="other">Other</option>
+                                    <option value="none">Not on GLP therapy</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="notes">Additional Notes</label>
+                                <textarea class="form-input" id="notes"
+                                    ></textarea>
+                            </div>
+                        </form>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-ghost" onclick="prevStep(2)">← Back</button>
+                            <button type="button" class="btn btn-primary" onclick="nextStep(4)">Continue →</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Photos -->
+                    <div class="step-panel" data-step="4">
+                        <h3 class="step-title">Progress Photos</h3>
+                        <p class="step-desc">Upload baseline photos. These will be used for your transformation
+                            documentation.</p>
+                        <div class="photo-upload-grid">
+                            <label class="photo-upload-box" for="photo-front">
+                                <span class="photo-upload-icon">📷</span>
+                                <span class="photo-upload-label">Front View</span>
+                                <input type="file" id="photo-front" accept="image/*" hidden />
+                            </label>
+                            <label class="photo-upload-box" for="photo-side">
+                                <span class="photo-upload-icon">📷</span>
+                                <span class="photo-upload-label">Side View</span>
+                                <input type="file" id="photo-side" accept="image/*" hidden />
+                            </label>
+                            <label class="photo-upload-box" for="photo-back">
+                                <span class="photo-upload-icon">📷</span>
+                                <span class="photo-upload-label">Back View</span>
+                                <input type="file" id="photo-back" accept="image/*" hidden />
+                            </label>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-ghost" onclick="prevStep(3)">← Back</button>
+                            <button type="button" class="btn btn-primary btn-glow" onclick="submitForm()">Submit
+                                Application</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ TAB: Dashboard ═══ -->
+            <div class="tab-panel" id="dashboard" role="tabpanel">
+                <div class="dashboard-header">
+                    <h3 class="step-title" id="dashboard-greeting">Projected Results Dashboard</h3>
+                    <p class="step-desc">Sign in to track your real data. Below is a projected 8-week preview based on average participant outcomes.</p>
+                    <!-- Demo data notice -->
+                    <div id="demo-data-notice" style="background: rgba(28,125,255,0.1); border: 1px solid rgba(28,125,255,0.3); border-radius: 10px; padding: 10px 16px; margin-bottom: 20px; font-size: 13px; color: var(--text-secondary);">
+                        📊 Showing projected 8-week results. <a href="#" onclick="document.getElementById('btn-nav-signin')?.click(); return false;" style="color:var(--electric-blue); text-decoration:underline;">Sign in</a> and submit your baseline to track your real data.
+                    </div>
+                    <!-- Starting metrics from profile -->
+                    <div class="dash-profile-row">
+                        <div class="dash-metric-pill">Start Weight: <strong id="dash-start-weight">—</strong></div>
+                        <div class="dash-metric-pill">Body Fat: <strong id="dash-start-fat">—</strong></div>
+                        <div class="dash-metric-pill">Lean Mass: <strong id="dash-start-lean">—</strong></div>
+                    </div>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="dashboard-charts">
+                        <!-- Weight Chart -->
+                        <div class="chart-card">
+                            <h4 class="chart-card-title">📊 Weight Progress (lbs)</h4>
+                            <div class="chart-container">
+                                <canvas id="weightChart"></canvas>
+                            </div>
+                        </div>
+                        <!-- Body Composition Chart -->
+                        <div class="chart-card" style="margin-top: 24px;">
+                            <h4 class="chart-card-title">🧬 Body Composition</h4>
+                            <div class="chart-container">
+                                <canvas id="compositionChart"></canvas>
+                            </div>
+                        </div>
+                        <!-- Measurements Chart -->
+                        <div class="chart-card" style="margin-top: 24px;">
+                            <h4 class="chart-card-title">📏 Measurements</h4>
+                            <div class="chart-container">
+                                <canvas id="measurementsChart"></canvas>
+                            </div>
+                        </div>
+                        <!-- Photo Comparison Slider -->
+                        <div class="chart-card" style="margin-top: 24px;">
+                            <h4 class="chart-card-title">📸 Photo Comparison</h4>
+                            <div class="photo-comparison" id="photo-comparison">
+                                <div class="comparison-container">
+                                    <div class="comparison-before">
+                                        <div class="comparison-placeholder">Before</div>
+                                    </div>
+                                    <div class="comparison-after">
+                                        <div class="comparison-placeholder">After</div>
+                                    </div>
+                                    <input type="range" class="comparison-slider" id="comparison-slider" min="0"
+                                        max="100" value="50" />
+                                    <div class="comparison-handle" id="comparison-handle">
+                                        <div class="comparison-handle-line"></div>
+                                        <div class="comparison-handle-circle">⇔</div>
+                                        <div class="comparison-handle-line"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="metrics-sidebar">
+                        <div class="metric-card">
+                            <div class="metric-value text-gradient" id="metric-weight-lost">—</div>
+                            <div class="metric-label">lbs lost</div>
+                            <div class="metric-change positive" id="metric-weight-pct"></div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" style="color: var(--neon-bio-blue);" id="metric-lean-gained">—</div>
+                            <div class="metric-label">lbs lean mass gained</div>
+                            <div class="metric-change positive" id="metric-lean-pct"></div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value text-gradient" id="metric-fat-dropped">—</div>
+                            <div class="metric-label">body fat % dropped</div>
+                            <div class="metric-change positive" id="metric-fat-pct"></div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" style="color: var(--titanium-silver);" id="metric-weeks">—</div>
+                            <div class="metric-label">weeks tracked</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" style="color: var(--neon-bio-blue);" id="metric-muscle-pct">—</div>
+                            <div class="metric-label">muscle preserved</div>
+                        </div>
+
+                        <!-- Weekly Check-In Form -->
+                        <div class="checkin-card">
+                            <h4 class="checkin-title">📝 Log This Week</h4>
+                            <div class="form-group" style="margin-bottom:10px;">
+                                <label class="form-label" for="ci-weight">Weight (lbs)</label>
+                                <input type="number" class="form-input" id="ci-weight" step="0.1" />
+                            </div>
+                            <div class="form-group" style="margin-bottom:10px;">
+                                <label class="form-label" for="ci-bodyfat">Body Fat %</label>
+                                <input type="number" class="form-input" id="ci-bodyfat" step="0.1" />
+                            </div>
+                            <div class="form-group" style="margin-bottom:10px;">
+                                <label class="form-label" for="ci-leanmass">Lean Mass (lbs)</label>
+                                <input type="number" class="form-input" id="ci-leanmass" step="0.1" />
+                            </div>
+                            <button class="btn btn-primary" style="width:100%; margin-top:4px;" id="btn-checkin">Save Check-In</button>
+                            <p class="checkin-saved" id="checkin-saved" style="display:none; color:#4ADE80; font-size:13px; text-align:center; margin-top:8px;">✓ Saved!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ TAB: Media Gallery ═══ -->
+            <div class="tab-panel" id="media" role="tabpanel">
+                <div class="gallery-header">
+                    <div>
+                        <h3 class="step-title">Media Gallery</h3>
+                        <p class="step-desc">Progress photos, DEXA scans, and transformation documentation.</p>
+                    </div>
+                    <label class="btn btn-primary" for="media-upload" style="cursor:pointer;">+ Upload Media
+                        <input type="file" id="media-upload" hidden multiple accept="image/*,.pdf" />
+                    </label>
+                </div>
+
+                <div class="gallery-section-label">Example Patient Submissions</div>
+
+                <div class="media-grid-rich">
+                    <!-- Week 1 photos -->
+                    <div class="media-card">
+                        <div class="media-card-photo" style="background: linear-gradient(145deg,#1a0a00,#3d1800);">
+                            <div class="media-card-silhouette before-silhouette"></div>
+                            <div class="media-card-overlay">
+                                <span class="media-card-week">Week 1</span>
+                                <span class="media-card-angle">Front View</span>
+                            </div>
+                            <div class="media-card-stats">210 lbs · 28% BF</div>
+                        </div>
+                        <div class="media-card-meta">
+                            <span class="media-card-name">Sarah M.</span>
+                            <span class="media-card-date">Jan 6, 2026</span>
+                        </div>
+                    </div>
+                    <div class="media-card">
+                        <div class="media-card-photo" style="background: linear-gradient(145deg,#001a10,#003820);">
+                            <div class="media-card-silhouette after-silhouette"></div>
+                            <div class="media-card-overlay">
+                                <span class="media-card-week">Week 12</span>
+                                <span class="media-card-angle">Front View</span>
+                            </div>
+                            <div class="media-card-stats">168 lbs · 19% BF</div>
+                        </div>
+                        <div class="media-card-meta">
+                            <span class="media-card-name">Sarah M.</span>
+                            <span class="media-card-date">Apr 1, 2026</span>
+                        </div>
+                    </div>
+                    <!-- Marcus D. -->
+                    <div class="media-card">
+                        <div class="media-card-photo" style="background: linear-gradient(145deg,#0a0014,#200030);">
+                            <div class="media-card-silhouette before-silhouette male"></div>
+                            <div class="media-card-overlay">
+                                <span class="media-card-week">Week 1</span>
+                                <span class="media-card-angle">Side View</span>
+                            </div>
+                            <div class="media-card-stats">247 lbs · 34% BF</div>
+                        </div>
+                        <div class="media-card-meta">
+                            <span class="media-card-name">Marcus D.</span>
+                            <span class="media-card-date">Nov 12, 2025</span>
+                        </div>
+                    </div>
+                    <div class="media-card">
+                        <div class="media-card-photo" style="background: linear-gradient(145deg,#001428,#002a52);">
+                            <div class="media-card-silhouette after-silhouette male"></div>
+                            <div class="media-card-overlay">
+                                <span class="media-card-week">Week 16</span>
+                                <span class="media-card-angle">Side View</span>
+                            </div>
+                            <div class="media-card-stats">209 lbs · 22% BF</div>
+                        </div>
+                        <div class="media-card-meta">
+                            <span class="media-card-name">Marcus D.</span>
+                            <span class="media-card-date">Mar 4, 2026</span>
+                        </div>
+                    </div>
+                    <!-- DEXA Scans -->
+                    <div class="media-card media-card-doc">
+                        <div class="media-card-photo dexa-card">
+                            <div class="dexa-preview">
+                                <div class="dexa-row"><span>Total Mass</span><span>210.4 lbs</span></div>
+                                <div class="dexa-row"><span>Fat Mass</span><span class="dexa-red">58.9 lbs</span></div>
+                                <div class="dexa-row"><span>Lean Mass</span><span class="dexa-blue">148.6 lbs</span></div>
+                                <div class="dexa-row"><span>Bone Density</span><span>2.91 lbs</span></div>
+                                <div class="dexa-row"><span>Body Fat %</span><span class="dexa-red">28.0%</span></div>
+                                <div class="dexa-bar-row">
+                                    <div class="dexa-bar" style="--pct:28%;background:linear-gradient(90deg,#1c7dff 72%,#f87171 72%)"></div>
+                                </div>
+                            </div>
+                            <div class="media-card-overlay">
+                                <span class="media-card-week">DEXA Scan</span>
+                                <span class="media-card-angle">Baseline</span>
+                            </div>
+                        </div>
+                        <div class="media-card-meta">
+                            <span class="media-card-name">Sarah M. · Week 1</span>
+                            <span class="media-card-date media-card-type">PDF Report</span>
+                        </div>
+                    </div>
+                    <div class="media-card media-card-doc">
+                        <div class="media-card-photo dexa-card">
+                            <div class="dexa-preview">
+                                <div class="dexa-row"><span>Total Mass</span><span>168.2 lbs</span></div>
+                                <div class="dexa-row"><span>Fat Mass</span><span class="dexa-red">32.0 lbs</span></div>
+                                <div class="dexa-row"><span>Lean Mass</span><span class="dexa-blue">133.4 lbs</span></div>
+                                <div class="dexa-row"><span>Bone Density</span><span>2.88 lbs</span></div>
+                                <div class="dexa-row"><span>Body Fat %</span><span class="dexa-blue">19.0%</span></div>
+                                <div class="dexa-bar-row">
+                                    <div class="dexa-bar" style="--pct:19%;background:linear-gradient(90deg,#1c7dff 81%,#f87171 81%)"></div>
+                                </div>
+                            </div>
+                            <div class="media-card-overlay">
+                                <span class="media-card-week">DEXA Scan</span>
+                                <span class="media-card-angle">Week 12</span>
+                            </div>
+                        </div>
+                        <div class="media-card-meta">
+                            <span class="media-card-name">Sarah M. · Week 12</span>
+                            <span class="media-card-date media-card-type">PDF Report</span>
+                        </div>
+                    </div>
+                    <!-- James R. -->
+                    <div class="media-card">
+                        <div class="media-card-photo" style="background: linear-gradient(145deg,#0a0a00,#1e1a00);">
+                            <div class="media-card-silhouette before-silhouette male"></div>
+                            <div class="media-card-overlay">
+                                <span class="media-card-week">Week 1</span>
+                                <span class="media-card-angle">Front View</span>
+                            </div>
+                            <div class="media-card-stats">218 lbs · 31% BF</div>
+                        </div>
+                        <div class="media-card-meta">
+                            <span class="media-card-name">James R.</span>
+                            <span class="media-card-date">Dec 3, 2025</span>
+                        </div>
+                    </div>
+                    <!-- Upload CTA -->
+                    <label class="media-card media-card-upload" for="media-upload-2">
+                        <div class="media-upload-inner">
+                            <div class="media-upload-icon">+</div>
+                            <div class="media-upload-text">Upload Your Photos</div>
+                            <div class="media-upload-sub">JPG, PNG, PDF · Max 20MB</div>
+                        </div>
+                        <input type="file" id="media-upload-2" hidden multiple accept="image/*,.pdf" />
+                    </label>
+                </div>
+
+                <div class="gallery-note">
+                    Example submissions shown above. Upload your own to begin your documented journey.
+                </div>
+            </div>
+
+            <!-- ═══ TAB: Featured Transformations ═══ -->
+            <div class="tab-panel" id="featured" role="tabpanel">
+                <div class="text-center" style="margin-bottom: 48px;">
+                    <span class="label-text">Featured</span>
+                    <h2 class="headline-section" style="margin-top: 12px;">
+                        Real <span class="text-gradient">Transformations</span>
+                    </h2>
+                    <p style="color: var(--text-secondary); margin-top: 8px; max-width:560px; margin-left:auto; margin-right:auto;">
+                        These participants documented every week of their journey and are now MuscleLock brand ambassadors. Submit your baseline to begin yours.
+                    </p>
+                </div>
+
+                <!-- Featured stats bar -->
+                <div class="featured-stats-bar">
+                    <div class="featured-stat"><span class="featured-stat-value">−38.5</span><span class="featured-stat-label">avg lbs lost</span></div>
+                    <div class="featured-stat-divider"></div>
+                    <div class="featured-stat"><span class="featured-stat-value">97.4%</span><span class="featured-stat-label">avg muscle preserved</span></div>
+                    <div class="featured-stat-divider"></div>
+                    <div class="featured-stat"><span class="featured-stat-value">12–16 wk</span><span class="featured-stat-label">avg program length</span></div>
+                    <div class="featured-stat-divider"></div>
+                    <div class="featured-stat"><span class="featured-stat-value">3</span><span class="featured-stat-label">featured this quarter</span></div>
+                </div>
+
+                <div class="transformations-grid-rich">
+                    <!-- Sarah M. -->
+                    <div class="transformation-card-rich">
+                        <div class="transformation-images-rich">
+                            <div class="tf-panel tf-before">
+                                <div class="tf-body-art tf-body-before"></div>
+                                <div class="tf-panel-stats">
+                                    <div class="tf-panel-stat">210 lbs</div>
+                                    <div class="tf-panel-stat muted">28% body fat</div>
+                                </div>
+                                <div class="tf-tag">BEFORE</div>
+                            </div>
+                            <div class="tf-panel tf-after">
+                                <div class="tf-body-art tf-body-after"></div>
+                                <div class="tf-panel-stats">
+                                    <div class="tf-panel-stat accent">168 lbs</div>
+                                    <div class="tf-panel-stat accent-dim">19% body fat</div>
+                                </div>
+                                <div class="tf-tag after">AFTER</div>
+                            </div>
+                        </div>
+                        <div class="tf-info">
+                            <div class="tf-name-row">
+                                <h4 class="tf-name">Sarah M. <span class="tf-age">Age 38</span></h4>
+                                <div class="tf-badge">Featured</div>
+                            </div>
+                            <p class="tf-protocol">12 weeks · Semaglutide · Resistance training</p>
+                            <div class="tf-results-row">
+                                <div class="tf-result-chip loss">−42 lbs</div>
+                                <div class="tf-result-chip muscle">97% muscle kept</div>
+                                <div class="tf-result-chip fat">−9% body fat</div>
+                            </div>
+                            <p class="tf-quote">"I lost more weight in 12 weeks on MuscleLock than I had in years of trying — and I look leaner, not smaller."</p>
+                        </div>
+                    </div>
+
+                    <!-- Marcus D. -->
+                    <div class="transformation-card-rich">
+                        <div class="transformation-images-rich">
+                            <div class="tf-panel tf-before" style="--before-color:#1a0028;">
+                                <div class="tf-body-art tf-body-before male"></div>
+                                <div class="tf-panel-stats">
+                                    <div class="tf-panel-stat">247 lbs</div>
+                                    <div class="tf-panel-stat muted">34% body fat</div>
+                                </div>
+                                <div class="tf-tag">BEFORE</div>
+                            </div>
+                            <div class="tf-panel tf-after" style="--after-color:#00163a;">
+                                <div class="tf-body-art tf-body-after male"></div>
+                                <div class="tf-panel-stats">
+                                    <div class="tf-panel-stat accent">209 lbs</div>
+                                    <div class="tf-panel-stat accent-dim">22% body fat</div>
+                                </div>
+                                <div class="tf-tag after">AFTER</div>
+                            </div>
+                        </div>
+                        <div class="tf-info">
+                            <div class="tf-name-row">
+                                <h4 class="tf-name">Marcus D. <span class="tf-age">Age 44</span></h4>
+                                <div class="tf-badge">Featured</div>
+                            </div>
+                            <p class="tf-protocol">16 weeks · Tirzepatide · Hybrid training</p>
+                            <div class="tf-results-row">
+                                <div class="tf-result-chip loss">−38 lbs</div>
+                                <div class="tf-result-chip muscle">99% muscle kept</div>
+                                <div class="tf-result-chip fat">−12% body fat</div>
+                            </div>
+                            <p class="tf-quote">"My doctor couldn't believe my DEXA results. All fat loss, zero muscle. The science is real."</p>
+                        </div>
+                    </div>
+
+                    <!-- James R. -->
+                    <div class="transformation-card-rich">
+                        <div class="transformation-images-rich">
+                            <div class="tf-panel tf-before" style="--before-color:#0f1000;">
+                                <div class="tf-body-art tf-body-before male"></div>
+                                <div class="tf-panel-stats">
+                                    <div class="tf-panel-stat">218 lbs</div>
+                                    <div class="tf-panel-stat muted">31% body fat</div>
+                                </div>
+                                <div class="tf-tag">BEFORE</div>
+                            </div>
+                            <div class="tf-panel tf-after" style="--after-color:#001414;">
+                                <div class="tf-body-art tf-body-after male"></div>
+                                <div class="tf-panel-stats">
+                                    <div class="tf-panel-stat accent">183 lbs</div>
+                                    <div class="tf-panel-stat accent-dim">20% body fat</div>
+                                </div>
+                                <div class="tf-tag after">AFTER</div>
+                            </div>
+                        </div>
+                        <div class="tf-info">
+                            <div class="tf-name-row">
+                                <h4 class="tf-name">James R. <span class="tf-age">Age 52</span></h4>
+                                <div class="tf-badge">Featured</div>
+                            </div>
+                            <p class="tf-protocol">12 weeks · Semaglutide · HIIT + Weights</p>
+                            <div class="tf-results-row">
+                                <div class="tf-result-chip loss">−35 lbs</div>
+                                <div class="tf-result-chip muscle">+4 lbs lean</div>
+                                <div class="tf-result-chip fat">−11% body fat</div>
+                            </div>
+                            <p class="tf-quote">"I actually gained muscle while losing 35 lbs. At 52 I didn't think that was possible."</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTA to join -->
+                <div class="featured-join-cta">
+                    <div class="featured-join-inner">
+                        <h3>Could this be you next quarter?</h3>
+                        <p>Submit your baseline, document your journey, and get selected as a featured transformation.</p>
+                        <button class="btn btn-primary btn-glow" onclick="document.querySelector('[data-tab=submit]').click()">Submit My Baseline →</button>
+                    </div>
+                </div>
+
+                <div class="text-center" style="margin-top: 32px;">
+                    <p style="color: var(--text-muted); font-size: 13px; font-style: italic;">
+                        Results may vary. Featured transformations are selected by the MuscleLock medical team. Individual results depend on adherence, GLP therapy, and training consistency.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════ FOOTER ═══════ -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="nav-logo">
+                        <img src="/musclelock/assets/matrix_logo_lock.png" alt="MuscleLock" style="height: 32px" />
+                        <div class="nav-logo-text">
+                            <span class="nav-logo-name">MuscleLock</span>
+                            <span class="nav-logo-sub">by Matrix Advanced Solutions</span>
+                        </div>
+                    </div>
+                    <p class="footer-brand-desc">
+                        Advanced muscle preservation technology. Designed as the ultimate companion to GLP weight loss
+                        therapies.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="footer-col-title">Product</h4>
+                    <ul class="footer-links">
+                        <li><a href="/#problem">Science</a></li>
+                        <li><a href="/#clinical">Innovation</a></li>
+                        <li><a href="/#bottle">The Bottle</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="footer-col-title">Program</h4>
+                    <ul class="footer-links">
+                        <li><a href="#submit">Submit Results</a></li>
+                        <li><a href="#dashboard">Dashboard</a></li>
+                        <li><a href="#featured">Featured</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="footer-col-title">Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>&copy; 2026 Matrix Advanced Solutions. All rights reserved.</span>
+                <span>MuscleLock™ is a trademark of Matrix Advanced Solutions.</span>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>
