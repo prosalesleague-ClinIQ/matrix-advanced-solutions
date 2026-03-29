@@ -16,7 +16,7 @@ export function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
       <div className="absolute inset-0 bg-navy-950/80 backdrop-blur-xl border-b border-white/5" />
-      <nav className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <nav className="relative mx-auto max-w-[90rem] px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 lg:h-18 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
@@ -31,12 +31,12 @@ export function Header() {
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center gap-1">
-            {primaryNav.slice(0, 7).map((item) => (
+          <div className="hidden lg:flex items-center gap-0.5">
+            {primaryNav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="px-3 py-2 text-sm text-steel-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                className="px-2.5 py-2 text-[13px] text-steel-400 hover:text-white transition-colors rounded-lg hover:bg-white/5 whitespace-nowrap"
               >
                 {item.label}
               </Link>
