@@ -1,0 +1,137 @@
+/* MuscleLock mobile text overlap fixes */
+
+/* Reduce hero headline on smaller screens */
+@media (max-width: 1024px) {
+  .headline-hero {
+    font-size: clamp(3.5rem, 10vw, 7rem) !important;
+    line-height: 1 !important;
+    margin-bottom: 8px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .headline-hero {
+    font-size: clamp(2.8rem, 11vw, 4.5rem) !important;
+    line-height: 0.95 !important;
+    letter-spacing: -0.02em !important;
+    margin-bottom: 6px !important;
+  }
+
+  .hero-tagline {
+    font-size: 1.1rem !important;
+    margin-bottom: 12px !important;
+  }
+
+  .hero-glp-badge {
+    margin-bottom: 16px !important;
+  }
+
+  .hero-bullets {
+    gap: 6px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .hero-bullet {
+    font-size: 0.82rem !important;
+    line-height: 1.35 !important;
+  }
+
+  .hero-actions {
+    gap: 10px !important;
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+
+  .hero-actions .btn {
+    width: 100% !important;
+    max-width: 320px !important;
+  }
+
+  .hero-logo-area img {
+    width: 180px !important;
+  }
+
+  .hero-stats {
+    margin-top: 20px !important;
+    gap: 16px !important;
+  }
+
+  .hero-stat-value {
+    font-size: 1.8rem !important;
+  }
+
+  .hero-stat-label {
+    font-size: 0.7rem !important;
+  }
+
+  /* Nav logo */
+  .nav-logo img {
+    height: 36px !important;
+  }
+
+  .nav-logo-name {
+    font-size: 1rem !important;
+  }
+
+  .nav-logo-sub {
+    font-size: 9px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .headline-hero {
+    font-size: clamp(2.2rem, 12vw, 3.5rem) !important;
+  }
+
+  .hero-tagline {
+    font-size: 1rem !important;
+  }
+
+  .hero-bullet {
+    font-size: 0.78rem !important;
+  }
+
+  .hero-glp-badge .glp-title {
+    font-size: 0.85rem !important;
+  }
+
+  .hero-glp-badge .glp-sub {
+    font-size: 0.72rem !important;
+  }
+}
+
+/* Section headlines — prevent overlap on smaller screens */
+@media (max-width: 768px) {
+  .headline-section {
+    font-size: clamp(1.6rem, 6vw, 2.5rem) !important;
+    line-height: 1.15 !important;
+  }
+
+  .headline-sub {
+    font-size: 1rem !important;
+    line-height: 1.4 !important;
+  }
+
+  /* Ingredient cards */
+  .ingredient-card,
+  .mechanism-card,
+  .persona-card {
+    padding: 16px !important;
+  }
+
+  /* Gateway sections */
+  .gateway-headline {
+    font-size: 1.4rem !important;
+    line-height: 1.2 !important;
+  }
+}
+
+/* Scrollable stats ticker overflow fix */
+.stats-ticker {
+  overflow: hidden !important;
+}
+
+/* Ensure no horizontal overflow on the page */
+html, body {
+  overflow-x: hidden !important;
+}
