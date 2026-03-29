@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, lazy } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
@@ -25,9 +25,17 @@ const fadeUp = {
 }
 
 export function Hero() {
+  const [load3D, setLoad3D] = useState(false)
+
+  // Defer Three.js loading — wait 3s after mount so page is fully interactive first
+  useEffect(() => {
+    const timer = setTimeout(() => setLoad3D(true), 3000)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <section className="relative min-h-[100vh] flex items-center overflow-hidden">
-      <HeroScene />
+      {load3D ? <HeroScene /> : <SceneFallback />}
 
       <div className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/60 to-transparent z-10" />
 
@@ -66,7 +74,7 @@ export function Hero() {
             initial="hidden"
             animate="visible"
             custom={2}
-            className="mt-6 text-base sm:text-lg text-steel-400 leading-relaxed max-w-2xl"
+            className="mt-6 text-base sm:text-lg text-steel-400 leading-relaxed max-w-2xl mx-auto"
           >
             Matrix helps clinics expand high-value treatment categories with premium products,
             provider support, operational systems, and strategic growth infrastructure.
