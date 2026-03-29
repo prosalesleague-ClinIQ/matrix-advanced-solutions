@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useMemo } from 'react'
+import { useRef, useMemo, useState, useEffect } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Float, Line } from '@react-three/drei'
 import * as THREE from 'three'
@@ -12,7 +12,7 @@ function NetworkNodes() {
 
   const nodes = useMemo(() => {
     const points: { position: [number, number, number]; scale: number }[] = []
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 30; i++) {
       points.push({
         position: [
           (Math.random() - 0.5) * 12,
@@ -34,7 +34,7 @@ function NetworkNodes() {
           Math.pow(nodes[i].position[1] - nodes[j].position[1], 2) +
           Math.pow(nodes[i].position[2] - nodes[j].position[2], 2)
         )
-        if (dist < 4) {
+        if (dist < 3.5) {
           lines.push({ start: nodes[i].position, end: nodes[j].position })
         }
       }
@@ -53,7 +53,7 @@ function NetworkNodes() {
     <group ref={groupRef}>
       {nodes.map((node, i) => (
         <mesh key={`node-${i}`} position={node.position}>
-          <sphereGeometry args={[node.scale, 8, 8]} />
+          <sphereGeometry args={[node.scale, 6, 6]} />
           <meshBasicMaterial color="#a855f7" transparent opacity={0.6} />
         </mesh>
       ))}
@@ -84,7 +84,7 @@ function CentralOrb() {
   return (
     <Float speed={reducedMotion ? 0 : 1.5} rotationIntensity={0.2} floatIntensity={0.3}>
       <mesh ref={meshRef} position={[2, 0, -1]}>
-        <icosahedronGeometry args={[1.2, 2]} />
+        <icosahedronGeometry args={[1.2, 1]} />
         <meshBasicMaterial color="#6d28d9" transparent opacity={0.12} wireframe />
       </mesh>
     </Float>
@@ -93,10 +93,26 @@ function CentralOrb() {
 
 export function HeroScene() {
   const reducedMotion = useReducedMotion()
+  const [ready, setReady] = useState(false)
 
-  if (reducedMotion) {
+  // Defer 3D initialization until after main thread is idle
+  useEffect(() => {
+    if (reducedMotion) return
+    if ('requestIdleCallback' in window) {
+      const id = requestIdleCallback(() => setReady(true), { timeout: 2000 })
+      return () => cancelIdleCallback(id)
+    } else {
+      const id = setTimeout(() => setReady(true), 100)
+      return () => clearTimeout(id)
+    }
+  }, [reducedMotion])
+
+  if (reducedMotion || !ready) {
     return (
-      <div className="absolute inset-0 bg-gradient-to-br from-navy-950 via-navy-900 to-navy-950" />
+      <div className="absolute inset-0 bg-gradient-to-br from-navy-950 via-navy-900 to-navy-950">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-accent-purple/5 blur-3xl" />
+        <div className="absolute top-1/3 right-1/4 w-[300px] h-[300px] rounded-full bg-accent-purple-light/3 blur-2xl" />
+      </div>
     )
   }
 
@@ -106,8 +122,9 @@ export function HeroScene() {
       <Canvas
         camera={{ position: [0, 0, 6], fov: 50 }}
         dpr={[1, 1.5]}
-        gl={{ antialias: true, alpha: true }}
+        gl={{ antialias: false, alpha: true, powerPreference: 'low-power' }}
         style={{ background: 'transparent' }}
+        frameloop="always"
       >
         <ambientLight intensity={0.3} />
         <NetworkNodes />
