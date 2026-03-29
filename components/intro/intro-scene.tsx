@@ -1,172 +1,84 @@
 'use client'
 
-import { useRef, useMemo, useEffect } from 'react'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { useRef, useMemo, useEffect, useState } from 'react'
+import { Canvas, useFrame, useThree, useLoader } from '@react-three/fiber'
 import * as THREE from 'three'
 import gsap from 'gsap'
-import { generateLogoTargets } from './logo-target'
 
-// --- Particle system ---
+// --- Swirling star particles ---
 
-interface ParticleFieldProps {
-  onFormationComplete: () => void
-  isMobile: boolean
-}
-
-function ParticleField({ onFormationComplete, isMobile }: ParticleFieldProps) {
+function SwirlParticles({ isMobile, progress }: { isMobile: boolean; progress: React.MutableRefObject<{ value: number }> }) {
   const pointsRef = useRef<THREE.Points>(null)
-  const progressRef = useRef({ value: 0 })
-  const completedRef = useRef(false)
+  const count = isMobile ? 400 : 900
 
-  const count = isMobile ? 600 : 1400
-  const logoTargets = useMemo(() => generateLogoTargets(count), [count])
-
-  // Initial scattered positions (star field)
-  const initialPositions = useMemo(() => {
-    const arr = new Float32Array(count * 3)
+  const { initialPositions, swirlParams } = useMemo(() => {
+    const pos = new Float32Array(count * 3)
+    const params: { speed: number; radius: number; phase: number; targetRadius: number }[] = []
     for (let i = 0; i < count; i++) {
-      arr[i * 3] = (Math.random() - 0.5) * 16
-      arr[i * 3 + 1] = (Math.random() - 0.5) * 12
-      arr[i * 3 + 2] = (Math.random() - 0.5) * 8 - 2
-    }
-    return arr
-  }, [count])
-
-  // Initial white-ish star colors
-  const initialColors = useMemo(() => {
-    const arr = new Float32Array(count * 3)
-    for (let i = 0; i < count; i++) {
-      const brightness = 0.5 + Math.random() * 0.5
-      arr[i * 3] = brightness * 0.7
-      arr[i * 3 + 1] = brightness * 0.8
-      arr[i * 3 + 2] = brightness
-    }
-    return arr
-  }, [count])
-
-  // Sizes per particle
-  const sizes = useMemo(() => {
-    const arr = new Float32Array(count)
-    for (let i = 0; i < count; i++) {
-      arr[i] = isMobile ? 1.5 + Math.random() * 2 : 1.5 + Math.random() * 2.5
-    }
-    return arr
-  }, [count, isMobile])
-
-  // Per-particle swirl parameters
-  const swirlParams = useMemo(() => {
-    const params: { swirlSpeed: number; swirlRadius: number; swirlPhase: number }[] = []
-    for (let i = 0; i < count; i++) {
+      // Start scattered
+      const angle = Math.random() * Math.PI * 2
+      const dist = 3 + Math.random() * 8
+      pos[i * 3] = Math.cos(angle) * dist
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 10
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 6 - 2
       params.push({
-        swirlSpeed: 0.5 + Math.random() * 2,
-        swirlRadius: 0.3 + Math.random() * 1.5,
-        swirlPhase: Math.random() * Math.PI * 2,
+        speed: 0.3 + Math.random() * 1.8,
+        radius: 2 + Math.random() * 6,
+        phase: Math.random() * Math.PI * 2,
+        targetRadius: 0.3 + Math.random() * 1.2,
       })
     }
-    return params
+    return { initialPositions: pos, swirlParams: params }
   }, [count])
 
-  // GSAP timeline
-  useEffect(() => {
-    const duration = isMobile ? 2.8 : 3.5
-
-    const tl = gsap.timeline()
-    // Phase 1: drift (0 to 0.15)
-    tl.to(progressRef.current, {
-      value: 0.15,
-      duration: duration * 0.2,
-      ease: 'power1.inOut',
-    })
-    // Phase 2: swirl acceleration (0.15 to 0.6)
-    .to(progressRef.current, {
-      value: 0.6,
-      duration: duration * 0.35,
-      ease: 'power2.in',
-    })
-    // Phase 3: convergence (0.6 to 0.95)
-    .to(progressRef.current, {
-      value: 0.95,
-      duration: duration * 0.3,
-      ease: 'power3.out',
-    })
-    // Phase 4: settle (0.95 to 1.0)
-    .to(progressRef.current, {
-      value: 1.0,
-      duration: duration * 0.15,
-      ease: 'power1.out',
-      onComplete: () => {
-        if (!completedRef.current) {
-          completedRef.current = true
-          // Hold briefly then signal completion
-          setTimeout(onFormationComplete, 800)
-        }
-      },
-    })
-
-    return () => { tl.kill() }
-  }, [onFormationComplete, isMobile])
+  const geometry = useMemo(() => {
+    const geom = new THREE.BufferGeometry()
+    geom.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(initialPositions), 3))
+    return geom
+  }, [initialPositions])
 
   useFrame(({ clock }) => {
     if (!pointsRef.current) return
-    const geom = pointsRef.current.geometry
-    const posAttr = geom.getAttribute('position') as THREE.BufferAttribute
-    const colAttr = geom.getAttribute('color') as THREE.BufferAttribute
+    const posAttr = pointsRef.current.geometry.getAttribute('position') as THREE.BufferAttribute
     const pos = posAttr.array as Float32Array
-    const col = colAttr.array as Float32Array
-    const p = progressRef.current.value
-    const time = clock.elapsedTime
+    const p = progress.current.value
+    const t = clock.elapsedTime
 
     for (let i = 0; i < count; i++) {
       const i3 = i * 3
       const sp = swirlParams[i]
 
-      // Source
+      // Current orbital radius shrinks as progress increases
+      const currentRadius = sp.radius * (1 - p * 0.85) + sp.targetRadius * p * 0.15
+      const swirlAngle = t * sp.speed + sp.phase + p * 6
+
+      // Spiral inward
       const sx = initialPositions[i3]
       const sy = initialPositions[i3 + 1]
       const sz = initialPositions[i3 + 2]
 
-      // Target
-      const tx = logoTargets.positions[i3]
-      const ty = logoTargets.positions[i3 + 1]
-      const tz = logoTargets.positions[i3 + 2]
+      const targetX = Math.cos(swirlAngle) * currentRadius * (1 - p * 0.7)
+      const targetY = Math.sin(swirlAngle) * currentRadius * 0.6 * (1 - p * 0.7)
+      const targetZ = -1 + Math.sin(swirlAngle * 0.5) * 0.5 * (1 - p)
 
-      // Swirl offset — strongest in mid-phase
-      const swirlIntensity = Math.sin(p * Math.PI) * sp.swirlRadius * (1 - p * 0.7)
-      const swirlAngle = time * sp.swirlSpeed + sp.swirlPhase + p * 4
-      const swirlX = Math.cos(swirlAngle) * swirlIntensity
-      const swirlY = Math.sin(swirlAngle) * swirlIntensity * 0.6
-
-      // Interpolate position with swirl
-      const easedP = p < 0.3 ? p * p * 3.3 : p
-      pos[i3] = sx + (tx - sx) * easedP + swirlX
-      pos[i3 + 1] = sy + (ty - sy) * easedP + swirlY
-      pos[i3 + 2] = sz + (tz - sz) * easedP
-
-      // Color transition: white stars → branded colors
-      const colorP = Math.min(1, p * 1.5)
-      col[i3] = initialColors[i3] + (logoTargets.colors[i3] - initialColors[i3]) * colorP
-      col[i3 + 1] = initialColors[i3 + 1] + (logoTargets.colors[i3 + 1] - initialColors[i3 + 1]) * colorP
-      col[i3 + 2] = initialColors[i3 + 2] + (logoTargets.colors[i3 + 2] - initialColors[i3 + 2]) * colorP
+      pos[i3] = sx * (1 - p) + targetX * p
+      pos[i3 + 1] = sy * (1 - p) + targetY * p
+      pos[i3 + 2] = sz * (1 - p) + targetZ * p
     }
-
     posAttr.needsUpdate = true
-    colAttr.needsUpdate = true
-  })
 
-  const geometry = useMemo(() => {
-    const geom = new THREE.BufferGeometry()
-    geom.setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(initialPositions), 3))
-    geom.setAttribute('color', new THREE.Float32BufferAttribute(new Float32Array(initialColors), 3))
-    return geom
-  }, [initialPositions, initialColors])
+    // Fade particles as logo appears
+    const mat = pointsRef.current.material as THREE.PointsMaterial
+    mat.opacity = p < 0.7 ? 0.7 : 0.7 * (1 - (p - 0.7) / 0.3)
+  })
 
   return (
     <points ref={pointsRef} geometry={geometry}>
       <pointsMaterial
-        size={isMobile ? 2.5 : 3}
-        vertexColors
+        size={isMobile ? 2 : 2.5}
+        color="#8b9cc7"
         transparent
-        opacity={0.9}
+        opacity={0.7}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
         depthWrite={false}
@@ -175,48 +87,124 @@ function ParticleField({ onFormationComplete, isMobile }: ParticleFieldProps) {
   )
 }
 
-// --- Background stars (static atmosphere) ---
+// --- Background star field (static) ---
 
 function BackgroundStars({ count }: { count: number }) {
-  const positions = useMemo(() => {
-    const arr = new Float32Array(count * 3)
-    for (let i = 0; i < count; i++) {
-      arr[i * 3] = (Math.random() - 0.5) * 30
-      arr[i * 3 + 1] = (Math.random() - 0.5) * 20
-      arr[i * 3 + 2] = -5 - Math.random() * 15
-    }
-    return arr
-  }, [count])
-
   const geometry = useMemo(() => {
+    const pos = new Float32Array(count * 3)
+    for (let i = 0; i < count; i++) {
+      pos[i * 3] = (Math.random() - 0.5) * 40
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 25
+      pos[i * 3 + 2] = -8 - Math.random() * 20
+    }
     const geom = new THREE.BufferGeometry()
-    geom.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
+    geom.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3))
     return geom
-  }, [positions])
+  }, [count])
 
   return (
     <points geometry={geometry}>
-      <pointsMaterial size={1} color="#667799" transparent opacity={0.4} sizeAttenuation depthWrite={false} />
+      <pointsMaterial size={1.2} color="#556688" transparent opacity={0.35} sizeAttenuation depthWrite={false} />
     </points>
   )
 }
 
-// --- Camera subtle drift ---
+// --- Glowing halo ring around the logo ---
+
+function LogoHalo({ progress }: { progress: React.MutableRefObject<{ value: number }> }) {
+  const ringRef = useRef<THREE.Mesh>(null)
+
+  useFrame(() => {
+    if (!ringRef.current) return
+    const p = progress.current.value
+    // Halo appears after 60% progress
+    const haloP = Math.max(0, (p - 0.6) / 0.4)
+    ringRef.current.scale.setScalar(1.8 + (1 - haloP) * 2)
+    const mat = ringRef.current.material as THREE.MeshBasicMaterial
+    mat.opacity = haloP * 0.25
+  })
+
+  return (
+    <mesh ref={ringRef} position={[0, 0, -0.5]}>
+      <ringGeometry args={[1.2, 1.8, 64]} />
+      <meshBasicMaterial color="#6d28d9" transparent opacity={0} side={THREE.DoubleSide} blending={THREE.AdditiveBlending} />
+    </mesh>
+  )
+}
+
+// --- Logo image plane that fades in crisp ---
+
+function LogoImage({ progress }: { progress: React.MutableRefObject<{ value: number }> }) {
+  const meshRef = useRef<THREE.Mesh>(null)
+  const texture = useLoader(THREE.TextureLoader, '/musclelock/assets/matrix_logo_lock.png')
+
+  useEffect(() => {
+    if (texture) {
+      texture.colorSpace = THREE.SRGBColorSpace
+    }
+  }, [texture])
+
+  useFrame(() => {
+    if (!meshRef.current) return
+    const p = progress.current.value
+    // Logo image starts appearing at 55% and is fully visible at 85%
+    const logoP = Math.max(0, Math.min(1, (p - 0.55) / 0.3))
+    const mat = meshRef.current.material as THREE.MeshBasicMaterial
+    mat.opacity = logoP
+    // Subtle scale-in
+    const scale = 0.85 + logoP * 0.15
+    meshRef.current.scale.set(scale * 2.2, scale * 2.8, 1)
+  })
+
+  return (
+    <mesh ref={meshRef} position={[0, 0, 0]}>
+      <planeGeometry args={[1, 1]} />
+      <meshBasicMaterial
+        map={texture}
+        transparent
+        opacity={0}
+        depthWrite={false}
+        side={THREE.DoubleSide}
+      />
+    </mesh>
+  )
+}
+
+// --- Ambient glow behind logo ---
+
+function AmbientGlow({ progress }: { progress: React.MutableRefObject<{ value: number }> }) {
+  const meshRef = useRef<THREE.Mesh>(null)
+
+  useFrame(() => {
+    if (!meshRef.current) return
+    const p = progress.current.value
+    const glowP = Math.max(0, (p - 0.5) / 0.5)
+    const mat = meshRef.current.material as THREE.MeshBasicMaterial
+    mat.opacity = glowP * 0.15
+  })
+
+  return (
+    <mesh ref={meshRef} position={[0, 0, -1]}>
+      <circleGeometry args={[3, 32]} />
+      <meshBasicMaterial color="#4f46e5" transparent opacity={0} blending={THREE.AdditiveBlending} depthWrite={false} />
+    </mesh>
+  )
+}
+
+// --- Camera ---
 
 function CameraDrift() {
   const { camera } = useThree()
-
   useFrame(({ clock }) => {
     const t = clock.elapsedTime
-    camera.position.x = Math.sin(t * 0.15) * 0.3
-    camera.position.y = Math.cos(t * 0.1) * 0.15
+    camera.position.x = Math.sin(t * 0.12) * 0.15
+    camera.position.y = Math.cos(t * 0.08) * 0.1
     camera.lookAt(0, 0, 0)
   })
-
   return null
 }
 
-// --- Exported scene ---
+// --- Main scene ---
 
 interface IntroSceneProps {
   onComplete: () => void
@@ -224,16 +212,42 @@ interface IntroSceneProps {
 }
 
 export function IntroScene({ onComplete, isMobile }: IntroSceneProps) {
+  const progressRef = useRef({ value: 0 })
+
+  useEffect(() => {
+    const duration = isMobile ? 2.5 : 3.2
+
+    const tl = gsap.timeline()
+    // Phase 1: subtle drift (0 → 0.1)
+    tl.to(progressRef.current, { value: 0.1, duration: duration * 0.15, ease: 'power1.inOut' })
+    // Phase 2: swirl acceleration (0.1 → 0.55)
+    .to(progressRef.current, { value: 0.55, duration: duration * 0.3, ease: 'power2.in' })
+    // Phase 3: convergence + logo reveal (0.55 → 0.9)
+    .to(progressRef.current, { value: 0.9, duration: duration * 0.35, ease: 'power2.out' })
+    // Phase 4: settle + hold (0.9 → 1.0)
+    .to(progressRef.current, {
+      value: 1.0,
+      duration: duration * 0.2,
+      ease: 'power1.out',
+      onComplete: () => { setTimeout(onComplete, 900) },
+    })
+
+    return () => { tl.kill() }
+  }, [onComplete, isMobile])
+
   return (
     <Canvas
-      camera={{ position: [0, 0, 5], fov: 50 }}
+      camera={{ position: [0, 0, 5], fov: 45 }}
       dpr={[1, isMobile ? 1 : 1.5]}
-      gl={{ antialias: false, alpha: false, powerPreference: 'default' }}
-      style={{ background: '#050510' }}
+      gl={{ antialias: false, alpha: false }}
+      style={{ background: '#040410' }}
     >
-      <color attach="background" args={['#050510']} />
-      <BackgroundStars count={isMobile ? 150 : 400} />
-      <ParticleField onFormationComplete={onComplete} isMobile={isMobile} />
+      <color attach="background" args={['#040410']} />
+      <BackgroundStars count={isMobile ? 200 : 500} />
+      <SwirlParticles isMobile={isMobile} progress={progressRef} />
+      <AmbientGlow progress={progressRef} />
+      <LogoHalo progress={progressRef} />
+      <LogoImage progress={progressRef} />
       <CameraDrift />
     </Canvas>
   )
