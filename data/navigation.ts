@@ -17,7 +17,7 @@ export const primaryNav: NavItem[] = [
 ]
 
 export const headerCTAs = [
-  { label: 'Request Catalog', href: '/contact?type=catalog', variant: 'primary' as const },
+  { label: 'Request Catalog', href: '/request-catalog', variant: 'primary' as const },
   { label: 'Strategy Call', href: '/contact?type=strategy', variant: 'secondary' as const },
   { label: 'Start Onboarding', href: '/clinic-onboarding', variant: 'ghost' as const },
 ]
@@ -44,7 +44,8 @@ export const footerNav = {
     { label: 'Provider Portal', href: '#' },
   ],
   legal: [
-    { label: 'Compliance', href: '/compliance' },
-    { label: 'Privacy', href: '/privacy' },
+    { label: 'Terms of Service', href: '/terms' },
+    { label: 'Privacy Policy', href: '/privacy' },
+    { label: 'Contact Us', href: '/contact' },
   ],
 }

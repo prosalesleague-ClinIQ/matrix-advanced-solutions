@@ -87,7 +87,7 @@ export function Hero() {
             custom={3}
             className="mt-10 flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <Link href="/contact?type=catalog">
+            <Link href="/request-catalog">
               <Button size="lg" onClick={() => trackCTA('request_catalog', 'hero')}>
                 Request Catalog
                 <ArrowRight size={18} />

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -58,7 +59,7 @@ export function OnboardingForm() {
     setSubmitState('loading')
     trackCTA('form_clinic_onboarding_submit', 'form')
 
-    const result = await submitLead('/api/clinic-onboarding', { ...data, inquiryType: 'clinic_onboarding' }, 'clinic_onboarding')
+    const result = await submitLead('/api/clinic-onboarding', { ...data, inquiryType: 'clinic_onboarding', smsConsentService: true, smsConsentMarketing: Boolean(data.smsConsentMarketing), smsConsentTimestamp: new Date().toISOString() }, 'clinic_onboarding')
     setSubmitState(result.success ? 'success' : 'error')
     setResultMessage(result.message)
   }
@@ -112,6 +113,48 @@ export function OnboardingForm() {
         placeholder="What categories are you interested in? What stage is your clinic at? Any specific goals?"
         {...register('notes')}
       />
+
+      {/* SMS Consent — Service / Reminders (Required) */}
+      <div>
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            className="mt-1 h-4 w-4 rounded border-white/20 bg-white/5 text-accent-blue focus:ring-accent-blue/50 focus:ring-offset-0"
+            {...register('smsConsentService')}
+          />
+          <span className="text-xs text-steel-400 leading-relaxed">
+            I agree to receive Automated Reminders and Service-Based messages from Matrix Advanced Solutions LLC at the phone number provided above. This agreement is not a condition of any purchase. Msg &amp; data rates may apply. Message frequency varies. Text HELP to 831-298-8933 for assistance. Reply STOP or OUT to opt out at any time.
+          </span>
+        </label>
+        {errors.smsConsentService?.message && (
+          <p className="mt-1.5 text-xs text-red-400">{errors.smsConsentService.message}</p>
+        )}
+      </div>
+
+      {/* SMS Consent — Marketing / Promotional (Optional) */}
+      <div>
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            className="mt-1 h-4 w-4 rounded border-white/20 bg-white/5 text-accent-blue focus:ring-accent-blue/50 focus:ring-offset-0"
+            {...register('smsConsentMarketing')}
+          />
+          <span className="text-xs text-steel-400 leading-relaxed">
+            I agree to receive Marketing and Promotional messages from Matrix Advanced Solutions LLC at the phone number provided above. This agreement is not a condition of any purchase. Msg &amp; data rates may apply. Message frequency varies. Text HELP to 831-298-8933 for assistance. Reply STOP or OUT to opt out at any time.
+          </span>
+        </label>
+      </div>
+
+      <p className="text-xs text-steel-500">
+        By submitting, you agree to our{' '}
+        <Link href="/terms" className="text-accent-purple hover:text-accent-purple-light transition-colors underline">
+          Terms of Service
+        </Link>{' '}
+        and{' '}
+        <Link href="/privacy" className="text-accent-purple hover:text-accent-purple-light transition-colors underline">
+          Privacy Policy
+        </Link>.
+      </p>
 
       {submitState === 'error' && (
         <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20">

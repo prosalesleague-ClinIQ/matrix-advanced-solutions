@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { catalogRequestSchema } from '@/lib/forms/validation'
+import { catalogRequestSchema, catalogFunnelSchema } from '@/lib/forms/validation'
 import { formatWebhookPayload, type LeadPayload } from '@/lib/forms/submit'
 import { buildWebhookConfigs, sendToWebhook } from '@/lib/automation/webhook'
 
@@ -7,17 +7,25 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
 
-    const parsed = catalogRequestSchema.safeParse(body)
-    if (!parsed.success) {
+    // Accept both the full catalog request schema and the simpler funnel schema
+    const fullParsed = catalogRequestSchema.safeParse(body)
+    const funnelParsed = catalogFunnelSchema.safeParse(body)
+
+    if (!fullParsed.success && !funnelParsed.success) {
       return NextResponse.json(
         { success: false, message: 'Invalid form data. Please check your entries and try again.' },
         { status: 400 }
       )
     }
 
+    const data = fullParsed.success ? fullParsed.data : funnelParsed.data!
+
     const lead: LeadPayload = {
-      ...parsed.data,
+      ...data,
       inquiryType: 'catalog_request',
+      smsConsentService: Boolean(data.smsConsentService),
+      smsConsentMarketing: Boolean(data.smsConsentMarketing),
+      smsConsentTimestamp: new Date().toISOString(),
     }
 
     const payload = formatWebhookPayload(lead)
@@ -29,12 +37,14 @@ export async function POST(request: NextRequest) {
 
     console.log('[Matrix API] Catalog request processed', {
       inquiryType: 'catalog_request',
+      smsConsentService: lead.smsConsentService,
+      smsConsentMarketing: lead.smsConsentMarketing,
       timestamp: new Date().toISOString(),
     })
 
     return NextResponse.json({
       success: true,
-      message: 'Your catalog request has been received. Our team will send catalog access details within one business day.',
+      message: 'Your catalog request has been received. We will send your full catalog and pricing within one business day.',
     })
   } catch (error) {
     console.error('[Matrix API] Catalog request error', error)

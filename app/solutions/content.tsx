@@ -82,7 +82,7 @@ export function SolutionsContent() {
                     </div>
                   </div>
 
-                  <Link href="/contact?type=catalog">
+                  <Link href="/request-catalog">
                     <Button onClick={() => trackCTA(`explore_${solution.id}`, 'solutions')}>
                       Explore {solution.title} <ArrowRight size={16} />
                     </Button>

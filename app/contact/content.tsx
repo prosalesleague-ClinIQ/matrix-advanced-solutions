@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { BookOpen, PhoneCall, MessageSquare, Building2, Users, Mail } from 'lucide-react'
 import { Container } from '@/components/ui/container'
@@ -9,7 +10,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { ContactForm } from '@/components/forms/contact-form'
 
 const inquiryPaths = [
-  { id: 'catalog', icon: BookOpen, title: 'Request Catalog', description: 'Get access to our full product catalog and category information.', endpoint: '/api/request-catalog', formName: 'request_catalog' },
+  { id: 'catalog', icon: BookOpen, title: 'Request Catalog', description: 'Get access to our full product catalog and pricing.', redirect: '/request-catalog' },
   { id: 'strategy', icon: PhoneCall, title: 'Strategic Partnership', description: 'Discuss growth strategy, expansion plans, or enterprise partnership.', endpoint: '/api/strategy-call', formName: 'strategy_call' },
   { id: 'product', icon: MessageSquare, title: 'Product Questions', description: 'Ask about specific products, categories, or protocol support.', endpoint: '/api/contact', formName: 'product_inquiry' },
   { id: 'growth', icon: Building2, title: 'Growth Infrastructure', description: 'Learn about marketing support, funding, and operational systems.', endpoint: '/api/contact', formName: 'growth_inquiry' },
@@ -18,8 +19,17 @@ const inquiryPaths = [
 ]
 
 export function ContactContent() {
+  const router = useRouter()
   const [selectedPath, setSelectedPath] = useState<string | null>(null)
   const activePath = inquiryPaths.find((p) => p.id === selectedPath)
+
+  function handlePathSelect(path: typeof inquiryPaths[number]) {
+    if ('redirect' in path && path.redirect) {
+      router.push(path.redirect as string)
+    } else {
+      setSelectedPath(path.id)
+    }
+  }
 
   return (
     <>
@@ -45,7 +55,7 @@ export function ContactContent() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {inquiryPaths.map((path, i) => (
                 <motion.div key={path.id} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06, duration: 0.4 }}>
-                  <button onClick={() => setSelectedPath(path.id)} className="w-full text-left">
+                  <button onClick={() => handlePathSelect(path)} className="w-full text-left">
                     <Card variant="interactive" glow className="h-full">
                       <CardContent>
                         <div className="mb-3 w-10 h-10 rounded-xl bg-accent-purple/10 flex items-center justify-center">

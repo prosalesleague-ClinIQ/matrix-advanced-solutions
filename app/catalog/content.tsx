@@ -94,7 +94,7 @@ export function CatalogContent() {
                     <p className="text-sm text-steel-400 leading-relaxed flex-1 mb-4">{product.description}</p>
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-steel-500">{product.format}</span>
-                      <Link href="/contact?type=catalog" onClick={() => trackCTA(`inquire_${product.id}`, 'catalog')}>
+                      <Link href="/request-catalog" onClick={() => trackCTA(`inquire_${product.id}`, 'catalog')}>
                         <span className="text-xs text-accent-purple hover:text-accent-purple-light transition-colors">
                           Inquire <ArrowRight size={12} className="inline ml-0.5" />
                         </span>

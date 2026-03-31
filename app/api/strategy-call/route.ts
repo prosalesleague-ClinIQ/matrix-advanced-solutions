@@ -18,6 +18,9 @@ export async function POST(request: NextRequest) {
     const lead: LeadPayload = {
       ...parsed.data,
       inquiryType: 'strategy_call',
+      smsConsentService: Boolean(parsed.data.smsConsentService),
+      smsConsentMarketing: Boolean(parsed.data.smsConsentMarketing),
+      smsConsentTimestamp: new Date().toISOString(),
     }
 
     const payload = formatWebhookPayload(lead)

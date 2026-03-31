@@ -15,6 +15,8 @@ export const contactSchema = z.object({
   notes: z.string().optional(),
   referralSource: z.string().optional(),
   inquiryType: z.string().optional(),
+  smsConsentService: z.literal(true, { message: 'You must consent to receive service messages to proceed' }),
+  smsConsentMarketing: z.boolean().optional(),
 })
 
 export type ContactFormData = z.infer<typeof contactSchema>
@@ -25,6 +27,18 @@ export const catalogRequestSchema = contactSchema.extend({
 })
 
 export type CatalogRequestFormData = z.infer<typeof catalogRequestSchema>
+
+export const catalogFunnelSchema = z.object({
+  contactName: z.string().min(2, 'Your name is required'),
+  clinicName: z.string().min(2, 'Clinic name is required'),
+  email: z.string().email('Valid email required'),
+  phone: z.string().min(7, 'Phone number is required'),
+  smsConsentService: z.literal(true, { message: 'You must consent to receive service messages to proceed' }),
+  smsConsentMarketing: z.boolean().optional(),
+  inquiryType: z.string().optional(),
+})
+
+export type CatalogFunnelFormData = z.infer<typeof catalogFunnelSchema>
 
 export const onboardingSchema = contactSchema.extend({
   inquiryType: z.string().optional(),

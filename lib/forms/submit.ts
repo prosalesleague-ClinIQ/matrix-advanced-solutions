@@ -4,10 +4,10 @@ import { trackFormSubmit } from '@/lib/analytics/track'
 export type LeadPayload = {
   clinicName: string
   contactName: string
-  role: string
+  role?: string
   email: string
   phone: string
-  state: string
+  state?: string
   specialty?: string
   clinicType?: string
   providerCount?: string
@@ -16,6 +16,9 @@ export type LeadPayload = {
   notes?: string
   referralSource?: string
   inquiryType: string
+  smsConsentService?: boolean
+  smsConsentMarketing?: boolean
+  smsConsentTimestamp?: string
 }
 
 export type WebhookPayload = LeadPayload & {
