@@ -45,6 +45,12 @@ export function Header() {
 
           {/* Desktop CTAs */}
           <div className="hidden lg:flex items-center gap-3">
+            <Link
+              href="/login"
+              className="px-3 py-2 text-[13px] text-steel-400 hover:text-white transition-colors rounded-lg hover:bg-white/5 whitespace-nowrap"
+            >
+              Provider Login
+            </Link>
             {headerCTAs.map((cta) => (
               <Link key={cta.href} href={cta.href}>
                 <Button
@@ -91,7 +97,17 @@ export function Header() {
                   <ChevronRight size={16} className="text-steel-600" />
                 </Link>
               ))}
-              <div className="pt-4 space-y-2">
+              <div className="pt-4 border-t border-white/10 mt-2">
+                <Link
+                  href="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center justify-between px-4 py-3 text-sm text-accent-purple hover:text-accent-purple-light hover:bg-white/5 rounded-xl transition-colors"
+                >
+                  Provider Login
+                  <ChevronRight size={16} className="text-accent-purple/50" />
+                </Link>
+              </div>
+              <div className="pt-2 space-y-2">
                 {headerCTAs.map((cta) => (
                   <Link key={cta.href} href={cta.href} onClick={() => setMobileOpen(false)}>
                     <Button variant={cta.variant} size="md" className="w-full">

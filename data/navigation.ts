@@ -41,7 +41,7 @@ export const footerNav = {
     { label: 'Products', href: '/products' },
     { label: 'Peptide Map', href: '/peptide-map' },
     { label: 'MuscleLock', href: '/musclelock' },
-    { label: 'Provider Portal', href: '#' },
+    { label: 'Provider Login', href: '/login' },
   ],
   legal: [
     { label: 'Terms of Service', href: '/terms' },
