@@ -1,0 +1,125 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent } from '@/components/ui/card'
+
+export function LoginForm() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirect = searchParams.get('redirect') || '/dashboard'
+
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+    setIsLoading(true)
+
+    try {
+      const supabase = createClient()
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      if (authError) {
+        setError(authError.message)
+        return
+      }
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (user) {
+        const { data: profile } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+
+        if (
+          profile &&
+          ['matrix_admin', 'matrix_staff'].includes(profile.role)
+        ) {
+          router.push('/admin/dashboard')
+        } else {
+          router.push(redirect)
+        }
+      }
+
+      router.refresh()
+    } catch {
+      setError('An unexpected error occurred. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <Card variant="glass">
+      <CardContent className="p-8">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold text-white">Sign In</h1>
+          <p className="mt-2 text-sm text-steel-400">
+            Welcome back to Matrix Advanced Solutions
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {error && (
+            <div className="rounded-xl p-3 text-sm text-red-300 bg-red-500/10 border border-red-500/20">
+              {error}
+            </div>
+          )}
+
+          <Input
+            id="email"
+            type="email"
+            label="Email"
+            placeholder="clinic@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+            disabled={isLoading}
+          />
+
+          <Input
+            id="password"
+            type="password"
+            label="Password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="current-password"
+            disabled={isLoading}
+          />
+
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? 'Signing in...' : 'Sign In'}
+          </Button>
+
+          <p className="text-sm text-center text-steel-400">
+            Don&apos;t have an account?{' '}
+            <Link
+              href="/signup"
+              className="text-accent-purple hover:text-accent-purple-light font-medium transition-colors"
+            >
+              Create one
+            </Link>
+          </p>
+        </form>
+      </CardContent>
+    </Card>
+  )
+}

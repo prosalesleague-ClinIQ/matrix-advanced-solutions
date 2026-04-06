@@ -8,7 +8,7 @@ export const primaryNav: NavItem[] = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
   { label: 'Solutions', href: '/solutions' },
-  { label: 'Catalog', href: '/catalog' },
+  { label: 'Products', href: '/products' },
   { label: 'Growth Infrastructure', href: '/growth-infrastructure' },
   { label: 'Peptide Map', href: '/peptide-map' },
   { label: 'MuscleLock', href: '/musclelock' },
@@ -38,7 +38,7 @@ export const footerNav = {
     { label: 'Contact', href: '/contact' },
   ],
   resources: [
-    { label: 'Catalog', href: '/catalog' },
+    { label: 'Products', href: '/products' },
     { label: 'Peptide Map', href: '/peptide-map' },
     { label: 'MuscleLock', href: '/musclelock' },
     { label: 'Provider Portal', href: '#' },

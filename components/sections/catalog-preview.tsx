@@ -46,7 +46,7 @@ export function CatalogPreview() {
         </div>
 
         <div className="mt-12 text-center">
-          <Link href="/catalog">
+          <Link href="/products">
             <Button variant="primary" size="lg">
               Request Full Catalog <ArrowRight size={16} />
             </Button>
