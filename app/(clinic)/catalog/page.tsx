@@ -14,6 +14,7 @@ export default async function CatalogPage() {
     .from('products')
     .select('*')
     .eq('is_active', true)
+    .order('is_featured', { ascending: false })
     .order('category')
     .order('name')
 

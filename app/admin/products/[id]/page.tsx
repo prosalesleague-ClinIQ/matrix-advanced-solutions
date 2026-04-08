@@ -56,6 +56,7 @@ export default function AdminProductEditPage() {
     prices: [0, 0, 0, 0],
     costs: [0, 0, 0, 0],
     is_active: true,
+    is_featured: false,
   })
 
   useEffect(() => {
@@ -79,6 +80,7 @@ export default function AdminProductEditPage() {
             prices: p.prices,
             costs: p.costs,
             is_active: p.is_active,
+            is_featured: p.is_featured ?? false,
           })
         }
 
@@ -127,6 +129,7 @@ export default function AdminProductEditPage() {
           prices: form.prices,
           costs: form.costs,
           is_active: form.is_active,
+          is_featured: form.is_featured,
         }),
       })
 
@@ -375,6 +378,15 @@ export default function AdminProductEditPage() {
                   className="h-4 w-4 rounded border-white/20 bg-white/5 text-accent-purple focus:ring-accent-purple focus:ring-offset-navy-950"
                 />
                 <span className="text-sm text-steel-300">Product is active and visible in catalog</span>
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer mt-3">
+                <input
+                  type="checkbox"
+                  checked={form.is_featured}
+                  onChange={(e) => updateField('is_featured', e.target.checked)}
+                  className="h-4 w-4 rounded border-white/20 bg-white/5 text-accent-purple focus:ring-accent-purple focus:ring-offset-navy-950"
+                />
+                <span className="text-sm text-steel-300">Featured product (appears at top of catalog)</span>
               </label>
             </CardContent>
           </Card>

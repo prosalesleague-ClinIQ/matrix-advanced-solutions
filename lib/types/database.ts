@@ -218,6 +218,7 @@ export interface Database {
           prices: number[];
           costs: number[];
           is_active: boolean;
+          is_featured: boolean;
           supplier_id: string | null;
           image_url: string | null;
           created_at: string;
@@ -233,6 +234,7 @@ export interface Database {
           prices: number[];
           costs: number[];
           is_active?: boolean;
+          is_featured?: boolean;
           supplier_id?: string | null;
           image_url?: string | null;
           created_at?: string;
@@ -248,6 +250,7 @@ export interface Database {
           prices?: number[];
           costs?: number[];
           is_active?: boolean;
+          is_featured?: boolean;
           supplier_id?: string | null;
           image_url?: string | null;
           created_at?: string;

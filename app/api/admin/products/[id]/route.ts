@@ -79,6 +79,7 @@ export async function PUT(
       supplier_id,
       image_url,
       is_active,
+      is_featured,
     } = body
 
     const admin = createAdminClient()
@@ -136,6 +137,7 @@ export async function PUT(
     if (supplier_id !== undefined) updateData.supplier_id = supplier_id
     if (image_url !== undefined) updateData.image_url = image_url
     if (is_active !== undefined) updateData.is_active = is_active
+    if (is_featured !== undefined) updateData.is_featured = is_featured
 
     const { data: product, error: updateError } = await admin
       .from('products')
