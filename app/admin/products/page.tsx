@@ -18,10 +18,12 @@ export default async function AdminProductsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-white">Products</h1>
-        <Button size="sm">
-          <Plus className="h-4 w-4" />
-          New Product
-        </Button>
+        <Link href="/admin/products/new">
+          <Button size="sm">
+            <Plus className="h-4 w-4" />
+            New Product
+          </Button>
+        </Link>
       </div>
 
       <div className="rounded-2xl bg-surface-card border border-white/8 overflow-hidden">

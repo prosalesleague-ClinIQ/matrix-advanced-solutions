@@ -25,6 +25,36 @@ async function requireAdmin(supabase: Awaited<ReturnType<typeof createServerSupa
   return user
 }
 
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const supabase = await createServerSupabaseClient()
+    const user = await requireAdmin(supabase)
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { id } = await params
+    const admin = createAdminClient()
+
+    const { data: product, error: fetchError } = await admin
+      .from('products')
+      .select('*')
+      .eq('id', id)
+      .single()
+
+    if (fetchError || !product) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+    }
+
+    return NextResponse.json({ product })
+  } catch {
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

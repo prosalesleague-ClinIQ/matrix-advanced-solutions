@@ -133,6 +133,58 @@ export async function POST(
   }
 }
 
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const supabase = await createServerSupabaseClient()
+    const user = await requireAdmin(supabase)
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { id } = await params
+    const admin = createAdminClient()
+
+    const { data: product, error: fetchError } = await admin
+      .from('products')
+      .select('id, image_url')
+      .eq('id', id)
+      .single()
+
+    if (fetchError || !product) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+    }
+
+    if (product.image_url) {
+      const oldPath = extractStoragePath(product.image_url)
+      if (oldPath) {
+        await admin.storage.from('product-images').remove([oldPath])
+      }
+    }
+
+    await admin
+      .from('products')
+      .update({ image_url: null })
+      .eq('id', id)
+
+    await writeAuditLog(admin, {
+      userId: user.id,
+      action: AUDIT_ACTIONS.PRODUCT_UPDATED,
+      entityType: 'product',
+      entityId: id,
+      beforeState: { image_url: product.image_url },
+      afterState: { image_url: null },
+    })
+
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    console.error('[ADMIN_PRODUCT_IMAGE] Delete error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
 function extractStoragePath(url: string): string | null {
   try {
     const match = url.match(/product-images\/(.+)$/)
