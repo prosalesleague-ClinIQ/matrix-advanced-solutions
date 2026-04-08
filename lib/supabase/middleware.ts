@@ -57,6 +57,7 @@ export async function updateSession(request: NextRequest) {
     "/login",
     "/signup",
     "/verify-email",
+    "/reset-password",
     "/challenge",
     "/challenge/signup",
     "/challenge/login",
