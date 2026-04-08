@@ -8,13 +8,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { PRODUCT_CATEGORIES, PRODUCT_UNITS } from '@/lib/constants'
+import { PRODUCT_UNITS } from '@/lib/constants'
 
 const TIER_LABELS = ['1+ units', '25+ units', '50+ units', '100+ units']
-
-const categoryOptions = PRODUCT_CATEGORIES
-  .filter((c) => c !== 'All')
-  .map((c) => ({ value: c, label: c }))
 
 const unitOptions = PRODUCT_UNITS.map((u) => ({
   value: u,
@@ -24,6 +20,7 @@ const unitOptions = PRODUCT_UNITS.map((u) => ({
 export default function AdminNewProductPage() {
   const router = useRouter()
   const [suppliers, setSuppliers] = useState<{ id: string; name: string }[]>([])
+  const [categories, setCategories] = useState<{ value: string; label: string }[]>([])
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -39,10 +36,20 @@ export default function AdminNewProductPage() {
   })
 
   useEffect(() => {
-    fetch('/api/admin/suppliers?active=true')
-      .then((r) => r.json())
-      .then((data) => setSuppliers(Array.isArray(data) ? data : data.suppliers ?? []))
-      .catch(() => {})
+    Promise.all([
+      fetch('/api/admin/suppliers?active=true'),
+      fetch('/api/admin/categories'),
+    ]).then(async ([supRes, catRes]) => {
+      if (supRes.ok) {
+        const data = await supRes.json()
+        setSuppliers(Array.isArray(data) ? data : data.suppliers ?? [])
+      }
+      if (catRes.ok) {
+        const cats = await catRes.json()
+        const arr = Array.isArray(cats) ? cats : []
+        setCategories(arr.filter((c: { is_active: boolean }) => c.is_active).map((c: { name: string }) => ({ value: c.name, label: c.name })))
+      }
+    }).catch(() => {})
   }, [])
 
   function updateField(key: string, value: string) {
@@ -134,7 +141,7 @@ export default function AdminNewProductPage() {
               />
               <Select
                 label="Category"
-                options={categoryOptions}
+                options={categories}
                 placeholder="Select category"
                 value={form.category}
                 onChange={(e) => updateField('category', e.target.value)}

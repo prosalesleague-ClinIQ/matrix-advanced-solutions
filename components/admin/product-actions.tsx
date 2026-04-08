@@ -13,13 +13,24 @@ interface ProductActionsProps {
 
 export function ProductActions({ product, onUpdate }: ProductActionsProps) {
   const [suppliers, setSuppliers] = useState<{ id: string; name: string }[]>([])
+  const [categories, setCategories] = useState<{ value: string; label: string }[]>([])
   const [toggling, setToggling] = useState(false)
 
   useEffect(() => {
-    fetch('/api/admin/suppliers?active=true')
-      .then((res) => res.json())
-      .then((data) => setSuppliers(data.suppliers ?? data ?? []))
-      .catch(() => {})
+    Promise.all([
+      fetch('/api/admin/suppliers?active=true'),
+      fetch('/api/admin/categories'),
+    ]).then(async ([supRes, catRes]) => {
+      if (supRes.ok) {
+        const data = await supRes.json()
+        setSuppliers(data.suppliers ?? data ?? [])
+      }
+      if (catRes.ok) {
+        const cats = await catRes.json()
+        const arr = Array.isArray(cats) ? cats : []
+        setCategories(arr.filter((c: { is_active: boolean }) => c.is_active).map((c: { name: string }) => ({ value: c.name, label: c.name })))
+      }
+    }).catch(() => {})
   }, [])
 
   async function handleToggle() {
@@ -41,6 +52,7 @@ export function ProductActions({ product, onUpdate }: ProductActionsProps) {
       <ProductFormDialog
         product={product}
         suppliers={suppliers}
+        categories={categories}
         onSuccess={onUpdate}
       />
       <Button

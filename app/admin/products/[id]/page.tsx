@@ -19,14 +19,10 @@ import { Select } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatCurrency } from '@/lib/format'
-import { PRODUCT_CATEGORIES, PRODUCT_UNITS } from '@/lib/constants'
+import { PRODUCT_UNITS } from '@/lib/constants'
 import type { Product } from '@/lib/types/database'
 
 const TIER_LABELS = ['1+ units', '25+ units', '50+ units', '100+ units']
-
-const categoryOptions = PRODUCT_CATEGORIES
-  .filter((c) => c !== 'All')
-  .map((c) => ({ value: c, label: c }))
 
 const unitOptions = PRODUCT_UNITS.map((u) => ({
   value: u,
@@ -40,6 +36,7 @@ export default function AdminProductEditPage() {
 
   const [product, setProduct] = useState<Product | null>(null)
   const [suppliers, setSuppliers] = useState<{ id: string; name: string }[]>([])
+  const [categories, setCategories] = useState<{ value: string; label: string }[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -62,9 +59,10 @@ export default function AdminProductEditPage() {
   useEffect(() => {
     async function load() {
       try {
-        const [prodRes, supRes] = await Promise.all([
+        const [prodRes, supRes, catRes] = await Promise.all([
           fetch(`/api/admin/products/${productId}`),
           fetch('/api/admin/suppliers?active=true'),
+          fetch('/api/admin/categories'),
         ])
 
         if (prodRes.ok) {
@@ -87,6 +85,12 @@ export default function AdminProductEditPage() {
         if (supRes.ok) {
           const sups = await supRes.json()
           setSuppliers(Array.isArray(sups) ? sups : sups.suppliers ?? [])
+        }
+
+        if (catRes.ok) {
+          const cats = await catRes.json()
+          const arr = Array.isArray(cats) ? cats : []
+          setCategories(arr.filter((c: { is_active: boolean }) => c.is_active).map((c: { name: string }) => ({ value: c.name, label: c.name })))
         }
       } catch {
         setError('Failed to load product')
@@ -283,7 +287,7 @@ export default function AdminProductEditPage() {
                 />
                 <Select
                   label="Category"
-                  options={categoryOptions}
+                  options={categories}
                   placeholder="Select category"
                   value={form.category}
                   onChange={(e) => updateField('category', e.target.value)}

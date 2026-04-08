@@ -6,26 +6,23 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import type { Product } from '@/lib/types/database'
-import { PRODUCT_CATEGORIES, PRODUCT_UNITS } from '@/lib/constants'
+import { PRODUCT_UNITS } from '@/lib/constants'
 
 interface ProductFormDialogProps {
   product?: Product
   suppliers: { id: string; name: string }[]
+  categories: { value: string; label: string }[]
   onSuccess: () => void
 }
 
 const TIER_LABELS = ['1+', '25+', '50+', '100+']
-
-const categoryOptions = PRODUCT_CATEGORIES
-  .filter((c) => c !== 'All')
-  .map((c) => ({ value: c, label: c }))
 
 const unitOptions = PRODUCT_UNITS.map((u) => ({
   value: u,
   label: u.charAt(0).toUpperCase() + u.slice(1),
 }))
 
-export function ProductFormDialog({ product, suppliers, onSuccess }: ProductFormDialogProps) {
+export function ProductFormDialog({ product, suppliers, categories, onSuccess }: ProductFormDialogProps) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -147,7 +144,7 @@ export function ProductFormDialog({ product, suppliers, onSuccess }: ProductForm
               <div className="grid grid-cols-2 gap-4">
                 <Select
                   label="Category"
-                  options={categoryOptions}
+                  options={categories}
                   placeholder="Select category"
                   value={form.category}
                   onChange={(e) => updateField('category', e.target.value)}
