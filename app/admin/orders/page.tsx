@@ -1,8 +1,10 @@
 import Link from 'next/link'
+import { Plus } from 'lucide-react'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { formatCurrency, formatDate } from '@/lib/format'
 import { PAYMENT_STATUS_LABELS, MFG_STATUS_LABELS } from '@/lib/constants'
 import { OrderStatusBadge } from '@/components/orders/order-status-badge'
+import { Button } from '@/components/ui/button'
 import type { OrderStatus } from '@/lib/types/database'
 
 export default async function AdminOrdersPage() {
@@ -16,7 +18,15 @@ export default async function AdminOrdersPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-white">Orders</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-white">Orders</h1>
+        <Link href="/admin/orders/new">
+          <Button size="sm">
+            <Plus className="h-4 w-4" />
+            Place Order for Clinic
+          </Button>
+        </Link>
+      </div>
 
       <div className="rounded-2xl bg-surface-card border border-white/8 overflow-hidden">
         <div className="overflow-x-auto">

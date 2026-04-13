@@ -22,25 +22,37 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // ── Get user profile + clinic ──────────────────────────────
+    // ── Get user profile ───────────────────────────────────────
     const { data: profile, error: profileError } = await supabase
       .from('users')
       .select('*')
       .eq('id', user.id)
       .single()
 
-    if (profileError || !profile?.clinic_id) {
+    if (profileError || !profile) {
       return NextResponse.json(
-        { error: 'User profile or clinic not found' },
+        { error: 'User profile not found' },
         { status: 400 }
       )
     }
 
-    const clinicId = profile.clinic_id
+    const isAdmin = ['matrix_admin', 'matrix_staff'].includes(profile.role)
 
     // ── Parse + validate request body ──────────────────────────
-    const body: OrderSubmitRequest = await request.json()
+    const body: OrderSubmitRequest & { clinicId?: string; overrideTierGate?: boolean } = await request.json()
     const { items, shippingMethod, shippingAddress, paymentMethod, notes } = body
+
+    // Admins can place orders on behalf of a clinic by passing clinicId.
+    // Clinic users always order for their own clinic.
+    const clinicId = isAdmin && body.clinicId ? body.clinicId : profile.clinic_id
+    const overrideTierGate = isAdmin && body.overrideTierGate === true
+
+    if (!clinicId) {
+      return NextResponse.json(
+        { error: 'No clinic specified' },
+        { status: 400 }
+      )
+    }
 
     if (!items || items.length === 0) {
       return NextResponse.json(
@@ -56,7 +68,8 @@ export async function POST(request: Request) {
       )
     }
 
-    if (!['wire', 'card'].includes(paymentMethod)) {
+    const allowedMethods = isAdmin ? ['wire', 'card', 'ach'] : ['wire', 'card']
+    if (!allowedMethods.includes(paymentMethod)) {
       return NextResponse.json(
         { error: 'Invalid payment method' },
         { status: 400 }
@@ -87,8 +100,8 @@ export async function POST(request: Request) {
       )
     }
 
-    // New clinics cannot pay by card
-    if (paymentMethod === 'card' && clinic.tier === 'new') {
+    // New clinics cannot pay by card — unless an admin is overriding the gate
+    if (paymentMethod === 'card' && clinic.tier === 'new' && !overrideTierGate) {
       return NextResponse.json(
         { error: 'Card payments are not available for new clinic accounts. Please use wire transfer.' },
         { status: 403 }
@@ -300,6 +313,8 @@ export async function POST(request: Request) {
         total,
         payment_method: paymentMethod,
         item_count: items.length,
+        placed_on_behalf: isAdmin && body.clinicId ? true : false,
+        clinic_id: clinicId,
       },
     })
 
