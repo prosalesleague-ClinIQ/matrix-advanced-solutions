@@ -5,10 +5,30 @@ import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { CategoryFilter } from './category-filter'
 import { ProductCard } from './product-card'
-import type { Product } from '@/lib/types/database'
+import type { BundleSnapshot } from '@/lib/types/database'
+
+/**
+ * Unified catalog item shape — covers both products and bundles.
+ * `kind` discriminates which one. Bundles carry a `bundle_snapshot`
+ * that lists their components for display.
+ */
+export interface CatalogItem {
+  id: string
+  kind: 'product' | 'bundle'
+  name: string
+  sku: string
+  category: string
+  unit: string
+  prices: number[]
+  costs: number[]
+  image_url: string | null
+  is_featured: boolean
+  description: string | null
+  bundle_snapshot?: BundleSnapshot
+}
 
 interface ProductGridProps {
-  products: Product[]
+  products: CatalogItem[]
 }
 
 export function ProductGrid({ products }: ProductGridProps) {
@@ -39,7 +59,7 @@ export function ProductGrid({ products }: ProductGridProps) {
         <div className="relative max-w-sm flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-steel-500" />
           <Input
-            placeholder="Search products..."
+            placeholder="Search products and bundles..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10"
@@ -55,14 +75,14 @@ export function ProductGrid({ products }: ProductGridProps) {
       {/* Product grid */}
       {filtered.length > 0 ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {filtered.map((item) => (
+            <ProductCard key={`${item.kind}-${item.id}`} item={item} />
           ))}
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <Search className="mb-4 h-10 w-10 text-steel-500" />
-          <p className="text-lg font-medium text-steel-300">No products found</p>
+          <p className="text-lg font-medium text-steel-300">No items found</p>
           <p className="mt-1 text-sm text-steel-500">
             Try adjusting your search or filter criteria.
           </p>

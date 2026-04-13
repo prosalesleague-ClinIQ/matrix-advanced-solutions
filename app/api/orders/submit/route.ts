@@ -8,6 +8,7 @@ import { syncOrderPlaced } from '@/lib/ghl/sync'
 import { SHIPPING_METHODS, WIRE_INSTRUCTIONS } from '@/lib/constants'
 import type { OrderSubmitRequest, OrderSubmitResponse } from '@/lib/types/orders'
 import type { ShippingMethod } from '@/lib/constants'
+import type { Product, Json } from '@/lib/types/database'
 
 export async function POST(request: Request) {
   try {
@@ -108,35 +109,83 @@ export async function POST(request: Request) {
       )
     }
 
-    // ── Validate products exist and are active ─────────────────
-    const productIds = items.map((i) => i.productId)
-    const { data: products, error: productsError } = await admin
-      .from('products')
-      .select('*')
-      .in('id', productIds)
-      .eq('is_active', true)
+    // ── Split items into products and bundles ─────────────────
+    const productLineIds = items
+      .filter((i) => i.kind !== 'bundle')
+      .map((i) => i.productId)
+    const bundleLineIds = items
+      .filter((i) => i.kind === 'bundle')
+      .map((i) => i.productId)
 
-    if (productsError || !products) {
-      return NextResponse.json(
-        { error: 'Failed to validate products' },
-        { status: 500 }
-      )
+    // Fetch active products referenced by the order
+    let productMap = new Map<string, Product>()
+    if (productLineIds.length > 0) {
+      const { data: products, error: productsError } = await admin
+        .from('products')
+        .select('*')
+        .in('id', productLineIds)
+        .eq('is_active', true)
+
+      if (productsError || !products) {
+        return NextResponse.json(
+          { error: 'Failed to validate products' },
+          { status: 500 }
+        )
+      }
+      if (products.length !== productLineIds.length) {
+        return NextResponse.json(
+          { error: 'One or more products are unavailable' },
+          { status: 400 }
+        )
+      }
+      productMap = new Map(products.map((p) => [p.id, p]))
     }
 
-    if (products.length !== productIds.length) {
-      return NextResponse.json(
-        { error: 'One or more products are unavailable' },
-        { status: 400 }
-      )
+    // Fetch active bundles referenced by the order, with their components
+    type BundleWithComponents = {
+      id: string
+      sku: string
+      name: string
+      prices: number[]
+      is_active: boolean
+      items: Array<{
+        product_id: string
+        quantity: number
+        product: { id: string; sku: string; name: string; costs: number[] }
+      }>
     }
+    const bundleMap = new Map<string, BundleWithComponents>()
+    if (bundleLineIds.length > 0) {
+      const { data: bundles, error: bundlesError } = await admin
+        .from('product_bundles')
+        .select('id, sku, name, prices, is_active, items:product_bundle_items(product_id, quantity, product:products(id, sku, name, costs))')
+        .in('id', bundleLineIds)
+        .eq('is_active', true)
 
-    const productMap = new Map(products.map((p) => [p.id, p]))
+      if (bundlesError || !bundles) {
+        return NextResponse.json(
+          { error: 'Failed to validate bundles' },
+          { status: 500 }
+        )
+      }
+      if (bundles.length !== bundleLineIds.length) {
+        return NextResponse.json(
+          { error: 'One or more bundles are unavailable' },
+          { status: 400 }
+        )
+      }
+      for (const b of bundles as unknown as BundleWithComponents[]) {
+        bundleMap.set(b.id, b)
+      }
+    }
 
     // ── Calculate pricing ──────────────────────────────────────
     let subtotal = 0
     let totalCost = 0
     const orderItemsData: Array<{
-      product_id: string
+      product_id: string | null
+      bundle_id: string | null
+      bundle_snapshot: Json | null
       sku: string
       product_name: string
       quantity: number
@@ -148,29 +197,72 @@ export async function POST(request: Request) {
     }> = []
 
     for (const item of items) {
-      const product = productMap.get(item.productId)
-      if (!product) continue
+      if (item.kind === 'bundle') {
+        const bundle = bundleMap.get(item.productId)
+        if (!bundle) continue
 
-      const unitPrice = getUnitPrice(product.prices, item.quantity)
-      const unitCost = getUnitCost(product.costs, item.quantity)
-      const lineTotal = getLineTotal(product.prices, item.quantity)
-      const lineCost = unitCost * item.quantity
-      const tierApplied = getTierLabel(item.quantity)
+        const unitPrice = getUnitPrice(bundle.prices, item.quantity)
+        const lineTotal = getLineTotal(bundle.prices, item.quantity)
+        // Bundle cost = sum of component costs × component quantity × bundle quantity
+        const unitCost = bundle.items.reduce(
+          (sum, comp) => sum + (comp.product?.costs?.[0] ?? 0) * comp.quantity,
+          0
+        )
+        const lineCost = unitCost * item.quantity
+        const tierApplied = getTierLabel(item.quantity)
 
-      subtotal += lineTotal
-      totalCost += lineCost
+        subtotal += lineTotal
+        totalCost += lineCost
 
-      orderItemsData.push({
-        product_id: product.id,
-        sku: product.sku,
-        product_name: product.name,
-        quantity: item.quantity,
-        unit_price: unitPrice,
-        unit_cost: unitCost,
-        tier_applied: tierApplied,
-        line_total: lineTotal,
-        line_cost: lineCost,
-      })
+        orderItemsData.push({
+          product_id: null,
+          bundle_id: bundle.id,
+          bundle_snapshot: {
+            bundle_sku: bundle.sku,
+            bundle_name: bundle.name,
+            components: bundle.items.map((c) => ({
+              product_id: c.product_id,
+              sku: c.product?.sku ?? '',
+              name: c.product?.name ?? '',
+              quantity: c.quantity,
+            })),
+          } as unknown as Json,
+          sku: bundle.sku,
+          product_name: bundle.name,
+          quantity: item.quantity,
+          unit_price: unitPrice,
+          unit_cost: unitCost,
+          tier_applied: tierApplied,
+          line_total: lineTotal,
+          line_cost: lineCost,
+        })
+      } else {
+        const product = productMap.get(item.productId)
+        if (!product) continue
+
+        const unitPrice = getUnitPrice(product.prices, item.quantity)
+        const unitCost = getUnitCost(product.costs, item.quantity)
+        const lineTotal = getLineTotal(product.prices, item.quantity)
+        const lineCost = unitCost * item.quantity
+        const tierApplied = getTierLabel(item.quantity)
+
+        subtotal += lineTotal
+        totalCost += lineCost
+
+        orderItemsData.push({
+          product_id: product.id,
+          bundle_id: null,
+          bundle_snapshot: null,
+          sku: product.sku,
+          product_name: product.name,
+          quantity: item.quantity,
+          unit_price: unitPrice,
+          unit_cost: unitCost,
+          tier_applied: tierApplied,
+          line_total: lineTotal,
+          line_cost: lineCost,
+        })
+      }
     }
 
     const shippingCost = SHIPPING_METHODS[shippingMethod].price

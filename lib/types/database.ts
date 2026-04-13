@@ -50,6 +50,25 @@ export type AuditLog = Database["public"]["Tables"]["audit_log"]["Row"];
 export type Challenge = Database["public"]["Tables"]["challenges"]["Row"];
 export type ChallengeParticipant = Database["public"]["Tables"]["challenge_participants"]["Row"];
 export type ChallengeEntry = Database["public"]["Tables"]["challenge_entries"]["Row"];
+export type ProductBundle = Database["public"]["Tables"]["product_bundles"]["Row"];
+export type ProductBundleItem = Database["public"]["Tables"]["product_bundle_items"]["Row"];
+
+// Bundle with components joined for display/editing
+export interface BundleWithItems extends ProductBundle {
+  items: Array<ProductBundleItem & { product: Product }>;
+}
+
+// Frozen snapshot of bundle contents stored in order_items.bundle_snapshot
+export interface BundleSnapshot {
+  bundle_sku: string;
+  bundle_name: string;
+  components: Array<{
+    product_id: string;
+    sku: string;
+    name: string;
+    quantity: number;
+  }>;
+}
 
 // ─── Supabase Database Type (for client generics) ───────────────
 
@@ -362,7 +381,9 @@ export interface Database {
         Row: {
           id: string;
           order_id: string;
-          product_id: string;
+          product_id: string | null;
+          bundle_id: string | null;
+          bundle_snapshot: Json | null;
           sku: string;
           product_name: string;
           quantity: number;
@@ -376,7 +397,9 @@ export interface Database {
         Insert: {
           id?: string;
           order_id: string;
-          product_id: string;
+          product_id?: string | null;
+          bundle_id?: string | null;
+          bundle_snapshot?: Json | null;
           sku: string;
           product_name: string;
           quantity: number;
@@ -390,7 +413,9 @@ export interface Database {
         Update: {
           id?: string;
           order_id?: string;
-          product_id?: string;
+          product_id?: string | null;
+          bundle_id?: string | null;
+          bundle_snapshot?: Json | null;
           sku?: string;
           product_name?: string;
           quantity?: number;
@@ -1007,6 +1032,93 @@ export interface Database {
             columns: ["challenge_id"];
             isOneToOne: false;
             referencedRelation: "challenges";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      product_bundles: {
+        Row: {
+          id: string;
+          name: string;
+          sku: string;
+          category: string;
+          description: string | null;
+          prices: number[];
+          image_url: string | null;
+          is_active: boolean;
+          is_featured: boolean;
+          display_order: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          sku: string;
+          category?: string;
+          description?: string | null;
+          prices: number[];
+          image_url?: string | null;
+          is_active?: boolean;
+          is_featured?: boolean;
+          display_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          sku?: string;
+          category?: string;
+          description?: string | null;
+          prices?: number[];
+          image_url?: string | null;
+          is_active?: boolean;
+          is_featured?: boolean;
+          display_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      product_bundle_items: {
+        Row: {
+          id: string;
+          bundle_id: string;
+          product_id: string;
+          quantity: number;
+          display_order: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          bundle_id: string;
+          product_id: string;
+          quantity: number;
+          display_order?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          bundle_id?: string;
+          product_id?: string;
+          quantity?: number;
+          display_order?: number;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "product_bundle_items_bundle_id_fkey";
+            columns: ["bundle_id"];
+            isOneToOne: false;
+            referencedRelation: "product_bundles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "product_bundle_items_product_id_fkey";
+            columns: ["product_id"];
+            isOneToOne: false;
+            referencedRelation: "products";
             referencedColumns: ["id"];
           },
         ];

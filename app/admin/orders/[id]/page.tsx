@@ -91,31 +91,55 @@ export default async function AdminOrderDetailPage({
                     </tr>
                   </thead>
                   <tbody>
-                    {items?.map((item) => (
-                      <tr
-                        key={item.id}
-                        className="border-b border-white/5"
-                      >
-                        <td className="py-3 font-mono text-steel-400">{item.sku}</td>
-                        <td className="py-3 text-white">{item.product_name}</td>
-                        <td className="py-3 text-right text-steel-300">{item.quantity}</td>
-                        <td className="py-3 text-right text-steel-300">
-                          {formatCurrency(item.unit_price)}
-                        </td>
-                        <td className="py-3 text-right text-steel-400">
-                          {formatCurrency(item.unit_cost)}
-                        </td>
-                        <td className="py-3">
-                          <Badge variant="outline">{item.tier_applied}</Badge>
-                        </td>
-                        <td className="py-3 text-right text-white font-medium">
-                          {formatCurrency(item.line_total)}
-                        </td>
-                        <td className="py-3 text-right text-steel-400">
-                          {formatCurrency(item.line_cost)}
-                        </td>
-                      </tr>
-                    ))}
+                    {items?.map((item) => {
+                      const snapshot = item.bundle_snapshot as {
+                        components?: Array<{ sku: string; name: string; quantity: number }>
+                      } | null
+                      const isBundle = item.bundle_id != null
+                      return (
+                        <tr
+                          key={item.id}
+                          className="border-b border-white/5 align-top"
+                        >
+                          <td className="py-3 font-mono text-steel-400">{item.sku}</td>
+                          <td className="py-3 text-white">
+                            <div className="flex items-center gap-2">
+                              {item.product_name}
+                              {isBundle && (
+                                <span className="rounded-full bg-accent-blue/15 px-2 py-0.5 text-[10px] font-semibold text-accent-blue">
+                                  Bundle
+                                </span>
+                              )}
+                            </div>
+                            {isBundle && snapshot?.components && (
+                              <ul className="mt-1 ml-3 space-y-0.5 text-xs text-steel-500">
+                                {snapshot.components.map((c, i) => (
+                                  <li key={i}>
+                                    {c.quantity}× {c.name}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </td>
+                          <td className="py-3 text-right text-steel-300">{item.quantity}</td>
+                          <td className="py-3 text-right text-steel-300">
+                            {formatCurrency(item.unit_price)}
+                          </td>
+                          <td className="py-3 text-right text-steel-400">
+                            {formatCurrency(item.unit_cost)}
+                          </td>
+                          <td className="py-3">
+                            <Badge variant="outline">{item.tier_applied}</Badge>
+                          </td>
+                          <td className="py-3 text-right text-white font-medium">
+                            {formatCurrency(item.line_total)}
+                          </td>
+                          <td className="py-3 text-right text-steel-400">
+                            {formatCurrency(item.line_cost)}
+                          </td>
+                        </tr>
+                      )
+                    })}
                   </tbody>
                 </table>
               </div>

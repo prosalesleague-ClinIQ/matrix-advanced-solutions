@@ -104,28 +104,50 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5">
-                    {orderItems?.map((item) => (
-                      <tr key={item.id}>
-                        <td className="py-3 text-sm font-mono text-steel-400">
-                          {item.sku}
-                        </td>
-                        <td className="py-3 text-sm text-white">
-                          {item.product_name}
-                        </td>
-                        <td className="py-3 text-right text-sm text-steel-300">
-                          {item.quantity}
-                        </td>
-                        <td className="py-3 text-right text-sm text-steel-300">
-                          {formatCurrency(item.unit_price)}
-                        </td>
-                        <td className="py-3 text-sm text-steel-400">
-                          {item.tier_applied}
-                        </td>
-                        <td className="py-3 text-right text-sm font-medium text-white">
-                          {formatCurrency(item.line_total)}
-                        </td>
-                      </tr>
-                    ))}
+                    {orderItems?.map((item) => {
+                      const snapshot = item.bundle_snapshot as {
+                        components?: Array<{ sku: string; name: string; quantity: number }>
+                      } | null
+                      const isBundle = item.bundle_id != null
+                      return (
+                        <tr key={item.id}>
+                          <td className="py-3 text-sm font-mono text-steel-400 align-top">
+                            {item.sku}
+                          </td>
+                          <td className="py-3 text-sm text-white align-top">
+                            <div className="flex items-center gap-2">
+                              {item.product_name}
+                              {isBundle && (
+                                <span className="rounded-full bg-accent-blue/15 px-2 py-0.5 text-[10px] font-semibold text-accent-blue">
+                                  Bundle
+                                </span>
+                              )}
+                            </div>
+                            {isBundle && snapshot?.components && (
+                              <ul className="mt-1 ml-3 space-y-0.5 text-xs text-steel-500">
+                                {snapshot.components.map((c, i) => (
+                                  <li key={i}>
+                                    {c.quantity}× {c.name}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </td>
+                          <td className="py-3 text-right text-sm text-steel-300 align-top">
+                            {item.quantity}
+                          </td>
+                          <td className="py-3 text-right text-sm text-steel-300 align-top">
+                            {formatCurrency(item.unit_price)}
+                          </td>
+                          <td className="py-3 text-sm text-steel-400 align-top">
+                            {item.tier_applied}
+                          </td>
+                          <td className="py-3 text-right text-sm font-medium text-white align-top">
+                            {formatCurrency(item.line_total)}
+                          </td>
+                        </tr>
+                      )
+                    })}
                   </tbody>
                 </table>
               </div>

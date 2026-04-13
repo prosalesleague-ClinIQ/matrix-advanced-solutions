@@ -6,8 +6,14 @@ import type { ShippingMethod } from '@/lib/constants'
 
 // ─── Cart Types ─────────────────────────────────────────────────
 
+/**
+ * A single cart line. `kind` defaults to 'product' for backward compat.
+ * Bundle items use the same shape but `kind: 'bundle'` and the `productId`
+ * field holds the bundle id (cart state is keyed by it).
+ */
 export interface CartItem {
   productId: string
+  kind?: 'product' | 'bundle'
   sku: string
   name: string
   category: string
@@ -36,6 +42,7 @@ export interface OrderSubmitRequest {
 export interface OrderSubmitItem {
   productId: string
   quantity: number
+  kind?: 'product' | 'bundle'
 }
 
 export interface OrderSubmitResponse {

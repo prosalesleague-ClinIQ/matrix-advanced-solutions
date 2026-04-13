@@ -93,6 +93,11 @@ export const AUDIT_ACTIONS = {
   PRODUCT_UPDATED: "product.updated",
   PRODUCT_DELETED: "product.deleted",
 
+  // Bundles
+  BUNDLE_CREATED: "bundle.created",
+  BUNDLE_UPDATED: "bundle.updated",
+  BUNDLE_DELETED: "bundle.deleted",
+
   // Suppliers
   SUPPLIER_CREATED: "supplier.created",
   SUPPLIER_UPDATED: "supplier.updated",

@@ -13,6 +13,7 @@ import {
   Layers,
   Truck,
   Package,
+  PackageOpen,
   Tags,
   ScrollText,
   LogOut,
@@ -32,6 +33,7 @@ const navItems = [
   { label: 'Batch POs', href: '/admin/batch', icon: Layers },
   { label: 'Suppliers', href: '/admin/suppliers', icon: Truck },
   { label: 'Products', href: '/admin/products', icon: Package },
+  { label: 'Bundles', href: '/admin/bundles', icon: PackageOpen },
   { label: 'Categories', href: '/admin/categories', icon: Tags },
   { label: 'Audit Log', href: '/admin/audit-log', icon: ScrollText },
 ]
