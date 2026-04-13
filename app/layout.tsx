@@ -1,9 +1,35 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
+import { headers } from 'next/headers'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { IntroOverlay } from '@/components/intro/intro-overlay'
 import './globals.css'
+
+// Routes that render their own portal chrome and should NOT get the marketing
+// header/footer. Middleware sets `x-pathname` on every request.
+const PORTAL_ROUTE_PREFIXES = [
+  '/admin',
+  '/dashboard',
+  '/catalog',
+  '/cart',
+  '/checkout',
+  '/orders',
+  '/invoices',
+  '/settings',
+  '/onboarding',
+  '/challenge',
+  '/login',
+  '/signup',
+  '/verify-email',
+  '/reset-password',
+]
+
+function isPortalRoute(pathname: string): boolean {
+  return PORTAL_ROUTE_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(prefix + '/')
+  )
+}
 
 const inter = Inter({
   subsets: ['latin'],
@@ -44,7 +70,11 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const headersList = await headers()
+  const pathname = headersList.get('x-pathname') ?? '/'
+  const isPortal = isPortalRoute(pathname)
+
   return (
     <html lang="en" className={inter.variable}>
       <head>
@@ -53,10 +83,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
       </head>
       <body className="min-h-screen bg-navy-950 text-steel-300 font-sans">
-        <IntroOverlay />
-        <Header />
+        {!isPortal && <IntroOverlay />}
+        {!isPortal && <Header />}
         <main>{children}</main>
-        <Footer />
+        {!isPortal && <Footer />}
       </body>
     </html>
   )
