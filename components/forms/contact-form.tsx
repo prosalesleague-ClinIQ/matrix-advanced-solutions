@@ -11,7 +11,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select } from '@/components/ui/select'
 import { contactSchema, type ContactFormData } from '@/lib/forms/validation'
 import { submitLead } from '@/lib/forms/submit'
-import { trackCTA } from '@/lib/analytics/track'
 
 interface ContactFormProps {
   inquiryType?: string
@@ -67,7 +66,7 @@ export function ContactForm({
   const onSubmit = async (data: ContactFormData) => {
     if (honey) return // Bot detected
     setSubmitState('loading')
-    trackCTA(`form_${formName}_submit`, 'form')
+    // submitLead() calls trackFormSubmit() on success — don't double-track here.
 
     const result = await submitLead(endpoint, { ...data, inquiryType, smsConsentService: true, smsConsentMarketing: Boolean(data.smsConsentMarketing), smsConsentTimestamp: new Date().toISOString() }, formName)
     setSubmitState(result.success ? 'success' : 'error')

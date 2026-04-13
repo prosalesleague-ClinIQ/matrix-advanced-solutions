@@ -1,6 +1,19 @@
+import type { Metadata } from 'next'
 import dynamic from 'next/dynamic'
 import { Hero } from '@/components/sections/hero'
 import { CapabilityStrip } from '@/components/sections/capability-strip'
+
+// Use `title.absolute` so the root template doesn't double-append.
+export const metadata: Metadata = {
+  title: {
+    absolute: 'Matrix Advanced Solutions | Clinic Growth Infrastructure',
+  },
+  description:
+    'Matrix Advanced Solutions is the infrastructure behind modern clinic growth. Premium products, provider support, operational systems, and strategic growth infrastructure for qualified clinics.',
+  alternates: {
+    canonical: '/',
+  },
+}
 
 // Lazy load below-fold sections to reduce initial JS bundle
 const WhyMatrix = dynamic(() => import('@/components/sections/why-matrix').then(m => ({ default: m.WhyMatrix })))

@@ -11,7 +11,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select } from '@/components/ui/select'
 import { onboardingSchema, type OnboardingFormData } from '@/lib/forms/validation'
 import { submitLead } from '@/lib/forms/submit'
-import { trackCTA } from '@/lib/analytics/track'
 
 const clinicTypeOptions = [
   { value: 'medical-spa', label: 'Medical Spa / Aesthetic Clinic' },
@@ -57,7 +56,7 @@ export function OnboardingForm() {
   const onSubmit = async (data: OnboardingFormData) => {
     if (honey) return
     setSubmitState('loading')
-    trackCTA('form_clinic_onboarding_submit', 'form')
+    // submitLead() calls trackFormSubmit() on success — don't double-track here.
 
     const result = await submitLead('/api/clinic-onboarding', { ...data, inquiryType: 'clinic_onboarding', smsConsentService: true, smsConsentMarketing: Boolean(data.smsConsentMarketing), smsConsentTimestamp: new Date().toISOString() }, 'clinic_onboarding')
     setSubmitState(result.success ? 'success' : 'error')

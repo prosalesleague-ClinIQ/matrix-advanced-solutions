@@ -43,13 +43,19 @@ export const viewport: Viewport = {
   themeColor: '#0a0a14',
 }
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://matrixadvancedsolutions.com'
+const OG_IMAGE = '/og-image.png' // TODO: drop in 1200x630 production asset
+const DEFAULT_TITLE = 'Matrix Advanced Solutions | Clinic Growth Infrastructure'
+const DEFAULT_DESCRIPTION =
+  'Matrix Advanced Solutions is the infrastructure behind modern clinic growth. Premium products, provider support, operational systems, and strategic growth infrastructure for qualified clinics.'
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Matrix Advanced Solutions | Clinic Growth Infrastructure',
+    default: DEFAULT_TITLE,
     template: '%s | Matrix Advanced Solutions',
   },
-  description:
-    'Matrix Advanced Solutions is the infrastructure behind modern clinic growth. Premium products, provider support, operational systems, and strategic growth infrastructure for qualified clinics.',
+  description: DEFAULT_DESCRIPTION,
   keywords: [
     'clinic growth infrastructure',
     'peptide supplier for clinics',
@@ -63,6 +69,23 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     siteName: 'Matrix Advanced Solutions',
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    url: SITE_URL,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: 'Matrix Advanced Solutions — Clinic Growth Infrastructure',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    images: [OG_IMAGE],
   },
   robots: {
     index: true,
