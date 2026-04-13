@@ -17,9 +17,24 @@ export const primaryNav: NavItem[] = [
 ]
 
 export const headerCTAs = [
-  { label: 'Request Catalog', href: '/request-catalog', variant: 'primary' as const },
-  { label: 'Strategy Call', href: '/contact?type=strategy', variant: 'secondary' as const },
-  { label: 'Start Onboarding', href: '/clinic-onboarding', variant: 'ghost' as const },
+  {
+    label: 'Request Catalog',
+    trackingId: 'request_catalog',
+    href: '/request-catalog',
+    variant: 'primary' as const,
+  },
+  {
+    label: 'Strategy Call',
+    trackingId: 'strategy_call',
+    href: '/contact?type=strategy',
+    variant: 'secondary' as const,
+  },
+  {
+    label: 'Start Onboarding',
+    trackingId: 'start_onboarding',
+    href: '/clinic-onboarding',
+    variant: 'ghost' as const,
+  },
 ]
 
 export const footerNav = {

@@ -56,7 +56,7 @@ export function Header() {
                 <Button
                   variant={cta.variant}
                   size="sm"
-                  onClick={() => trackCTA(cta.label, 'header')}
+                  onClick={() => trackCTA(cta.trackingId, 'header')}
                 >
                   {cta.label}
                 </Button>

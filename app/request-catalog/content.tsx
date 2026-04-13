@@ -15,6 +15,8 @@ export function RequestCatalogContent() {
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  // Honeypot for spam — hidden from real users, bots fill it
+  const [honey, setHoney] = useState('')
 
   const {
     register,
@@ -25,6 +27,7 @@ export function RequestCatalogContent() {
   })
 
   async function onSubmit(data: CatalogFunnelFormData) {
+    if (honey) return // Bot detected — drop the submit silently
     setSubmitting(true)
     setErrorMessage('')
 
@@ -84,9 +87,16 @@ export function RequestCatalogContent() {
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            {/* Honeypot */}
+            {/* Honeypot — hidden from real users */}
             <div className="absolute -left-[9999px]" aria-hidden="true">
-              <input type="text" tabIndex={-1} autoComplete="off" />
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                value={honey}
+                onChange={(e) => setHoney(e.target.value)}
+              />
             </div>
 
             <Input
@@ -167,7 +177,9 @@ export function RequestCatalogContent() {
             </p>
 
             {errorMessage && (
-              <p className="text-sm text-red-400">{errorMessage}</p>
+              <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+                {errorMessage}
+              </div>
             )}
 
             <Button
