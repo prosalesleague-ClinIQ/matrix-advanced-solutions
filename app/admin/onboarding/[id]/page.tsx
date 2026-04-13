@@ -56,32 +56,40 @@ export default function AdminOnboardingDetailPage() {
     load()
   }, [params.id])
 
+  const [reviewError, setReviewError] = useState<string | null>(null)
+
   async function handleReview(action: 'approve' | 'reject') {
     const reason =
       action === 'reject' ? window.prompt('Rejection reason:') : null
     if (action === 'reject' && !reason) return
 
     setLoading(true)
+    setReviewError(null)
     try {
       const res = await fetch('/api/admin/onboarding/review', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          clinic_id: params.id,
+          clinicId: params.id,
           action,
           reason,
         }),
       })
-      if (res.ok) {
-        // Reload clinic data
-        const supabase = createClient()
-        const { data } = await supabase
-          .from('clinics')
-          .select('*')
-          .eq('id', params.id)
-          .single()
-        setClinic(data as ClinicData | null)
+      if (!res.ok) {
+        const data = await res.json().catch(() => null)
+        throw new Error(data?.error ?? 'Failed to update clinic')
       }
+
+      // Reload clinic data
+      const supabase = createClient()
+      const { data } = await supabase
+        .from('clinics')
+        .select('*')
+        .eq('id', params.id)
+        .single()
+      setClinic(data as ClinicData | null)
+    } catch (err) {
+      setReviewError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setLoading(false)
     }
@@ -261,19 +269,26 @@ export default function AdminOnboardingDetailPage() {
 
       {/* Action Buttons */}
       {clinic.onboarding_status === 'submitted' && (
-        <div className="flex gap-3">
-          <Button onClick={() => handleReview('approve')} disabled={loading}>
-            {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-            Approve
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => handleReview('reject')}
-            disabled={loading}
-            className="border-red-500/30 text-red-400 hover:bg-red-500/10"
-          >
-            Reject
-          </Button>
+        <div className="space-y-3">
+          {reviewError && (
+            <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+              {reviewError}
+            </div>
+          )}
+          <div className="flex gap-3">
+            <Button onClick={() => handleReview('approve')} disabled={loading}>
+              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+              Approve
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => handleReview('reject')}
+              disabled={loading}
+              className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+            >
+              Reject
+            </Button>
+          </div>
         </div>
       )}
     </div>
