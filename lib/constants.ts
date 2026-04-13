@@ -25,7 +25,7 @@ export type ShippingMethod = keyof typeof SHIPPING_METHODS
 
 // ─── Wire Transfer Instructions ─────────────────────────────────
 export const WIRE_INSTRUCTIONS = {
-  bankName: 'JPMorgan Chase',
+  bankName: 'Bank of America',
   routingNumber: '026009593',
   accountNumber: '898164338257',
   accountName: 'Matrix Advanced Solutions',
@@ -33,7 +33,7 @@ export const WIRE_INSTRUCTIONS = {
 } as const
 
 export const ACH_INSTRUCTIONS = {
-  bankName: 'JPMorgan Chase',
+  bankName: 'Bank of America',
   routingNumber: '063100277',
   accountNumber: '898164338257',
   accountName: 'Matrix Advanced Solutions',
