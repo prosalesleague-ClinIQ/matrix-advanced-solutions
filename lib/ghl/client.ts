@@ -208,3 +208,50 @@ export async function updateCustomFields(
     return false;
   }
 }
+
+// ─── Task Operations ────────────────────────────────────────────
+
+export interface GHLTaskData {
+  title: string;
+  body?: string;
+  dueDate?: string; // ISO
+  assignedTo?: string; // GHL user ID
+  completed?: boolean;
+}
+
+/**
+ * Create a task attached to a GHL contact. Optionally assign to a user.
+ */
+export async function addTask(
+  contactId: string,
+  task: GHLTaskData
+): Promise<string | null> {
+  const config = getConfig();
+  if (!config) return null;
+
+  try {
+    const res = await fetch(`${GHL_BASE_URL}/contacts/${contactId}/tasks`, {
+      method: "POST",
+      headers: headers(config.apiKey),
+      body: JSON.stringify({
+        title: task.title,
+        body: task.body ?? "",
+        dueDate: task.dueDate ?? new Date().toISOString(),
+        completed: task.completed ?? false,
+        ...(task.assignedTo ? { assignedTo: task.assignedTo } : {}),
+      }),
+    });
+
+    if (!res.ok) {
+      const errBody = await res.text();
+      console.error("[GHL] addTask failed:", res.status, errBody);
+      return null;
+    }
+
+    const data = await res.json();
+    return data?.task?.id ?? null;
+  } catch (err) {
+    console.error("[GHL] addTask error:", err);
+    return null;
+  }
+}

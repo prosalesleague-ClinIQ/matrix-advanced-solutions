@@ -199,7 +199,14 @@ export async function POST(request: Request) {
     for (const item of items) {
       if (item.kind === 'bundle') {
         const bundle = bundleMap.get(item.productId)
-        if (!bundle) continue
+        if (!bundle) {
+          // Should be unreachable — the upstream length check guarantees
+          // every bundleLineId resolves — but fail loudly if it ever isn't.
+          return NextResponse.json(
+            { error: 'One or more bundles are unavailable' },
+            { status: 400 }
+          )
+        }
 
         const unitPrice = getUnitPrice(bundle.prices, item.quantity)
         const lineTotal = getLineTotal(bundle.prices, item.quantity)
@@ -238,7 +245,13 @@ export async function POST(request: Request) {
         })
       } else {
         const product = productMap.get(item.productId)
-        if (!product) continue
+        if (!product) {
+          // Same defensive guard as the bundle branch.
+          return NextResponse.json(
+            { error: 'One or more products are unavailable' },
+            { status: 400 }
+          )
+        }
 
         const unitPrice = getUnitPrice(product.prices, item.quantity)
         const unitCost = getUnitCost(product.costs, item.quantity)

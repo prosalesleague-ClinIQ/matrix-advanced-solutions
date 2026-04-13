@@ -121,8 +121,9 @@ export async function POST(request: Request) {
       })
 
     if (uploadError) {
+      console.error('[CHALLENGE_PHOTOS] storage upload error:', uploadError)
       return NextResponse.json(
-        { error: uploadError.message },
+        { error: 'Failed to upload photo' },
         { status: 500 }
       )
     }

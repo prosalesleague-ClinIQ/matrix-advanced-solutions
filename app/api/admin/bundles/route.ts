@@ -12,9 +12,15 @@ async function requireAdmin(supabase: Awaited<ReturnType<typeof createServerSupa
   return user
 }
 
-// ─── GET: list bundles (accessible to any authenticated user) ──
+// ─── GET: list bundles (admin only) ───────────────────────────
 export async function GET(request: Request) {
   try {
+    const supabase = await createServerSupabaseClient()
+    const user = await requireAdmin(supabase)
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const admin = createAdminClient()
     const { searchParams } = new URL(request.url)
     const activeOnly = searchParams.get('active') === 'true'

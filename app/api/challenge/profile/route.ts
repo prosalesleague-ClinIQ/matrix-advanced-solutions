@@ -96,8 +96,9 @@ export async function PATCH(request: Request) {
       .single()
 
     if (updateError) {
+      console.error('[CHALLENGE_PROFILE] PATCH db error:', updateError)
       return NextResponse.json(
-        { error: updateError.message },
+        { error: 'Failed to update profile' },
         { status: 500 }
       )
     }

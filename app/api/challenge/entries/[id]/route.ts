@@ -149,8 +149,9 @@ export async function PATCH(
       .single()
 
     if (updateError) {
+      console.error('[CHALLENGE_ENTRY] PATCH db error:', updateError)
       return NextResponse.json(
-        { error: updateError.message },
+        { error: 'Failed to update check-in' },
         { status: 500 }
       )
     }

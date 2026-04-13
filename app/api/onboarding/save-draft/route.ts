@@ -1,5 +1,23 @@
 import { NextResponse } from 'next/server'
+import { z } from 'zod'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
+
+// Whitelisted fields a clinic user may update while drafting their
+// onboarding application. Anything not in this schema is ignored —
+// no way to set tier, onboarding_status, wire_verified, or other
+// admin-only columns via this route.
+const draftSchema = z.object({
+  name: z.string().trim().max(200).optional(),
+  primary_contact_name: z.string().trim().max(100).optional(),
+  primary_phone: z.string().trim().max(30).optional(),
+  business_address: z.string().trim().max(500).optional(),
+  tax_id: z.string().trim().max(50).nullable().optional(),
+  shipping_address: z.string().trim().max(500).optional(),
+  practice_type: z.string().trim().max(50).nullable().optional(),
+  medical_license: z.string().trim().max(50).nullable().optional(),
+  npi_number: z.string().trim().max(10).nullable().optional(),
+  assigned_rep_id: z.string().uuid().nullable().optional(),
+})
 
 export async function POST(request: Request) {
   try {
@@ -23,30 +41,36 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
+    const parsed = draftSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: 'Invalid draft data' },
+        { status: 400 }
+      )
+    }
+
+    // parsed.data is already limited to the allowlisted fields.
+    const update = {
+      ...parsed.data,
+      updated_at: new Date().toISOString(),
+    }
 
     const { error } = await supabase
       .from('clinics')
-      .update({
-        name: body.name,
-        primary_contact_name: body.primary_contact_name,
-        primary_phone: body.primary_phone,
-        business_address: body.business_address,
-        tax_id: body.tax_id,
-        shipping_address: body.shipping_address,
-        practice_type: body.practice_type,
-        medical_license: body.medical_license,
-        npi_number: body.npi_number,
-        assigned_rep_id: body.assigned_rep_id,
-        updated_at: new Date().toISOString(),
-      })
+      .update(update)
       .eq('id', profile.clinic_id)
 
     if (error) {
-      return NextResponse.json({ error: 'Failed to save draft' }, { status: 500 })
+      console.error('[ONBOARDING_SAVE_DRAFT] DB error:', error)
+      return NextResponse.json(
+        { error: 'Failed to save draft' },
+        { status: 500 }
+      )
     }
 
     return NextResponse.json({ success: true })
-  } catch {
+  } catch (err) {
+    console.error('[ONBOARDING_SAVE_DRAFT] Unexpected error:', err)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

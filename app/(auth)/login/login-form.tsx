@@ -64,7 +64,16 @@ export function LoginForm() {
       })
 
       if (authError) {
-        setError(authError.message)
+        // Don't show Supabase's specific error — "Invalid login credentials"
+        // vs "Email not confirmed" etc. leaks whether a user exists.
+        // Log real error to console for debugging, show generic message.
+        console.error('[LOGIN] Auth error:', authError)
+        const msg = authError.message?.toLowerCase() ?? ''
+        if (msg.includes('confirm') || msg.includes('verify')) {
+          setError('Please verify your email address before signing in.')
+        } else {
+          setError('Invalid email or password.')
+        }
         return
       }
 

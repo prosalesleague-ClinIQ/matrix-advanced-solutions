@@ -12,12 +12,14 @@ import {
   addTag,
   updateCustomFields,
   updateContact,
+  addTask,
 } from "./client";
 
 // ─── GHL Tags (must match GHL build sheet) ──────────────────────
 
 export const GHL_TAGS = {
   NEW_SIGNUP: "lifecycle__new_signup",
+  NEEDS_ADMIN_REVIEW: "action__needs_admin_review",
   ONBOARDING_SUBMITTED: "ops__onboarding_submitted",
   ONBOARDING_APPROVED: "ops__onboarding_approved",
   ONBOARDING_REJECTED: "ops__onboarding_rejected",
@@ -89,7 +91,9 @@ export async function syncNewSignup(data: {
       email: data.email,
       firstName,
       lastName,
-      tags: [GHL_TAGS.NEW_SIGNUP, GHL_TAGS.TIER_NEW],
+      // NEEDS_ADMIN_REVIEW tag is the trigger a GHL workflow should watch
+      // to email/notify internal staff that a new clinic needs approval.
+      tags: [GHL_TAGS.NEW_SIGNUP, GHL_TAGS.TIER_NEW, GHL_TAGS.NEEDS_ADMIN_REVIEW],
       customFields: [
         { key: CF.CLINIC_ID, value: data.clinicId },
         { key: CF.CLINIC_NAME, value: data.clinicName },
@@ -101,6 +105,27 @@ export async function syncNewSignup(data: {
       ],
       ...(data.assignedRepGhlId ? { assignedTo: data.assignedRepGhlId } : {}),
     });
+
+    // Create an explicit task for the admin so the approval shows up in
+    // their GHL task list, not just tag-based. If GHL_ADMIN_USER_ID is set,
+    // the task is assigned directly; otherwise it sits unassigned but still
+    // visible via the NEEDS_ADMIN_REVIEW tag.
+    if (contactId) {
+      const adminUserId = process.env.GHL_ADMIN_USER_ID;
+      await addTask(contactId, {
+        title: `New clinic signup: ${data.clinicName}`,
+        body: [
+          `${data.fullName} (${data.email}) just signed up for ${data.clinicName}.`,
+          "",
+          "Next step: review their onboarding application in the Matrix admin portal",
+          "and approve or request changes.",
+          "",
+          `Clinic ID: ${data.clinicId}`,
+        ].join("\n"),
+        dueDate: new Date().toISOString(),
+        ...(adminUserId ? { assignedTo: adminUserId } : {}),
+      });
+    }
 
     return contactId;
   }, "syncNewSignup");

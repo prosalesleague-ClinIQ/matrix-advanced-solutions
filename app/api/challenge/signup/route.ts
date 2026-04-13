@@ -40,6 +40,7 @@ export async function POST(request: Request) {
     })
 
     if (authError) {
+      console.error('[CHALLENGE_SIGNUP] auth error:', authError)
       if (authError.message?.includes('already been registered') || authError.message?.includes('duplicate')) {
         return NextResponse.json(
           { error: 'An account with this email already exists' },
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
         )
       }
       return NextResponse.json(
-        { error: authError.message },
+        { error: 'Unable to create account. Please try again.' },
         { status: 400 }
       )
     }
@@ -90,8 +91,9 @@ export async function POST(request: Request) {
       .single()
 
     if (participantError) {
+      console.error('[CHALLENGE_SIGNUP] participant insert error:', participantError)
       return NextResponse.json(
-        { error: participantError.message },
+        { error: 'Failed to create participant record' },
         { status: 500 }
       )
     }

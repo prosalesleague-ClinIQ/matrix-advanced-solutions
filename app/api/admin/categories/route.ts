@@ -12,6 +12,12 @@ async function requireAdmin(supabase: Awaited<ReturnType<typeof createServerSupa
 
 export async function GET() {
   try {
+    const supabase = await createServerSupabaseClient()
+    const user = await requireAdmin(supabase)
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const admin = createAdminClient()
     const { data, error } = await admin
       .from('product_categories')
@@ -20,7 +26,8 @@ export async function GET() {
       .order('name', { ascending: true })
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+      console.error('[ADMIN_CATEGORIES] GET error:', error)
+      return NextResponse.json({ error: 'Failed to load categories' }, { status: 500 })
     }
 
     return NextResponse.json(data)

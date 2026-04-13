@@ -63,9 +63,25 @@ export default function SignupPage() {
       })
 
       if (authError) {
-        setError(authError.message)
+        // Don't leak Supabase's specific error messages — they can reveal
+        // whether a user already exists (enumeration vector). Log the real
+        // error in the browser console for debugging and show a generic
+        // message to the user.
+        console.error('[SIGNUP] Auth error:', authError)
+        const msg = authError.message?.toLowerCase() ?? ''
+        if (msg.includes('already') || msg.includes('registered') || msg.includes('exists')) {
+          setError('Unable to create account. If you already have one, please sign in.')
+        } else if (msg.includes('password')) {
+          setError('Password does not meet requirements. Please use at least 8 characters.')
+        } else {
+          setError('Unable to create account. Please try again or contact support.')
+        }
         return
       }
+
+      // Fire-and-forget: trigger GHL sync + admin task from the server side
+      // on the newly-authenticated session. Never block the signup UX.
+      fetch('/api/auth/signup-complete', { method: 'POST' }).catch(() => {})
 
       router.push('/verify-email')
     } catch {

@@ -37,8 +37,9 @@ export async function GET() {
       .order('week_number', { ascending: true })
 
     if (entriesError) {
+      console.error('[CHALLENGE_ENTRIES] GET db error:', entriesError)
       return NextResponse.json(
-        { error: entriesError.message },
+        { error: 'Failed to load entries' },
         { status: 500 }
       )
     }
@@ -137,8 +138,9 @@ export async function POST(request: Request) {
       .single()
 
     if (entryError) {
+      console.error('[CHALLENGE_ENTRIES] POST db error:', entryError)
       return NextResponse.json(
-        { error: entryError.message },
+        { error: 'Failed to save check-in' },
         { status: 500 }
       )
     }
