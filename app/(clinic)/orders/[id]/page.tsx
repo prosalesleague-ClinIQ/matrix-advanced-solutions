@@ -6,7 +6,7 @@ import { OrderStatusBadge } from '@/components/orders/order-status-badge'
 import { OrderStatusStepper } from '@/components/orders/order-status-stepper'
 import { formatCurrency, formatDate } from '@/lib/format'
 import { PAYMENT_STATUS_LABELS } from '@/lib/constants'
-import { ArrowLeft, FileText } from 'lucide-react'
+import { ArrowLeft, FileText, Printer, CreditCard } from 'lucide-react'
 import type { OrderStatus, PaymentStatus } from '@/lib/types/database'
 
 interface OrderDetailPageProps {
@@ -154,43 +154,92 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
             </CardContent>
           </Card>
 
-          {/* Invoices */}
-          {invoices && invoices.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Invoices</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {invoices.map((invoice) => (
-                    <Link
-                      key={invoice.id}
-                      href={`/invoices/${invoice.id}`}
-                      className="flex items-center justify-between rounded-xl p-3 transition-colors hover:bg-white/5"
-                    >
-                      <div className="flex items-center gap-3">
-                        <FileText className="h-5 w-5 text-steel-500" />
-                        <div>
-                          <p className="text-sm font-medium text-white">
-                            {invoice.invoice_number}
-                          </p>
-                          <p className="text-xs text-steel-400">
-                            {invoice.invoice_type === 'consulting'
-                              ? 'Consulting'
-                              : 'Product'}{' '}
-                            &middot; {formatDate(invoice.created_at)}
-                          </p>
+          {/* Payment Invoice (consulting) */}
+          {(() => {
+            const consulting = invoices?.find((i) => i.invoice_type === 'consulting')
+            const product = invoices?.find((i) => i.invoice_type === 'product')
+            return (
+              <>
+                {consulting && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Payment Invoice</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="mb-4 text-sm text-steel-400">
+                        This is the invoice you pay. It covers professional consulting
+                        services for this order.
+                      </p>
+                      <div className="flex items-center justify-between rounded-xl bg-white/3 p-4">
+                        <div className="flex items-center gap-3">
+                          <FileText className="h-5 w-5 text-accent-purple" />
+                          <div>
+                            <p className="text-sm font-medium text-white">
+                              {consulting.invoice_number}
+                            </p>
+                            <p className="text-xs text-steel-400">
+                              {formatDate(consulting.created_at)} &middot;{' '}
+                              {formatCurrency(consulting.total)}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Link
+                            href={`/invoices/${consulting.id}`}
+                            className="rounded-lg bg-accent-purple px-4 py-2 text-xs font-semibold text-white hover:bg-accent-purple-light"
+                          >
+                            View &amp; Pay
+                          </Link>
+                          <Link
+                            href={`/invoices/${consulting.id}/print`}
+                            target="_blank"
+                            className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs text-steel-300 hover:text-white"
+                          >
+                            PDF
+                          </Link>
                         </div>
                       </div>
-                      <span className="text-sm font-medium text-white">
-                        {formatCurrency(invoice.total)}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                    </CardContent>
+                  </Card>
+                )}
+
+                {product && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Itemized Receipt</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="mb-4 text-sm text-steel-400">
+                        Itemized record of products shipped with this order. For your
+                        records only — not a separate bill.
+                      </p>
+                      <div className="flex items-center justify-between rounded-xl bg-white/3 p-4">
+                        <div className="flex items-center gap-3">
+                          <FileText className="h-5 w-5 text-steel-500" />
+                          <div>
+                            <p className="text-sm font-medium text-white">
+                              {product.invoice_number}
+                            </p>
+                            <p className="text-xs text-steel-400">
+                              {formatDate(product.created_at)} &middot;{' '}
+                              {formatCurrency(product.total)}
+                            </p>
+                          </div>
+                        </div>
+                        <Link
+                          href={`/invoices/${product.id}/print`}
+                          target="_blank"
+                          className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-xs text-steel-300 hover:text-white"
+                        >
+                          Download PDF
+                        </Link>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </>
+            )
+          })()}
         </div>
 
         {/* Right sidebar */}

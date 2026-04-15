@@ -54,10 +54,10 @@ export default function CheckoutPage() {
   const effectiveShippingAddress =
     shippingAddress || clinic?.shipping_address || ''
 
-  // Force wire for new clinics
-  const effectivePaymentMethod: PaymentMethod = isNewClinic
-    ? 'wire'
-    : paymentMethod
+  // Card payments temporarily disabled — wire only for all clinics.
+  void isNewClinic
+  void paymentMethod
+  const effectivePaymentMethod: PaymentMethod = 'wire'
 
   // ─── Loading state ───────────────────────────────────────────
   if (isLoading) {
@@ -185,11 +185,15 @@ export default function CheckoutPage() {
         {/* Payment-specific content */}
         {orderResult.paymentMethod === 'wire' ? (
           <div className="space-y-6">
-            <WireInstructions orderNumber={orderResult.orderNumber} />
+            <WireInstructions
+              orderNumber={
+                orderResult.wireInstructions?.reference ?? orderResult.orderNumber
+              }
+            />
             <Card variant="glass" className="p-4">
               <p className="text-sm text-steel-400">
                 Your order will be processed once the wire transfer is confirmed.
-                Please include your order number as the wire reference.
+                Please include the payment invoice number as the wire reference.
               </p>
             </Card>
           </div>

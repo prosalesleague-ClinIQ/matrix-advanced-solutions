@@ -69,7 +69,9 @@ export async function POST(request: Request) {
       )
     }
 
-    const allowedMethods = isAdmin ? ['wire', 'card', 'ach'] : ['wire', 'card']
+    // Card payments temporarily disabled — wire only across the board.
+    void isAdmin
+    const allowedMethods = ['wire']
     if (!allowedMethods.includes(paymentMethod)) {
       return NextResponse.json(
         { error: 'Invalid payment method' },
@@ -363,32 +365,46 @@ export async function POST(request: Request) {
       total: item.line_total,
     }))
 
-    const { error: invoicesError } = await admin.from('invoices').insert([
-      {
-        order_id: order.id,
-        clinic_id: clinicId,
-        invoice_type: 'consulting',
-        status: initialStatus,
-        line_items: consultingLineItems,
-        subtotal: total,
-        tax: 0,
-        total,
-      },
-      {
-        order_id: order.id,
-        clinic_id: clinicId,
-        invoice_type: 'product',
-        status: initialStatus,
-        line_items: productLineItems,
-        subtotal, // pre-shipping subtotal
-        tax: 0,
-        total, // order total (includes shipping) — payment total matches consulting total
-      },
-    ])
+    const { data: createdInvoices, error: invoicesError } = await admin
+      .from('invoices')
+      .insert([
+        {
+          order_id: order.id,
+          clinic_id: clinicId,
+          invoice_type: 'consulting',
+          status: initialStatus,
+          line_items: consultingLineItems,
+          subtotal: total,
+          tax: 0,
+          total,
+        },
+        {
+          order_id: order.id,
+          clinic_id: clinicId,
+          invoice_type: 'product',
+          status: initialStatus,
+          line_items: productLineItems,
+          subtotal, // pre-shipping subtotal
+          tax: 0,
+          total, // order total (includes shipping) — payment total matches consulting total
+        },
+      ])
+      .select('id, invoice_number, invoice_type')
 
     if (invoicesError) {
       console.error('[ORDER_SUBMIT] Failed to create invoices:', invoicesError)
       // Non-fatal — order is still valid, admin can regenerate later.
+    }
+
+    const consultingInvoiceNumber =
+      createdInvoices?.find((i) => i.invoice_type === 'consulting')?.invoice_number ??
+      order.order_number
+
+    if (paymentMethod === 'wire' && consultingInvoiceNumber) {
+      await admin
+        .from('orders')
+        .update({ wire_reference: consultingInvoiceNumber })
+        .eq('id', order.id)
     }
 
     // ── Stripe PaymentIntent (card orders) ─────────────────────
@@ -486,7 +502,7 @@ export async function POST(request: Request) {
           routingNumber: WIRE_INSTRUCTIONS.routingNumber,
           accountNumber: WIRE_INSTRUCTIONS.accountNumber,
           accountName: WIRE_INSTRUCTIONS.accountName,
-          reference: order.order_number,
+          reference: consultingInvoiceNumber,
         },
       }),
       ...(stripeClientSecret && { stripeClientSecret }),

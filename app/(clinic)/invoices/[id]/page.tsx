@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { formatCurrency, formatDate } from '@/lib/format'
 import { INVOICE_STATUS_LABELS } from '@/lib/constants'
-import { ArrowLeft, Printer } from 'lucide-react'
+import { ArrowLeft, Printer, Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { InvoiceLineItem } from '@/lib/types/database'
 import type { InvoiceStatus, InvoiceType } from '@/lib/types/database'
@@ -56,6 +56,18 @@ export default async function InvoiceDetailPage({ params }: InvoiceDetailPagePro
     .eq('id', invoice.order_id)
     .single()
 
+  const isProduct = (invoice.invoice_type as InvoiceType) === 'product'
+  let consultingSibling: { id: string; invoice_number: string } | null = null
+  if (isProduct && invoice.order_id) {
+    const { data: sib } = await supabase
+      .from('invoices')
+      .select('id, invoice_number')
+      .eq('order_id', invoice.order_id)
+      .eq('invoice_type', 'consulting')
+      .maybeSingle()
+    consultingSibling = sib
+  }
+
   const lineItems = (invoice.line_items ?? []) as unknown as InvoiceLineItem[]
 
   return (
@@ -70,6 +82,25 @@ export default async function InvoiceDetailPage({ params }: InvoiceDetailPagePro
           Back to Invoices
         </Link>
       </div>
+
+      {isProduct && consultingSibling && (
+        <div className="flex items-start gap-3 rounded-xl border border-accent-blue/30 bg-accent-blue/10 p-4">
+          <Info className="mt-0.5 h-5 w-5 shrink-0 text-accent-blue-light" />
+          <div className="flex-1 text-sm">
+            <p className="font-medium text-white">This is an itemized receipt, not a bill.</p>
+            <p className="mt-1 text-steel-300">
+              Your payment invoice for this order is{' '}
+              <Link
+                href={`/invoices/${consultingSibling.id}`}
+                className="font-medium text-accent-blue-light underline hover:text-white"
+              >
+                {consultingSibling.invoice_number}
+              </Link>
+              . Use that invoice to submit payment.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Heading */}
       <div className="flex flex-wrap items-center gap-4">

@@ -47,7 +47,7 @@ export function ProductCard({ item }: ProductCardProps) {
   return (
     <Card variant="interactive" className="flex flex-col bg-surface-card border-white/10">
       {/* Image or placeholder */}
-      <div className="relative mb-4 flex h-40 items-center justify-center overflow-hidden rounded-xl bg-white/5">
+      <div className="relative mb-4 flex aspect-square items-center justify-center overflow-hidden rounded-xl bg-white/5">
         {item.is_featured && (
           <div className="absolute top-2 left-2 z-10 flex items-center gap-1 rounded-full bg-accent-purple/90 px-2 py-0.5 text-[10px] font-semibold text-white">
             <Star className="h-3 w-3 fill-current" />

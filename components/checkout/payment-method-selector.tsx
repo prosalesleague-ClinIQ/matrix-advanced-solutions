@@ -17,6 +17,7 @@ const OPTIONS: {
   label: string
   description: string
   icon: typeof Building2
+  disabled?: boolean
 }[] = [
   {
     value: 'wire',
@@ -28,9 +29,9 @@ const OPTIONS: {
   {
     value: 'card',
     label: 'Credit / Debit Card',
-    description:
-      'Pay instantly with a credit or debit card via Stripe.',
+    description: 'Card payments are coming soon. Please use wire transfer for now.',
     icon: CreditCard,
+    disabled: true,
   },
 ]
 
@@ -47,10 +48,10 @@ export function PaymentMethodSelector({
 
       <div className="grid gap-3">
         {OPTIONS.map((option) => {
-          const isCardDisabled =
-            option.value === 'card' && clinicTier === 'new'
-          const isActive = selected === option.value
+          const isCardDisabled = option.disabled === true
+          const isActive = selected === option.value && !isCardDisabled
           const Icon = option.icon
+          void clinicTier
 
           return (
             <button
@@ -90,12 +91,17 @@ export function PaymentMethodSelector({
                     {option.label}
                   </span>
                   {isCardDisabled && (
-                    <Lock className="h-3.5 w-3.5 text-steel-500" />
+                    <>
+                      <Lock className="h-3.5 w-3.5 text-steel-500" />
+                      <span className="rounded-full bg-accent-blue/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent-blue-light">
+                        Coming Soon
+                      </span>
+                    </>
                   )}
                 </div>
                 <p className="mt-1 text-xs text-steel-400">
                   {isCardDisabled
-                    ? 'Available after your first completed wire transfer order.'
+                    ? 'Card payments are coming soon. Please use wire transfer for now.'
                     : option.description}
                 </p>
               </div>
