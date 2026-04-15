@@ -332,8 +332,30 @@ export async function POST(request: Request) {
       )
     }
 
-    // ── Create consulting invoice ──────────────────────────────
-    const invoiceLineItems = orderItemsData.map((item) => ({
+    // ── Create two invoices: consulting + product ─────────────
+    // By design, both invoices have total = order total. The consulting
+    // invoice is a single-line "Professional Consulting Services" fee;
+    // the product invoice lists the actual SKUs. A single payment (wire
+    // or Stripe) marks both as paid simultaneously downstream.
+    //
+    // Shape matches the legacy production data from the old app so old
+    // and new invoices render identically:
+    //   • consulting: 1 line item, sku='CONSULTING-FEE', subtotal=total
+    //   • product:    N line items (one per order_item),
+    //                 subtotal = pre-shipping subtotal, total = order total
+    const initialStatus = paymentMethod === 'wire' ? 'sent' : 'draft'
+
+    const consultingLineItems = [
+      {
+        sku: 'CONSULTING-FEE',
+        name: 'Professional Consulting Services',
+        quantity: 1,
+        unit_price: total,
+        total: total,
+      },
+    ]
+
+    const productLineItems = orderItemsData.map((item) => ({
       sku: item.sku,
       name: item.product_name,
       quantity: item.quantity,
@@ -341,20 +363,32 @@ export async function POST(request: Request) {
       total: item.line_total,
     }))
 
-    const { error: invoiceError } = await admin.from('invoices').insert({
-      order_id: order.id,
-      clinic_id: clinicId,
-      invoice_type: 'consulting',
-      status: paymentMethod === 'wire' ? 'sent' : 'draft',
-      line_items: invoiceLineItems,
-      subtotal,
-      tax: 0,
-      total,
-    })
+    const { error: invoicesError } = await admin.from('invoices').insert([
+      {
+        order_id: order.id,
+        clinic_id: clinicId,
+        invoice_type: 'consulting',
+        status: initialStatus,
+        line_items: consultingLineItems,
+        subtotal: total,
+        tax: 0,
+        total,
+      },
+      {
+        order_id: order.id,
+        clinic_id: clinicId,
+        invoice_type: 'product',
+        status: initialStatus,
+        line_items: productLineItems,
+        subtotal, // pre-shipping subtotal
+        tax: 0,
+        total, // order total (includes shipping) — payment total matches consulting total
+      },
+    ])
 
-    if (invoiceError) {
-      console.error('[ORDER_SUBMIT] Failed to create invoice:', invoiceError)
-      // Non-fatal — order is still valid
+    if (invoicesError) {
+      console.error('[ORDER_SUBMIT] Failed to create invoices:', invoicesError)
+      // Non-fatal — order is still valid, admin can regenerate later.
     }
 
     // ── Stripe PaymentIntent (card orders) ─────────────────────

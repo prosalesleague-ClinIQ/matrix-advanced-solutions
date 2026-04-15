@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { formatCurrency, formatDate } from '@/lib/format'
 import { INVOICE_STATUS_LABELS } from '@/lib/constants'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Printer } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import type { InvoiceLineItem } from '@/lib/types/database'
 import type { InvoiceStatus, InvoiceType } from '@/lib/types/database'
 
@@ -88,6 +89,14 @@ export default async function InvoiceDetailPage({ params }: InvoiceDetailPagePro
         >
           {INVOICE_STATUS_LABELS[invoice.status] ?? invoice.status}
         </span>
+        <div className="ml-auto">
+          <Link href={`/invoices/${invoice.id}/print`} target="_blank">
+            <Button variant="outline" size="sm">
+              <Printer className="h-4 w-4" />
+              Download PDF
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Line items table */}

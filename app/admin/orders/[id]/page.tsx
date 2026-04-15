@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowLeft, FileText } from 'lucide-react'
+import { ArrowLeft, FileText, Printer } from 'lucide-react'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/format'
 import { PAYMENT_STATUS_LABELS, MFG_STATUS_LABELS, INVOICE_STATUS_LABELS } from '@/lib/constants'
@@ -190,17 +190,29 @@ export default async function AdminOrderDetailPage({
                       <div className="flex items-center gap-3">
                         <FileText className="h-4 w-4 text-steel-400" />
                         <div>
-                          <p className="text-sm font-medium text-white">{inv.invoice_number}</p>
-                          <p className="text-xs text-steel-500">{inv.invoice_type}</p>
+                          <p className="text-sm font-medium text-white">
+                            {inv.invoice_number}
+                          </p>
+                          <p className="text-xs text-steel-500 capitalize">
+                            {inv.invoice_type}
+                          </p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-3">
                         <Badge variant="outline">
                           {INVOICE_STATUS_LABELS[inv.status] ?? inv.status}
                         </Badge>
-                        <p className="text-sm font-medium text-white">
+                        <p className="text-sm font-medium text-white tabular-nums">
                           {formatCurrency(inv.total)}
                         </p>
+                        <Link
+                          href={`/invoices/${inv.id}/print`}
+                          target="_blank"
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-steel-300 transition-colors hover:border-accent-purple/40 hover:text-white"
+                        >
+                          <Printer className="h-3.5 w-3.5" />
+                          PDF
+                        </Link>
                       </div>
                     </div>
                   ))}
