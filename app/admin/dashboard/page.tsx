@@ -5,6 +5,9 @@ import {
   Clock,
   Package,
   Building2,
+  AlertCircle,
+  Truck,
+  ArrowRight,
 } from 'lucide-react'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { formatCurrency, formatDate } from '@/lib/format'
@@ -25,6 +28,8 @@ export default async function AdminDashboardPage() {
     { count: pendingBatch },
     { count: totalClinics },
     { data: recentOrders },
+    { data: awaitingWireOrders },
+    { data: readyToShipOrders },
   ] = await Promise.all([
     supabase
       .from('orders')
@@ -52,6 +57,23 @@ export default async function AdminDashboardPage() {
       .select('id, order_number, status, payment_status, total, created_at, clinics(name)')
       .order('created_at', { ascending: false })
       .limit(5),
+    // Action list 1 — orders waiting for wire confirmation
+    supabase
+      .from('orders')
+      .select('id, order_number, total, created_at, clinics(name)')
+      .eq('payment_status', 'awaiting_wire')
+      .order('created_at', { ascending: true })
+      .limit(8),
+    // Action list 2 — paid orders ready to ship
+    // (status confirmed or processing, no tracking number yet)
+    supabase
+      .from('orders')
+      .select('id, order_number, status, total, created_at, clinics(name)')
+      .in('status', ['confirmed', 'processing'])
+      .in('payment_status', ['paid', 'confirmed'])
+      .is('tracking_number', null)
+      .order('created_at', { ascending: true })
+      .limit(8),
   ])
 
   const totalRevenue = revenueData?.reduce((sum, o) => sum + (o.total ?? 0), 0) ?? 0
@@ -86,6 +108,111 @@ export default async function AdminDashboardPage() {
           </Card>
         ))}
       </div>
+
+      {/* Action Required — orders the admin needs to act on right now */}
+      {(awaitingWireOrders?.length || readyToShipOrders?.length) ? (
+        <div className="grid gap-4 md:grid-cols-2">
+          {/* Awaiting Wire Confirmation */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 text-amber-400" />
+                  Awaiting Wire Confirmation
+                </CardTitle>
+                <span className="text-xs text-steel-500">
+                  {awaitingWireOrders?.length ?? 0}
+                </span>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              {awaitingWireOrders && awaitingWireOrders.length > 0 ? (
+                <ul className="divide-y divide-white/5">
+                  {awaitingWireOrders.map((order) => {
+                    const clinic = order.clinics as unknown as { name: string } | null
+                    return (
+                      <li key={order.id}>
+                        <Link
+                          href={`/admin/orders/${order.id}`}
+                          className="flex items-center justify-between px-6 py-3 hover:bg-white/5 transition-colors group"
+                        >
+                          <div className="min-w-0">
+                            <p className="text-sm font-mono text-white truncate">
+                              {order.order_number}
+                            </p>
+                            <p className="text-xs text-steel-500 truncate">
+                              {clinic?.name ?? '—'} · {formatDate(order.created_at)}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-sm text-white font-medium tabular-nums">
+                              {formatCurrency(order.total)}
+                            </span>
+                            <ArrowRight className="h-4 w-4 text-steel-600 group-hover:text-accent-purple transition-colors" />
+                          </div>
+                        </Link>
+                      </li>
+                    )
+                  })}
+                </ul>
+              ) : (
+                <p className="px-6 py-6 text-center text-sm text-steel-500">
+                  No wires waiting on confirmation.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Ready to Ship */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2">
+                  <Truck className="h-4 w-4 text-accent-cyan" />
+                  Ready to Ship
+                </CardTitle>
+                <span className="text-xs text-steel-500">
+                  {readyToShipOrders?.length ?? 0}
+                </span>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              {readyToShipOrders && readyToShipOrders.length > 0 ? (
+                <ul className="divide-y divide-white/5">
+                  {readyToShipOrders.map((order) => {
+                    const clinic = order.clinics as unknown as { name: string } | null
+                    return (
+                      <li key={order.id}>
+                        <Link
+                          href={`/admin/orders/${order.id}`}
+                          className="flex items-center justify-between px-6 py-3 hover:bg-white/5 transition-colors group"
+                        >
+                          <div className="min-w-0">
+                            <p className="text-sm font-mono text-white truncate">
+                              {order.order_number}
+                            </p>
+                            <p className="text-xs text-steel-500 truncate">
+                              {clinic?.name ?? '—'} · {formatDate(order.created_at)}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <OrderStatusBadge status={order.status as OrderStatus} />
+                            <ArrowRight className="h-4 w-4 text-steel-600 group-hover:text-accent-purple transition-colors" />
+                          </div>
+                        </Link>
+                      </li>
+                    )
+                  })}
+                </ul>
+              ) : (
+                <p className="px-6 py-6 text-center text-sm text-steel-500">
+                  No paid orders waiting to ship.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      ) : null}
 
       {/* Recent Orders */}
       <Card>

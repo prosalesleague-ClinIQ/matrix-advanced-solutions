@@ -7,8 +7,10 @@ import { formatCurrency, formatDate } from '@/lib/format'
 import { BATCH_STATUS_LABELS } from '@/lib/constants'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { BatchStatusActions } from '@/components/admin/batch-status-actions'
 import { createClient } from '@/lib/supabase/client'
 import { useParams } from 'next/navigation'
+import type { BatchStatus } from '@/lib/types/database'
 
 const batchStatusColors: Record<string, string> = {
   draft: 'bg-steel-600/20 text-steel-400',
@@ -45,21 +47,23 @@ export default function AdminBatchDetailPage() {
   const [batch, setBatch] = useState<BatchPO | null>(null)
   const [items, setItems] = useState<BatchItem[]>([])
 
+  async function loadBatch() {
+    const supabase = createClient()
+    const [{ data: batchData }, { data: itemsData }] = await Promise.all([
+      supabase.from('batch_pos').select('*').eq('id', params.id).single(),
+      supabase
+        .from('batch_po_items')
+        .select('*')
+        .eq('batch_po_id', params.id)
+        .order('created_at', { ascending: true }),
+    ])
+    setBatch(batchData as BatchPO | null)
+    setItems((itemsData as BatchItem[]) ?? [])
+  }
+
   useEffect(() => {
-    async function load() {
-      const supabase = createClient()
-      const [{ data: batchData }, { data: itemsData }] = await Promise.all([
-        supabase.from('batch_pos').select('*').eq('id', params.id).single(),
-        supabase
-          .from('batch_po_items')
-          .select('*')
-          .eq('batch_po_id', params.id)
-          .order('created_at', { ascending: true }),
-      ])
-      setBatch(batchData as BatchPO | null)
-      setItems((itemsData as BatchItem[]) ?? [])
-    }
-    load()
+    loadBatch()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id])
 
   if (!batch) {
@@ -133,6 +137,13 @@ export default function AdminBatchDetailPage() {
 
         {/* Sidebar */}
         <div className="space-y-6">
+          {/* Status transition button — only renders when a next state exists */}
+          <BatchStatusActions
+            batchId={batch.id}
+            currentStatus={batch.status as BatchStatus}
+            onUpdate={() => loadBatch()}
+          />
+
           <Card>
             <CardHeader>
               <CardTitle>Batch Info</CardTitle>

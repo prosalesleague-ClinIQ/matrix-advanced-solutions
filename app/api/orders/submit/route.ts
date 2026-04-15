@@ -424,12 +424,18 @@ export async function POST(request: Request) {
     })
 
     // ── GHL sync (fire-and-forget) ─────────────────────────────
+    // Tags the clinic contact with ORDER_PLACED + NEW_ORDER_REVIEW
+    // and creates a GHL task so the admin gets notified via GHL
+    // workflows (email/SMS/Slack depending on their automation setup).
     syncOrderPlaced({
       clinicEmail: clinic.primary_email,
+      clinicName: clinic.name,
+      orderId: order.id,
       orderNumber: order.order_number,
       orderTotal: total,
       totalOrders: clinic.completed_order_count + 1,
       totalSpend: total,
+      paymentMethod,
     }).catch(() => {
       // GHL sync failures are non-blocking
     })

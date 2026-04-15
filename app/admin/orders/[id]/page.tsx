@@ -6,7 +6,8 @@ import { PAYMENT_STATUS_LABELS, MFG_STATUS_LABELS, INVOICE_STATUS_LABELS } from 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { OrderStatusBadge } from '@/components/orders/order-status-badge'
-import type { OrderStatus } from '@/lib/types/database'
+import { OrderAdminActions } from '@/components/admin/order-admin-actions'
+import type { OrderStatus, PaymentStatus } from '@/lib/types/database'
 import { notFound } from 'next/navigation'
 
 export default async function AdminOrderDetailPage({
@@ -211,6 +212,15 @@ export default async function AdminOrderDetailPage({
 
         {/* Sidebar */}
         <div className="space-y-6">
+          {/* Admin Actions */}
+          <OrderAdminActions
+            orderId={order.id}
+            orderNumber={order.order_number}
+            status={order.status as OrderStatus}
+            paymentStatus={order.payment_status as PaymentStatus}
+            trackingNumber={order.tracking_number}
+          />
+
           {/* Order Summary */}
           <Card>
             <CardHeader>

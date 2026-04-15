@@ -20,6 +20,7 @@ import {
 export const GHL_TAGS = {
   NEW_SIGNUP: "lifecycle__new_signup",
   NEEDS_ADMIN_REVIEW: "action__needs_admin_review",
+  NEW_ORDER_REVIEW: "action__new_order_review",
   ONBOARDING_SUBMITTED: "ops__onboarding_submitted",
   ONBOARDING_APPROVED: "ops__onboarding_approved",
   ONBOARDING_REJECTED: "ops__onboarding_rejected",
@@ -211,10 +212,13 @@ export async function syncOnboardingRejected(clinicEmail: string) {
 
 export async function syncOrderPlaced(data: {
   clinicEmail: string;
+  clinicName?: string;
+  orderId: string;
   orderNumber: string;
   orderTotal: number;
   totalOrders: number;
   totalSpend: number;
+  paymentMethod?: string;
 }) {
   await safe(async () => {
     const contactId = await findContactByEmail(data.clinicEmail);
@@ -223,13 +227,51 @@ export async function syncOrderPlaced(data: {
       return;
     }
 
+    // Two tags: one for the clinic-side lifecycle ("they placed an order")
+    // and one for admin-side workflow ("new order needs fulfillment review").
+    // Workflows watching NEW_ORDER_REVIEW can email/slack/text the admin.
     await addTag(contactId, GHL_TAGS.ORDER_PLACED);
+    await addTag(contactId, GHL_TAGS.NEW_ORDER_REVIEW);
 
     await updateCustomFields(contactId, [
       { key: CF.TOTAL_ORDERS, value: data.totalOrders },
       { key: CF.TOTAL_SPEND, value: data.totalSpend },
       { key: CF.LAST_ORDER_DATE, value: new Date().toISOString().split("T")[0] },
     ]);
+
+    // Create an explicit GHL task so the order surfaces in the admin's
+    // task list — not just tag-based. If GHL_ADMIN_USER_ID is set, the
+    // task is assigned directly; otherwise it stays unassigned but
+    // still findable via the NEW_ORDER_REVIEW tag.
+    const adminUserId = process.env.GHL_ADMIN_USER_ID;
+    const siteUrl =
+      process.env.NEXT_PUBLIC_APP_URL ??
+      process.env.NEXT_PUBLIC_SITE_URL ??
+      "https://matrixadvancedsolutions.com";
+
+    const totalFormatted = data.orderTotal.toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+    });
+
+    await addTask(contactId, {
+      title: `New order ${data.orderNumber} — ${totalFormatted}`,
+      body: [
+        `${data.clinicName ?? "Clinic"} just placed order ${data.orderNumber}.`,
+        "",
+        `Total:          ${totalFormatted}`,
+        `Payment method: ${data.paymentMethod ?? "unknown"}`,
+        `Total orders:   ${data.totalOrders}`,
+        "",
+        "Next step: review the order in the Matrix admin portal,",
+        "confirm payment (wire) if applicable, and advance it through",
+        "fulfillment.",
+        "",
+        `${siteUrl}/admin/orders/${data.orderId}`,
+      ].join("\n"),
+      dueDate: new Date().toISOString(),
+      ...(adminUserId ? { assignedTo: adminUserId } : {}),
+    });
   }, "syncOrderPlaced");
 }
 
