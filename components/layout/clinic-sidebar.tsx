@@ -14,19 +14,26 @@ import {
   LogOut,
   Menu,
   X,
+  BookOpen,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { useCartContext } from '@/providers/cart-provider'
 
-const navItems = [
+const navItems: {
+  label: string
+  href: string
+  icon: typeof LayoutDashboard
+  external?: boolean
+}[] = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Catalog', href: '/catalog', icon: Package },
   { label: 'Cart', href: '/cart', icon: ShoppingCart },
   { label: 'Orders', href: '/orders', icon: ClipboardList },
   { label: 'Invoices', href: '/invoices', icon: FileText },
   { label: 'Settings', href: '/settings', icon: Settings },
+  { label: 'Resource Center', href: 'https://matrix-clinic-resource-center.vercel.app/', icon: BookOpen, external: true },
 ]
 
 function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
@@ -46,20 +53,39 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
       <nav className="flex-1 px-3 py-4 space-y-1">
         {navItems.map((item) => {
           const isActive =
-            pathname === item.href ||
-            (item.href !== '/dashboard' && pathname.startsWith(item.href))
+            !item.external &&
+            (pathname === item.href ||
+              (item.href !== '/dashboard' && pathname.startsWith(item.href)))
           const Icon = item.icon
+          const classes = cn(
+            'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200',
+            isActive
+              ? 'bg-gradient-to-r from-accent-blue to-accent-purple text-white shadow-[0_0_12px_rgba(168,85,247,0.4)]'
+              : 'text-steel-400 hover:text-white hover:bg-white/5'
+          )
+
+          if (item.external) {
+            return (
+              <a
+                key={item.href}
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={onNavigate}
+                className={classes}
+              >
+                <Icon className="w-5 h-5" />
+                {item.label}
+              </a>
+            )
+          }
+
           return (
             <Link
               key={item.href}
               href={item.href}
               onClick={onNavigate}
-              className={cn(
-                'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200',
-                isActive
-                  ? 'bg-gradient-to-r from-accent-blue to-accent-purple text-white shadow-[0_0_12px_rgba(168,85,247,0.4)]'
-                  : 'text-steel-400 hover:text-white hover:bg-white/5'
-              )}
+              className={classes}
             >
               <Icon className="w-5 h-5" />
               {item.label}
