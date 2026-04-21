@@ -46,12 +46,62 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
+  const admin = createAdminClient()
+
+  // ── payment_intent.processing: ACH submitted, waiting 1-3 days to clear ──
+  // Move the order to awaiting_wire so the admin dashboard reflects "pending".
+  if (event.type === 'payment_intent.processing') {
+    const pi = event.data.object as Stripe.PaymentIntent
+    const { data: procOrder } = await admin
+      .from('orders')
+      .select('id, order_number, payment_status')
+      .eq('stripe_payment_intent_id', pi.id)
+      .single()
+
+    if (procOrder && procOrder.payment_status !== 'paid') {
+      await admin
+        .from('orders')
+        .update({
+          payment_status: 'awaiting_wire',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', procOrder.id)
+      console.log(
+        `[STRIPE_WEBHOOK] ACH processing for order ${procOrder.order_number}`
+      )
+    }
+    return NextResponse.json({ received: true })
+  }
+
+  // ── payment_intent.payment_failed: surface a failure signal ──
+  if (event.type === 'payment_intent.payment_failed') {
+    const pi = event.data.object as Stripe.PaymentIntent
+    const { data: failOrder } = await admin
+      .from('orders')
+      .select('id, order_number, payment_status')
+      .eq('stripe_payment_intent_id', pi.id)
+      .single()
+
+    if (failOrder && failOrder.payment_status !== 'paid') {
+      await admin
+        .from('orders')
+        .update({
+          payment_status: 'failed',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', failOrder.id)
+      console.warn(
+        `[STRIPE_WEBHOOK] Payment failed for order ${failOrder.order_number}`
+      )
+    }
+    return NextResponse.json({ received: true })
+  }
+
   if (event.type !== 'payment_intent.succeeded') {
     return NextResponse.json({ received: true })
   }
 
   const paymentIntent = event.data.object as Stripe.PaymentIntent
-  const admin = createAdminClient()
 
   // ── Find order ─────────────────────────────────────────────
   const { data: order } = await admin
@@ -90,12 +140,21 @@ export async function POST(request: Request) {
     .update({ status: 'paid', paid_at: now, locked: true, updated_at: now })
     .eq('order_id', order.id)
 
+  // ── Determine payment method (card vs ACH) from charge ─────
+  const charge = paymentIntent.latest_charge
+    ? typeof paymentIntent.latest_charge === 'string'
+      ? null
+      : paymentIntent.latest_charge
+    : null
+  const pmType = charge?.payment_method_details?.type ?? 'card'
+  const resolvedMethod = pmType === 'us_bank_account' ? 'ach' : 'card'
+
   // ── Create payment row ─────────────────────────────────────
   await admin.from('payments').insert({
     order_id: order.id,
     clinic_id: order.clinic_id,
     amount: paymentIntent.amount / 100,
-    method: 'card',
+    method: resolvedMethod,
     status: 'paid',
     stripe_payment_intent_id: paymentIntent.id,
     confirmed_at: now,
@@ -175,7 +234,7 @@ export async function POST(request: Request) {
     entityId: order.id,
     afterState: {
       order_number: order.order_number,
-      payment_method: 'card',
+      payment_method: resolvedMethod,
       amount: paymentIntent.amount / 100,
       stripe_payment_intent_id: paymentIntent.id,
     },

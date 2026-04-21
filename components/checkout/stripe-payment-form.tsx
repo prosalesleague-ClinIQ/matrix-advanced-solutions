@@ -1,10 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import {
+  Elements,
+  PaymentElement,
+  useElements,
+  useStripe,
+} from '@stripe/react-stripe-js'
+import type { StripeElementsOptions } from '@stripe/stripe-js'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { formatCurrency } from '@/lib/format'
 import { CreditCard, Loader2, ShieldCheck } from 'lucide-react'
+import { getStripeClient } from '@/lib/stripe-client'
 
 interface StripePaymentFormProps {
   orderId: string
@@ -12,124 +20,209 @@ interface StripePaymentFormProps {
   total: number
   onSuccess: () => void
   onCancel: () => void
+  returnUrl?: string
 }
 
-export function StripePaymentForm({
-  orderId,
+export function StripePaymentForm(props: StripePaymentFormProps) {
+  const [clientSecret, setClientSecret] = useState<string | null>(null)
+  const [intentError, setIntentError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    async function createIntent() {
+      try {
+        const res = await fetch('/api/payments/create-intent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId: props.orderId }),
+        })
+        const data = await res.json()
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to initialize payment')
+        }
+        if (!cancelled) setClientSecret(data.clientSecret)
+      } catch (err) {
+        if (!cancelled) {
+          setIntentError(
+            err instanceof Error ? err.message : 'Failed to initialize payment'
+          )
+        }
+      }
+    }
+    createIntent()
+    return () => {
+      cancelled = true
+    }
+  }, [props.orderId])
+
+  if (intentError) {
+    return (
+      <Card variant="glass" className="p-6">
+        <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-4">
+          <p className="text-sm text-red-400">{intentError}</p>
+        </div>
+        <div className="mt-4">
+          <Button variant="ghost" size="md" onClick={props.onCancel}>
+            Back
+          </Button>
+        </div>
+      </Card>
+    )
+  }
+
+  if (!clientSecret) {
+    return (
+      <Card variant="glass" className="p-6">
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-6 w-6 animate-spin text-accent-purple" />
+        </div>
+      </Card>
+    )
+  }
+
+  const options: StripeElementsOptions = {
+    clientSecret,
+    appearance: {
+      theme: 'night',
+      variables: {
+        colorPrimary: '#a855f7',
+        colorBackground: '#0b1020',
+        colorText: '#ffffff',
+        colorDanger: '#f87171',
+        fontFamily: 'Inter, system-ui, sans-serif',
+        borderRadius: '12px',
+      },
+    },
+  }
+
+  return (
+    <Elements stripe={getStripeClient()} options={options}>
+      <InnerPaymentForm {...props} />
+    </Elements>
+  )
+}
+
+function InnerPaymentForm({
   orderNumber,
   total,
   onSuccess,
   onCancel,
+  returnUrl,
 }: StripePaymentFormProps) {
+  const stripe = useStripe()
+  const elements = useElements()
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const handlePay = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!stripe || !elements) return
+
     setIsProcessing(true)
     setError(null)
 
-    try {
-      const res = await fetch('/api/payments/create-intent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId }),
-      })
+    const confirmReturnUrl =
+      returnUrl ??
+      (typeof window !== 'undefined'
+        ? `${window.location.origin}/orders`
+        : '/orders')
 
-      if (!res.ok) {
-        const data = await res.json()
-        throw new Error(data.error || 'Failed to create payment intent')
-      }
+    const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: confirmReturnUrl,
+      },
+      redirect: 'if_required',
+    })
 
-      // Client secret received — full Stripe Elements integration will go here
-      // const { clientSecret } = await res.json()
-
-      // For now, simulate success after intent creation
-      onSuccess()
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Payment processing failed'
-      )
-    } finally {
+    if (confirmError) {
+      setError(confirmError.message ?? 'Payment failed')
       setIsProcessing(false)
+      return
     }
+
+    if (paymentIntent) {
+      if (
+        paymentIntent.status === 'succeeded' ||
+        paymentIntent.status === 'processing'
+      ) {
+        onSuccess()
+        return
+      }
+      setError(`Unexpected payment status: ${paymentIntent.status}`)
+    }
+
+    setIsProcessing(false)
   }
 
   return (
     <Card variant="glass" className="p-6">
-      <div className="flex items-center gap-3 mb-5">
+      <div className="mb-5 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-purple/15">
           <CreditCard className="h-5 w-5 text-accent-purple" />
         </div>
         <div>
-          <h3 className="text-base font-semibold text-white">Card Payment</h3>
-          <p className="text-xs text-steel-400">
-            Order {orderNumber}
-          </p>
+          <h3 className="text-base font-semibold text-white">Pay Online</h3>
+          <p className="text-xs text-steel-400">Order {orderNumber}</p>
         </div>
       </div>
 
-      {/* Amount display */}
-      <div className="rounded-xl bg-white/5 border border-white/10 p-4 mb-5">
-        <p className="text-sm text-steel-400 mb-1">Amount Due</p>
+      <div className="mb-5 rounded-xl border border-white/10 bg-white/5 p-4">
+        <p className="mb-1 text-sm text-steel-400">Amount Due</p>
         <p className="text-2xl font-semibold text-white">
           {formatCurrency(total)}
         </p>
       </div>
 
-      {/* Placeholder for Stripe Elements */}
-      <div className="rounded-xl border border-dashed border-white/15 bg-white/[0.02] p-6 mb-5 text-center">
-        <CreditCard className="h-8 w-8 text-steel-500 mx-auto mb-2" />
-        <p className="text-sm text-steel-400">
-          Stripe Elements card form will be integrated here.
-        </p>
-        <p className="text-xs text-steel-500 mt-1">
-          Card payment processing is being finalized.
-        </p>
-      </div>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <PaymentElement
+          options={{
+            layout: 'tabs',
+            paymentMethodOrder: ['us_bank_account', 'card'],
+          }}
+        />
 
-      {/* Error display */}
-      {error && (
-        <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3 mb-4">
-          <p className="text-sm text-red-400">{error}</p>
+        {error && (
+          <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3">
+            <p className="text-sm text-red-400">{error}</p>
+          </div>
+        )}
+
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="h-4 w-4 text-steel-500" />
+          <p className="text-xs text-steel-500">
+            Secured by Stripe. Card and bank details never touch our servers.
+          </p>
         </div>
-      )}
 
-      {/* Security note */}
-      <div className="flex items-center gap-2 mb-5">
-        <ShieldCheck className="h-4 w-4 text-steel-500" />
-        <p className="text-xs text-steel-500">
-          Payments are processed securely via Stripe. Card details never touch
-          our servers.
-        </p>
-      </div>
-
-      {/* Actions */}
-      <div className="flex items-center gap-3">
-        <Button
-          variant="primary"
-          size="md"
-          onClick={handlePay}
-          disabled={isProcessing}
-          className="flex-1"
-        >
-          {isProcessing ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Processing...
-            </>
-          ) : (
-            <>Pay {formatCurrency(total)}</>
-          )}
-        </Button>
-        <Button
-          variant="ghost"
-          size="md"
-          onClick={onCancel}
-          disabled={isProcessing}
-        >
-          Cancel
-        </Button>
-      </div>
+        <div className="flex items-center gap-3">
+          <Button
+            type="submit"
+            variant="primary"
+            size="md"
+            disabled={!stripe || !elements || isProcessing}
+            className="flex-1"
+          >
+            {isProcessing ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>Pay {formatCurrency(total)}</>
+            )}
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="md"
+            onClick={onCancel}
+            disabled={isProcessing}
+          >
+            Cancel
+          </Button>
+        </div>
+      </form>
     </Card>
   )
 }

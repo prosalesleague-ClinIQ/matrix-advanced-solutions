@@ -25,7 +25,7 @@ import {
 } from 'lucide-react'
 import type { OrderSubmitResponse } from '@/lib/types/orders'
 
-type PaymentMethod = 'wire' | 'ach' | 'card'
+type PaymentMethod = 'wire' | 'online'
 type CheckoutPhase = 'form' | 'confirmation'
 
 export default function CheckoutPage() {
@@ -35,7 +35,7 @@ export default function CheckoutPage() {
   const cart = useCartContext()
 
   const [shippingAddress, setShippingAddress] = useState('')
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('wire')
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('online')
   const [notes, setNotes] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -53,10 +53,8 @@ export default function CheckoutPage() {
   const effectiveShippingAddress =
     shippingAddress || clinic?.shipping_address || ''
 
-  // Card payments temporarily disabled. Wire + ACH available to all clinics.
   void isNewClinic
-  const effectivePaymentMethod: PaymentMethod =
-    paymentMethod === 'card' ? 'wire' : paymentMethod
+  const effectivePaymentMethod: PaymentMethod = paymentMethod
 
   // ─── Loading state ───────────────────────────────────────────
   if (isLoading) {
@@ -134,7 +132,8 @@ export default function CheckoutPage() {
           })),
           shippingMethod: cart.shippingMethod,
           shippingAddress: effectiveShippingAddress,
-          paymentMethod: effectivePaymentMethod,
+          // 'online' = Stripe Payment Element (card + ACH)
+          paymentMethod: effectivePaymentMethod === 'online' ? 'card' : 'wire',
           notes: notes.trim() || undefined,
         }),
       })
@@ -269,9 +268,8 @@ export default function CheckoutPage() {
               clinicTier={isNewClinic ? 'new' : 'returning'}
             />
 
-            {/* Bank instructions shown inline when wire or ACH selected */}
-            {(effectivePaymentMethod === 'wire' ||
-              effectivePaymentMethod === 'ach') && (
+            {/* Bank instructions shown inline when wire selected */}
+            {effectivePaymentMethod === 'wire' && (
               <div className="mt-6">
                 <WireInstructions />
               </div>

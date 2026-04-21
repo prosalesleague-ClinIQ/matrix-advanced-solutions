@@ -52,11 +52,14 @@ export default async function InvoiceDetailPage({ params }: InvoiceDetailPagePro
 
   const { data: order } = await supabase
     .from('orders')
-    .select('id, order_number')
+    .select('id, order_number, payment_status')
     .eq('id', invoice.order_id)
     .single()
 
   const isProduct = (invoice.invoice_type as InvoiceType) === 'product'
+  const isPaid =
+    order?.payment_status === 'paid' || order?.payment_status === 'confirmed'
+  const canPayOnline = !isProduct && !isPaid
   let consultingSibling: { id: string; invoice_number: string } | null = null
   if (isProduct && invoice.order_id) {
     const { data: sib } = await supabase
@@ -120,7 +123,14 @@ export default async function InvoiceDetailPage({ params }: InvoiceDetailPagePro
         >
           {INVOICE_STATUS_LABELS[invoice.status] ?? invoice.status}
         </span>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-2">
+          {canPayOnline && (
+            <Link href={`/invoices/${invoice.id}/pay`}>
+              <Button variant="primary" size="sm">
+                Pay Now
+              </Button>
+            </Link>
+          )}
           <Link href={`/invoices/${invoice.id}/print`} target="_blank">
             <Button variant="outline" size="sm">
               <Printer className="h-4 w-4" />

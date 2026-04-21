@@ -1,5 +1,6 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { ProductGrid, type CatalogItem } from '@/components/catalog/product-grid'
+import { CatalogCartButton } from '@/components/catalog/catalog-cart-button'
 import type { Metadata } from 'next'
 import type { BundleSnapshot } from '@/lib/types/database'
 
@@ -98,11 +99,14 @@ export default async function CatalogPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white sm:text-4xl">Product Catalog</h1>
-        <p className="mt-2 text-steel-400">
-          Professional use only. For qualified clinics and providers.
-        </p>
+      <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-white sm:text-4xl">Product Catalog</h1>
+          <p className="mt-2 text-steel-400">
+            Professional use only. For qualified clinics and providers.
+          </p>
+        </div>
+        <CatalogCartButton />
       </div>
       <ProductGrid products={items} />
     </div>

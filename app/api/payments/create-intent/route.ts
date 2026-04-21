@@ -57,9 +57,9 @@ export async function POST(request: Request) {
       )
     }
 
-    if (order.payment_method !== 'card') {
+    if (order.payment_status === 'paid' || order.payment_status === 'confirmed') {
       return NextResponse.json(
-        { error: 'This order is not configured for card payment' },
+        { error: 'This order has already been paid' },
         { status: 400 }
       )
     }
@@ -112,9 +112,17 @@ export async function POST(request: Request) {
     }
 
     // ── Create new PaymentIntent ───────────────────────────────
+    // Accepts card + ACH (us_bank_account, Financial Connections flow).
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(order.total * 100),
       currency: 'usd',
+      payment_method_types: ['card', 'us_bank_account'],
+      payment_method_options: {
+        us_bank_account: {
+          financial_connections: { permissions: ['payment_method'] },
+          verification_method: 'instant',
+        },
+      },
       ...(stripeCustomerId && { customer: stripeCustomerId }),
       metadata: {
         order_id: order.id,

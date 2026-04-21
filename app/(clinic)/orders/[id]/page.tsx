@@ -158,6 +158,8 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
           {(() => {
             const consulting = invoices?.find((i) => i.invoice_type === 'consulting')
             const product = invoices?.find((i) => i.invoice_type === 'product')
+            const isPaid =
+              order.payment_status === 'paid' || order.payment_status === 'confirmed'
             return (
               <>
                 {consulting && (
@@ -170,7 +172,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                         This is the invoice you pay. It covers professional consulting
                         services for this order.
                       </p>
-                      <div className="flex items-center justify-between rounded-xl bg-white/3 p-4">
+                      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-white/3 p-4">
                         <div className="flex items-center gap-3">
                           <FileText className="h-5 w-5 text-accent-purple" />
                           <div>
@@ -184,11 +186,19 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
+                          {!isPaid && (
+                            <Link
+                              href={`/invoices/${consulting.id}/pay`}
+                              className="rounded-lg bg-emerald-500 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-400"
+                            >
+                              Pay Now
+                            </Link>
+                          )}
                           <Link
                             href={`/invoices/${consulting.id}`}
                             className="rounded-lg bg-accent-purple px-4 py-2 text-xs font-semibold text-white hover:bg-accent-purple-light"
                           >
-                            View &amp; Pay
+                            View Invoice
                           </Link>
                           <Link
                             href={`/invoices/${consulting.id}/print`}

@@ -1,9 +1,9 @@
 'use client'
 
-import { Lock, Building2, CreditCard, Landmark } from 'lucide-react'
+import { Building2, CreditCard } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-type PaymentMethodOption = 'wire' | 'ach' | 'card'
+type PaymentMethodOption = 'wire' | 'online'
 type ClinicTier = 'new' | 'returning'
 
 interface PaymentMethodSelectorProps {
@@ -17,28 +17,20 @@ const OPTIONS: {
   label: string
   description: string
   icon: typeof Building2
-  disabled?: boolean
 }[] = [
+  {
+    value: 'online',
+    label: 'Pay Online (Card or ACH)',
+    description:
+      'Pay instantly by credit card or bank transfer. ACH via instant bank verification.',
+    icon: CreditCard,
+  },
   {
     value: 'wire',
     label: 'Wire Transfer',
     description:
       'Pay via bank wire transfer. Order is processed upon wire confirmation.',
     icon: Building2,
-  },
-  {
-    value: 'ach',
-    label: 'ACH Bank Transfer',
-    description:
-      'Pay via ACH bank transfer. Order is processed once the ACH clears (1-3 business days).',
-    icon: Landmark,
-  },
-  {
-    value: 'card',
-    label: 'Credit / Debit Card',
-    description: 'Card payments are coming soon. Please use wire or ACH for now.',
-    icon: CreditCard,
-    disabled: true,
   },
 ]
 
@@ -55,8 +47,7 @@ export function PaymentMethodSelector({
 
       <div className="grid gap-3">
         {OPTIONS.map((option) => {
-          const isCardDisabled = option.disabled === true
-          const isActive = selected === option.value && !isCardDisabled
+          const isActive = selected === option.value
           const Icon = option.icon
           void clinicTier
 
@@ -64,16 +55,12 @@ export function PaymentMethodSelector({
             <button
               key={option.value}
               type="button"
-              disabled={isCardDisabled}
               onClick={() => onSelect(option.value)}
               className={cn(
-                'relative flex items-start gap-4 rounded-xl border p-4 text-left transition-all duration-200',
+                'relative flex items-start gap-4 rounded-xl border p-4 text-left transition-all duration-200 cursor-pointer hover:border-white/20',
                 isActive
                   ? 'border-accent-purple bg-accent-purple/10'
-                  : 'border-white/10 bg-white/5',
-                isCardDisabled
-                  ? 'cursor-not-allowed opacity-50'
-                  : 'cursor-pointer hover:border-white/20'
+                  : 'border-white/10 bg-white/5'
               )}
             >
               {/* Radio indicator */}
@@ -97,19 +84,9 @@ export function PaymentMethodSelector({
                   <span className="text-sm font-medium text-white">
                     {option.label}
                   </span>
-                  {isCardDisabled && (
-                    <>
-                      <Lock className="h-3.5 w-3.5 text-steel-500" />
-                      <span className="rounded-full bg-accent-blue/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent-blue-light">
-                        Coming Soon
-                      </span>
-                    </>
-                  )}
                 </div>
                 <p className="mt-1 text-xs text-steel-400">
-                  {isCardDisabled
-                    ? 'Card payments are coming soon. Please use wire transfer for now.'
-                    : option.description}
+                  {option.description}
                 </p>
               </div>
             </button>

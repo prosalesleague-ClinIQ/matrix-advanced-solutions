@@ -69,9 +69,9 @@ export async function POST(request: Request) {
       )
     }
 
-    // Card payments temporarily disabled. Wire + ACH available to everyone.
+    // Wire, ACH, and card (Stripe online payment) are all allowed.
     void isAdmin
-    const allowedMethods = ['wire', 'ach']
+    const allowedMethods = ['wire', 'ach', 'card']
     if (!allowedMethods.includes(paymentMethod)) {
       return NextResponse.json(
         { error: 'Invalid payment method' },
@@ -434,6 +434,13 @@ export async function POST(request: Request) {
           amount: Math.round(total * 100),
           currency: 'usd',
           customer: stripeCustomerId,
+          payment_method_types: ['card', 'us_bank_account'],
+          payment_method_options: {
+            us_bank_account: {
+              financial_connections: { permissions: ['payment_method'] },
+              verification_method: 'instant',
+            },
+          },
           metadata: {
             order_id: order.id,
             order_number: order.order_number,

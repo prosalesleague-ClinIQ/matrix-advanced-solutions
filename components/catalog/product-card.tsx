@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { Package, PackageOpen, ShoppingCart, Star } from 'lucide-react'
+import { Check, Package, PackageOpen, ShoppingCart, Star } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -18,10 +18,17 @@ interface ProductCardProps {
 
 export function ProductCard({ item }: ProductCardProps) {
   const [quantity, setQuantity] = useState(1)
+  const [justAdded, setJustAdded] = useState(false)
   const { addItem } = useCartContext()
 
   const isBundle = item.kind === 'bundle'
   const unitPrice = getUnitPrice(item.prices, quantity)
+
+  useEffect(() => {
+    if (!justAdded) return
+    const t = setTimeout(() => setJustAdded(false), 1800)
+    return () => clearTimeout(t)
+  }, [justAdded])
 
   function handleAddToCart() {
     addItem(
@@ -38,6 +45,7 @@ export function ProductCard({ item }: ProductCardProps) {
       quantity
     )
     setQuantity(1)
+    setJustAdded(true)
   }
 
   const placeholderIcon = isBundle
@@ -127,10 +135,21 @@ export function ProductCard({ item }: ProductCardProps) {
           variant="primary"
           size="sm"
           onClick={handleAddToCart}
-          className="flex-1"
+          className={`flex-1 transition-colors ${
+            justAdded ? 'bg-emerald-500 hover:bg-emerald-500' : ''
+          }`}
         >
-          <ShoppingCart className="h-4 w-4" />
-          Add to Cart
+          {justAdded ? (
+            <>
+              <Check className="h-4 w-4" />
+              Added to Cart
+            </>
+          ) : (
+            <>
+              <ShoppingCart className="h-4 w-4" />
+              Add to Cart
+            </>
+          )}
         </Button>
       </div>
     </Card>
