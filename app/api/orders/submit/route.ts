@@ -423,8 +423,19 @@ export async function POST(request: Request) {
       try {
         const stripe = getStripe()
 
-        // Ensure clinic has a Stripe customer
-        let stripeCustomerId = clinic.stripe_customer_id
+        // Ensure clinic has a Stripe customer that resolves in the
+        // current mode (switching between test/live invalidates old IDs).
+        let stripeCustomerId: string | null = clinic.stripe_customer_id ?? null
+        if (stripeCustomerId) {
+          try {
+            const existing = await stripe.customers.retrieve(stripeCustomerId)
+            if ((existing as { deleted?: boolean }).deleted) {
+              stripeCustomerId = null
+            }
+          } catch {
+            stripeCustomerId = null
+          }
+        }
         if (!stripeCustomerId) {
           const customer = await stripe.customers.create({
             email: clinic.primary_email,

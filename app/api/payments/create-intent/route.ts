@@ -88,14 +88,29 @@ export async function POST(request: Request) {
       }
     }
 
-    // ── Ensure Stripe customer exists ──────────────────────────
+    // ── Ensure Stripe customer exists (and matches current mode) ──
+    // When the account switches between test and live, previously-saved
+    // customer IDs from the other mode are invalid. Verify the ID still
+    // resolves in the current mode; if not, create a fresh customer.
     const { data: clinic } = await admin
       .from('clinics')
       .select('stripe_customer_id, primary_email, name')
       .eq('id', profile.clinic_id)
       .single()
 
-    let stripeCustomerId = clinic?.stripe_customer_id
+    let stripeCustomerId: string | null = clinic?.stripe_customer_id ?? null
+
+    if (stripeCustomerId) {
+      try {
+        const existing = await stripe.customers.retrieve(stripeCustomerId)
+        if ((existing as { deleted?: boolean }).deleted) {
+          stripeCustomerId = null
+        }
+      } catch {
+        // Customer doesn't exist in the current mode — clear and recreate.
+        stripeCustomerId = null
+      }
+    }
 
     if (!stripeCustomerId && clinic) {
       const customer = await stripe.customers.create({
