@@ -11,7 +11,6 @@ import { formatCurrency } from '@/lib/format'
 import { OrderSummary } from '@/components/checkout/order-summary'
 import { PaymentMethodSelector } from '@/components/checkout/payment-method-selector'
 import { WireInstructions } from '@/components/checkout/wire-instructions'
-import { AchGateBanner } from '@/components/checkout/ach-gate-banner'
 import { StripePaymentForm } from '@/components/checkout/stripe-payment-form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -26,7 +25,7 @@ import {
 } from 'lucide-react'
 import type { OrderSubmitResponse } from '@/lib/types/orders'
 
-type PaymentMethod = 'wire' | 'card'
+type PaymentMethod = 'wire' | 'ach' | 'card'
 type CheckoutPhase = 'form' | 'confirmation'
 
 export default function CheckoutPage() {
@@ -54,10 +53,10 @@ export default function CheckoutPage() {
   const effectiveShippingAddress =
     shippingAddress || clinic?.shipping_address || ''
 
-  // Card payments temporarily disabled — wire only for all clinics.
+  // Card payments temporarily disabled. Wire + ACH available to all clinics.
   void isNewClinic
-  void paymentMethod
-  const effectivePaymentMethod: PaymentMethod = 'wire'
+  const effectivePaymentMethod: PaymentMethod =
+    paymentMethod === 'card' ? 'wire' : paymentMethod
 
   // ─── Loading state ───────────────────────────────────────────
   if (isLoading) {
@@ -183,7 +182,7 @@ export default function CheckoutPage() {
         </div>
 
         {/* Payment-specific content */}
-        {orderResult.paymentMethod === 'wire' ? (
+        {orderResult.paymentMethod === 'wire' || orderResult.paymentMethod === 'ach' ? (
           <div className="space-y-6">
             <WireInstructions
               orderNumber={
@@ -192,8 +191,9 @@ export default function CheckoutPage() {
             />
             <Card variant="glass" className="p-4">
               <p className="text-sm text-steel-400">
-                Your order will be processed once the wire transfer is confirmed.
-                Please include the payment invoice number as the wire reference.
+                {orderResult.paymentMethod === 'ach'
+                  ? 'Your order will be processed once the ACH transfer clears (typically 1-3 business days). Please include the payment invoice number as the ACH reference.'
+                  : 'Your order will be processed once the wire transfer is confirmed. Please include the payment invoice number as the wire reference.'}
               </p>
             </Card>
           </div>
@@ -269,17 +269,11 @@ export default function CheckoutPage() {
               clinicTier={isNewClinic ? 'new' : 'returning'}
             />
 
-            {/* Wire instructions shown inline when wire selected */}
-            {effectivePaymentMethod === 'wire' && (
+            {/* Bank instructions shown inline when wire or ACH selected */}
+            {(effectivePaymentMethod === 'wire' ||
+              effectivePaymentMethod === 'ach') && (
               <div className="mt-6">
                 <WireInstructions />
-              </div>
-            )}
-
-            {/* ACH gate banner for new clinics */}
-            {isNewClinic && (
-              <div className="mt-4">
-                <AchGateBanner />
               </div>
             )}
           </Card>
@@ -319,10 +313,8 @@ export default function CheckoutPage() {
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Submitting...
                 </>
-              ) : effectivePaymentMethod === 'wire' ? (
-                'Submit Order'
               ) : (
-                'Submit & Pay'
+                'Submit Order'
               )}
             </Button>
             <p className="text-xs text-steel-500 text-center mt-3">
@@ -355,10 +347,8 @@ export default function CheckoutPage() {
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Submitting...
                 </>
-              ) : effectivePaymentMethod === 'wire' ? (
-                'Submit Order'
               ) : (
-                'Submit & Pay'
+                'Submit Order'
               )}
             </Button>
             <p className="text-xs text-steel-500 text-center mt-3">

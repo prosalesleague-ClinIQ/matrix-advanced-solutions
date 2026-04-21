@@ -141,11 +141,9 @@ export default function AdminNewOrderPage() {
   }
 
   const isNewClinic = clinic?.tier === 'new'
-  // Card/ACH temporarily disabled — wire only across the board.
-  void isNewClinic
-  void overrideTierGate
+  // Card temporarily disabled — wire + ACH only for now.
   const cardLocked = true
-  const achLocked = true
+  const achLocked = isNewClinic && !overrideTierGate
 
   async function handleSubmit() {
     if (cartLines.length === 0) {
@@ -487,9 +485,6 @@ export default function AdminNewOrderPage() {
                   className="text-accent-purple focus:ring-accent-purple"
                 />
                 <span className="text-sm text-white">ACH</span>
-                <span className="ml-auto rounded-full bg-accent-blue/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent-blue-light">
-                  Coming Soon
-                </span>
               </label>
 
               {isNewClinic && (

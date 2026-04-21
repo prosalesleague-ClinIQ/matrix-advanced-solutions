@@ -69,9 +69,9 @@ export async function POST(request: Request) {
       )
     }
 
-    // Card payments temporarily disabled — wire only across the board.
+    // Card payments temporarily disabled. Wire + ACH available to everyone.
     void isAdmin
-    const allowedMethods = ['wire']
+    const allowedMethods = ['wire', 'ach']
     if (!allowedMethods.includes(paymentMethod)) {
       return NextResponse.json(
         { error: 'Invalid payment method' },
@@ -289,7 +289,7 @@ export async function POST(request: Request) {
       .insert({
         clinic_id: clinicId,
         status: 'submitted',
-        payment_status: paymentMethod === 'wire' ? 'awaiting_wire' : 'pending',
+        payment_status: paymentMethod === 'card' ? 'pending' : 'awaiting_wire',
         payment_method: paymentMethod,
         mfg_status: 'pending',
         subtotal,
@@ -300,7 +300,7 @@ export async function POST(request: Request) {
         shipping_address: shippingAddress.trim(),
         notes: notes?.trim() || null,
         wire_reference:
-          paymentMethod === 'wire' ? `Wire pending` : null,
+          paymentMethod === 'card' ? null : `${paymentMethod === 'ach' ? 'ACH' : 'Wire'} pending`,
         created_by: user.id,
       })
       .select('id, order_number')
@@ -345,7 +345,7 @@ export async function POST(request: Request) {
     //   • consulting: 1 line item, sku='CONSULTING-FEE', subtotal=total
     //   • product:    N line items (one per order_item),
     //                 subtotal = pre-shipping subtotal, total = order total
-    const initialStatus = paymentMethod === 'wire' ? 'sent' : 'draft'
+    const initialStatus = paymentMethod === 'card' ? 'draft' : 'sent'
 
     const consultingLineItems = [
       {
@@ -400,7 +400,7 @@ export async function POST(request: Request) {
       createdInvoices?.find((i) => i.invoice_type === 'consulting')?.invoice_number ??
       order.order_number
 
-    if (paymentMethod === 'wire' && consultingInvoiceNumber) {
+    if (paymentMethod !== 'card' && consultingInvoiceNumber) {
       await admin
         .from('orders')
         .update({ wire_reference: consultingInvoiceNumber })
@@ -496,7 +496,7 @@ export async function POST(request: Request) {
       orderNumber: order.order_number,
       total,
       paymentMethod,
-      ...(paymentMethod === 'wire' && {
+      ...(paymentMethod !== 'card' && {
         wireInstructions: {
           bankName: WIRE_INSTRUCTIONS.bankName,
           routingNumber: WIRE_INSTRUCTIONS.routingNumber,

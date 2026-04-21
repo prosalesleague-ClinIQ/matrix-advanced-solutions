@@ -1,9 +1,9 @@
 'use client'
 
-import { Lock, Building2, CreditCard } from 'lucide-react'
+import { Lock, Building2, CreditCard, Landmark } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-type PaymentMethodOption = 'wire' | 'card'
+type PaymentMethodOption = 'wire' | 'ach' | 'card'
 type ClinicTier = 'new' | 'returning'
 
 interface PaymentMethodSelectorProps {
@@ -27,9 +27,16 @@ const OPTIONS: {
     icon: Building2,
   },
   {
+    value: 'ach',
+    label: 'ACH Bank Transfer',
+    description:
+      'Pay via ACH bank transfer. Order is processed once the ACH clears (1-3 business days).',
+    icon: Landmark,
+  },
+  {
     value: 'card',
     label: 'Credit / Debit Card',
-    description: 'Card payments are coming soon. Please use wire transfer for now.',
+    description: 'Card payments are coming soon. Please use wire or ACH for now.',
     icon: CreditCard,
     disabled: true,
   },

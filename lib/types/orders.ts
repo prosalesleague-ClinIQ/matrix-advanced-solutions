@@ -35,7 +35,7 @@ export interface OrderSubmitRequest {
   items: OrderSubmitItem[]
   shippingMethod: ShippingMethod
   shippingAddress: string
-  paymentMethod: 'wire' | 'card'
+  paymentMethod: 'wire' | 'ach' | 'card'
   notes?: string
 }
 
@@ -49,7 +49,7 @@ export interface OrderSubmitResponse {
   orderId: string
   orderNumber: string
   total: number
-  paymentMethod: 'wire' | 'card'
+  paymentMethod: 'wire' | 'ach' | 'card'
   stripeClientSecret?: string
   wireInstructions?: {
     bankName: string
