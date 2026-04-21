@@ -2,7 +2,7 @@
 
 import { Card } from '@/components/ui/card'
 import { WIRE_INSTRUCTIONS } from '@/lib/constants'
-import { Building2, Copy } from 'lucide-react'
+import { Building2, Copy, Smartphone } from 'lucide-react'
 import { useState } from 'react'
 
 interface WireInstructionsProps {
@@ -85,6 +85,30 @@ export function WireInstructions({ orderNumber }: WireInstructionsProps) {
             ? `Include "${orderNumber}" as the wire reference / memo.`
             : WIRE_INSTRUCTIONS.reference}
         </p>
+      </div>
+
+      {/* Zelle alternative (for smaller orders under the payer's Zelle limit) */}
+      <div className="mt-3 flex items-start gap-3 rounded-lg border border-white/8 bg-white/3 p-3">
+        <Smartphone className="mt-0.5 h-4 w-4 shrink-0 text-steel-400" />
+        <div className="flex-1 text-xs text-steel-300">
+          <p>
+            <span className="font-medium text-white">Prefer Zelle?</span> Send payment to{' '}
+            <span className="font-mono text-white">Leo@matrixadvancedsolutions.com</span>
+            <CopyButton value="Leo@matrixadvancedsolutions.com" />
+            {orderNumber ? (
+              <>
+                {' '}with{' '}
+                <span className="font-mono text-white">{orderNumber}</span>
+                {' '}as the memo.
+              </>
+            ) : (
+              <> with the payment invoice number as the memo.</>
+            )}
+          </p>
+          <p className="mt-1 text-steel-500">
+            Subject to your bank&apos;s Zelle daily/monthly limits.
+          </p>
+        </div>
       </div>
     </Card>
   )
