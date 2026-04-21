@@ -166,14 +166,18 @@ export default function CheckoutPage() {
             <CheckCircle2 className="h-8 w-8 text-green-400" />
           </div>
           <h1 className="text-2xl font-semibold text-white mb-2">
-            Order Submitted
+            {orderResult.paymentMethod === 'card'
+              ? 'Almost There — Complete Payment'
+              : 'Order Submitted'}
           </h1>
           <p className="text-steel-400">
             Order{' '}
             <span className="font-mono text-white">
               {orderResult.orderNumber}
             </span>{' '}
-            has been placed successfully.
+            {orderResult.paymentMethod === 'card'
+              ? 'is reserved. Complete payment below to finalize.'
+              : 'has been placed successfully.'}
           </p>
           <p className="text-sm text-steel-500 mt-1">
             Total: {formatCurrency(orderResult.total)}
@@ -311,6 +315,8 @@ export default function CheckoutPage() {
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Submitting...
                 </>
+              ) : effectivePaymentMethod === 'online' ? (
+                'Continue to Payment'
               ) : (
                 'Submit Order'
               )}
@@ -345,6 +351,8 @@ export default function CheckoutPage() {
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Submitting...
                 </>
+              ) : effectivePaymentMethod === 'online' ? (
+                'Continue to Payment'
               ) : (
                 'Submit Order'
               )}

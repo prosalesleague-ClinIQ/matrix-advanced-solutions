@@ -112,24 +112,31 @@ export async function POST(request: Request) {
     }
 
     // ── Create new PaymentIntent ───────────────────────────────
-    // Accepts card + ACH (us_bank_account, Financial Connections flow).
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(order.total * 100),
-      currency: 'usd',
-      payment_method_types: ['card', 'us_bank_account'],
-      payment_method_options: {
-        us_bank_account: {
-          financial_connections: { permissions: ['payment_method'] },
-          verification_method: 'instant',
+    // Uses automatic_payment_methods so Stripe serves whatever payment
+    // methods are enabled on the account (card, ACH, etc.) based on the
+    // dashboard settings. This avoids account-config mismatches that
+    // happen when we hardcode payment_method_types.
+    let paymentIntent
+    try {
+      paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(order.total * 100),
+        currency: 'usd',
+        automatic_payment_methods: { enabled: true },
+        ...(stripeCustomerId && { customer: stripeCustomerId }),
+        metadata: {
+          order_id: order.id,
+          order_number: order.order_number,
+          clinic_id: profile.clinic_id,
         },
-      },
-      ...(stripeCustomerId && { customer: stripeCustomerId }),
-      metadata: {
-        order_id: order.id,
-        order_number: order.order_number,
-        clinic_id: profile.clinic_id,
-      },
-    })
+      })
+    } catch (createErr) {
+      const msg = createErr instanceof Error ? createErr.message : 'unknown'
+      console.error('[CREATE_INTENT] Stripe create failed:', msg)
+      return NextResponse.json(
+        { error: `Stripe: ${msg}` },
+        { status: 500 }
+      )
+    }
 
     // Store PI ID on order
     await admin

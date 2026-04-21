@@ -443,13 +443,7 @@ export async function POST(request: Request) {
           amount: Math.round(total * 100),
           currency: 'usd',
           customer: stripeCustomerId,
-          payment_method_types: ['card', 'us_bank_account'],
-          payment_method_options: {
-            us_bank_account: {
-              financial_connections: { permissions: ['payment_method'] },
-              verification_method: 'instant',
-            },
-          },
+          automatic_payment_methods: { enabled: true },
           metadata: {
             order_id: order.id,
             order_number: order.order_number,
