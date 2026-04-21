@@ -41,6 +41,7 @@ export function ProductCard({ item }: ProductCardProps) {
         unit: item.unit,
         prices: item.prices,
         costs: item.costs,
+        free_shipping: item.free_shipping ?? false,
       },
       quantity
     )

@@ -155,7 +155,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     (sum, item) => sum + getLineTotal(item.prices, item.quantity),
     0
   )
-  const shippingCost = SHIPPING_METHODS[state.shippingMethod].price
+  const allFreeShipping =
+    itemEntries.length > 0 && itemEntries.every((item) => item.free_shipping === true)
+  const shippingCost = allFreeShipping
+    ? 0
+    : SHIPPING_METHODS[state.shippingMethod].price
   const total = subtotal + shippingCost
 
   return (

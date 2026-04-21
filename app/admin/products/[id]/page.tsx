@@ -54,6 +54,7 @@ export default function AdminProductEditPage() {
     costs: [0, 0, 0, 0],
     is_active: true,
     is_featured: false,
+    free_shipping: false,
   })
 
   useEffect(() => {
@@ -79,6 +80,7 @@ export default function AdminProductEditPage() {
             costs: p.costs,
             is_active: p.is_active,
             is_featured: p.is_featured ?? false,
+            free_shipping: p.free_shipping ?? false,
           })
         }
 
@@ -134,6 +136,7 @@ export default function AdminProductEditPage() {
           costs: form.costs,
           is_active: form.is_active,
           is_featured: form.is_featured,
+          free_shipping: form.free_shipping,
         }),
       })
 
@@ -391,6 +394,17 @@ export default function AdminProductEditPage() {
                   className="h-4 w-4 rounded border-white/20 bg-white/5 text-accent-purple focus:ring-accent-purple focus:ring-offset-navy-950"
                 />
                 <span className="text-sm text-steel-300">Featured product (appears at top of catalog)</span>
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer mt-3">
+                <input
+                  type="checkbox"
+                  checked={form.free_shipping}
+                  onChange={(e) => updateField('free_shipping', e.target.checked)}
+                  className="h-4 w-4 rounded border-white/20 bg-white/5 text-accent-purple focus:ring-accent-purple focus:ring-offset-navy-950"
+                />
+                <span className="text-sm text-steel-300">
+                  Free shipping (shipping cost is waived if every item in the order has this flag)
+                </span>
               </label>
             </CardContent>
           </Card>

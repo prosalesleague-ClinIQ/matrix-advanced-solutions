@@ -43,6 +43,7 @@ export default async function CatalogPage() {
     costs: p.costs,
     image_url: p.image_url,
     is_featured: p.is_featured,
+    free_shipping: p.free_shipping ?? false,
     description: p.description,
   }))
 

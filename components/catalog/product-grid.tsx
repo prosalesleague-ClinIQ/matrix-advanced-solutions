@@ -23,6 +23,7 @@ export interface CatalogItem {
   costs: number[]
   image_url: string | null
   is_featured: boolean
+  free_shipping?: boolean
   description: string | null
   bundle_snapshot?: BundleSnapshot
 }

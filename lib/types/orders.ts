@@ -21,6 +21,7 @@ export interface CartItem {
   quantity: number
   prices: number[]
   costs: number[]
+  free_shipping?: boolean
 }
 
 export interface CartState {

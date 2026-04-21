@@ -184,6 +184,8 @@ export async function POST(request: Request) {
     // ── Calculate pricing ──────────────────────────────────────
     let subtotal = 0
     let totalCost = 0
+    // Shipping is waived only when every line item is marked free_shipping.
+    let allFreeShipping = items.length > 0
     const orderItemsData: Array<{
       product_id: string | null
       bundle_id: string | null
@@ -200,6 +202,9 @@ export async function POST(request: Request) {
 
     for (const item of items) {
       if (item.kind === 'bundle') {
+        // Bundles don't carry a free_shipping flag today, so any bundle in
+        // the cart disqualifies the order from free shipping.
+        allFreeShipping = false
         const bundle = bundleMap.get(item.productId)
         if (!bundle) {
           // Should be unreachable — the upstream length check guarantees
@@ -255,6 +260,10 @@ export async function POST(request: Request) {
           )
         }
 
+        if (!product.free_shipping) {
+          allFreeShipping = false
+        }
+
         const unitPrice = getUnitPrice(product.prices, item.quantity)
         const unitCost = getUnitCost(product.costs, item.quantity)
         const lineTotal = getLineTotal(product.prices, item.quantity)
@@ -280,7 +289,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const shippingCost = SHIPPING_METHODS[shippingMethod].price
+    const shippingCost = allFreeShipping ? 0 : SHIPPING_METHODS[shippingMethod].price
     const total = subtotal + shippingCost
 
     // ── Create order ───────────────────────────────────────────
