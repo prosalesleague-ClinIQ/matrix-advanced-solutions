@@ -86,6 +86,7 @@ export default async function PayInvoicePage({ params }: PayInvoicePageProps) {
         <PayInvoiceClient
           orderId={order.id}
           orderNumber={order.order_number}
+          invoiceNumber={invoice.invoice_number}
           total={order.total}
         />
       )}
