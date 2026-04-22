@@ -19,6 +19,8 @@ export type LeadPayload = {
   smsConsentService?: boolean
   smsConsentMarketing?: boolean
   smsConsentTimestamp?: string
+  smsConsentIp?: string
+  smsConsentUserAgent?: string
 }
 
 export type WebhookPayload = LeadPayload & {

@@ -16,7 +16,7 @@ export function Footer() {
           />
 
           {/* Nav links */}
-          <nav className="flex items-center gap-6 text-sm">
+          <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
             <Link href="/terms" className="text-steel-400 hover:text-white transition-colors">
               Terms of Service
             </Link>
@@ -25,10 +25,23 @@ export function Footer() {
               Privacy Policy
             </Link>
             <span className="text-steel-700">|</span>
+            <Link href="/sms-terms" className="text-steel-400 hover:text-white transition-colors">
+              SMS Terms
+            </Link>
+            <span className="text-steel-700">|</span>
             <Link href="/contact" className="text-steel-400 hover:text-white transition-colors">
               Contact Us
             </Link>
           </nav>
+
+          {/* Business identity — required for SMS/A2P compliance and commercial trust */}
+          <address className="not-italic text-center text-xs text-steel-500 leading-relaxed">
+            <span className="text-steel-300 font-medium">Matrix Advanced Solutions LLC</span><br />
+            5830 E 2nd Street, STE 7000 9914, Casper, WY 82609, United States<br />
+            <a href="tel:+18312988933" className="hover:text-white transition-colors">831-298-8933</a>
+            <span className="text-steel-700 mx-2">|</span>
+            <a href="mailto:leo@matrixadvancedsolutions.com" className="hover:text-white transition-colors">leo@matrixadvancedsolutions.com</a>
+          </address>
 
           {/* Disclaimer + copyright */}
           <div className="text-center space-y-1">

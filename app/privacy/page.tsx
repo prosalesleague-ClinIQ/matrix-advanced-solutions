@@ -12,7 +12,7 @@ export default function PrivacyPage() {
       <Container size="narrow">
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent-purple mb-4">Legal</p>
         <h1 className="text-4xl sm:text-5xl font-bold text-white tracking-tight mb-4">Privacy Policy</h1>
-        <p className="text-sm text-steel-500 mb-10">Last Updated: December 4, 2025</p>
+        <p className="text-sm text-steel-500 mb-10">Last Updated: April 21, 2026</p>
 
         <div className="prose prose-invert prose-sm max-w-none space-y-10 text-steel-400">
 
@@ -107,9 +107,45 @@ export default function PrivacyPage() {
             <p>Information sharing to subcontractors in support services, such as customer service, is permitted. All other use case categories exclude text messaging originator opt-in data and consent; this information will not be shared with any third parties.</p>
           </section>
 
-          {/* 4 */}
+          {/* 4 — SMS Program */}
           <section>
-            <h2 className="text-lg font-semibold text-white">4. How We Use Personal Information</h2>
+            <h2 className="text-lg font-semibold text-white">4. SMS / Text Message Program</h2>
+
+            <h3 className="text-base font-semibold text-white mt-4">Program Overview</h3>
+            <p>Matrix Advanced Solutions LLC operates an SMS messaging program (&ldquo;Matrix Advanced Solutions LLC SMS Alerts&rdquo;) used to send two distinct categories of messages to opted-in contacts:</p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li><strong className="text-white">Service / transactional messages</strong> &mdash; catalog-ready notifications, onboarding and appointment reminders, order and shipping updates, account verification prompts, and customer-support replies.</li>
+              <li><strong className="text-white">Marketing / promotional messages</strong> &mdash; new-product releases, restocks, protocol updates, and clinic-focused educational content. These are sent only to contacts who provide separate, independent consent.</li>
+            </ul>
+
+            <h3 className="text-base font-semibold text-white mt-4">How Users Opt In</h3>
+            <p>Opt-in is collected exclusively through web forms on matrixadvancedsolutions.com. There is no keyword-based opt-in, point-of-sale collection, or third-party list acquisition.</p>
+            <p>A visitor submits their phone number through one of our web forms (including the catalog request, contact, clinic onboarding, and strategy call forms) and actively checks one or both of two separate, unchecked consent checkboxes:</p>
+            <ul className="list-disc pl-5 space-y-1">
+              <li>A <strong className="text-white">Service / Reminders</strong> checkbox authorizing automated reminders and service-based messages.</li>
+              <li>A <strong className="text-white">Marketing / Promotional</strong> checkbox, independent of the service checkbox, authorizing marketing and promotional messages.</li>
+            </ul>
+            <p>Neither checkbox is pre-selected. Consent is not a condition of any purchase. At the moment of submission, we capture and retain the consent timestamp, IP address, user agent, and the exact checkbox text accepted as evidence of opt-in.</p>
+
+            <h3 className="text-base font-semibold text-white mt-4">Message Frequency</h3>
+            <p>Message frequency varies by recipient activity and typically ranges from approximately 2 to 8 messages per month per opted-in contact. Marketing messages are sent only to contacts who separately opted in to the marketing category.</p>
+
+            <h3 className="text-base font-semibold text-white mt-4">Fees</h3>
+            <p>Message and data rates may apply for messages sent to you and from you, based on your mobile carrier plan.</p>
+
+            <h3 className="text-base font-semibold text-white mt-4">Opt-Out and Help</h3>
+            <p>You may cancel the SMS service at any time by texting <strong className="text-white">STOP</strong>, <strong className="text-white">END</strong>, <strong className="text-white">QUIT</strong>, <strong className="text-white">CANCEL</strong>, <strong className="text-white">UNSUBSCRIBE</strong>, or <strong className="text-white">OUT</strong> to <strong className="text-white">831-298-8933</strong>. You will receive a confirmation message and no further texts will be sent. To rejoin, complete the opt-in process again on our website. For assistance, reply <strong className="text-white">HELP</strong> or email <a href="mailto:leo@matrixadvancedsolutions.com" className="text-accent-purple hover:text-accent-purple-light transition-colors">leo@matrixadvancedsolutions.com</a>.</p>
+
+            <h3 className="text-base font-semibold text-white mt-4">Age Requirement</h3>
+            <p>Participation in the SMS program is limited to U.S. recipients 18 years of age or older.</p>
+
+            <h3 className="text-base font-semibold text-white mt-4">Data Handling</h3>
+            <p>Text messaging originator opt-in data and consent are not shared with any third parties, except for aggregators and providers of the text message services required to transmit the messages. No mobile information will be shared with third parties or affiliates for marketing or promotional purposes. Full details are set out in Section 3 (Mobile &amp; SMS Data Protection) above and in our <a href="/sms-terms" className="text-accent-purple hover:text-accent-purple-light transition-colors">SMS Terms &amp; Conditions</a>.</p>
+          </section>
+
+          {/* 5 */}
+          <section>
+            <h2 className="text-lg font-semibold text-white">5. How We Use Personal Information</h2>
             <p>We use personal information to:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li>Process orders and payments</li>
@@ -122,9 +158,9 @@ export default function PrivacyPage() {
             </ul>
           </section>
 
-          {/* 5 */}
+          {/* 6 */}
           <section>
-            <h2 className="text-lg font-semibold text-white">5. How We Share Personal Information</h2>
+            <h2 className="text-lg font-semibold text-white">6. How We Share Personal Information</h2>
             <p>We may share personal information with:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li>Payment processors</li>
@@ -136,9 +172,9 @@ export default function PrivacyPage() {
             <p>We do not share mobile opt-in data for marketing purposes.</p>
           </section>
 
-          {/* 6 */}
+          {/* 7 */}
           <section>
-            <h2 className="text-lg font-semibold text-white">6. Data Retention</h2>
+            <h2 className="text-lg font-semibold text-white">7. Data Retention</h2>
             <p>We retain personal information only as long as necessary to:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li>Complete transactions</li>
@@ -149,16 +185,16 @@ export default function PrivacyPage() {
             </ul>
           </section>
 
-          {/* 7 */}
+          {/* 8 */}
           <section>
-            <h2 className="text-lg font-semibold text-white">7. Security</h2>
+            <h2 className="text-lg font-semibold text-white">8. Security</h2>
             <p>We implement reasonable administrative, technical, and physical safeguards to protect your personal information, including sensitive financial and tax-related data.</p>
             <p>However, no method of transmission over the internet is completely secure.</p>
           </section>
 
-          {/* 8 */}
+          {/* 9 */}
           <section>
-            <h2 className="text-lg font-semibold text-white">8. Your Rights</h2>
+            <h2 className="text-lg font-semibold text-white">9. Your Rights</h2>
             <p>Depending on your location, you may have the right to:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li>Access your personal information</li>
@@ -171,19 +207,19 @@ export default function PrivacyPage() {
             <p>
               <strong className="text-white">Matrix Advanced Solutions LLC</strong><br />
               Email: <a href="mailto:leo@matrixadvancedsolutions.com" className="text-accent-purple hover:text-accent-purple-light transition-colors">leo@matrixadvancedsolutions.com</a><br />
-              Address: 951 De Soto Road, 427, Boca Raton, FL 33432, United States
+              Address: 5830 E 2nd Street, STE 7000 9914, Casper, WY 82609, United States
             </p>
-          </section>
-
-          {/* 9 */}
-          <section>
-            <h2 className="text-lg font-semibold text-white">9. International Transfers</h2>
-            <p>Your information may be transferred and processed outside your country of residence where legally permitted.</p>
           </section>
 
           {/* 10 */}
           <section>
-            <h2 className="text-lg font-semibold text-white">10. Changes to This Privacy Policy</h2>
+            <h2 className="text-lg font-semibold text-white">10. International Transfers</h2>
+            <p>Your information may be transferred and processed outside your country of residence where legally permitted.</p>
+          </section>
+
+          {/* 11 */}
+          <section>
+            <h2 className="text-lg font-semibold text-white">11. Changes to This Privacy Policy</h2>
             <p>We may update this Privacy Policy periodically. Updates will be posted on this page with a revised &ldquo;Last Updated&rdquo; date.</p>
           </section>
 

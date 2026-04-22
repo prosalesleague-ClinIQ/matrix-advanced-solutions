@@ -70,6 +70,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-lg font-semibold text-white">Section 8 &mdash; SMS / Text Message Program Terms</h2>
             <p className="font-medium text-white">&ldquo;Matrix Advanced Solutions LLC SMS Alerts&rdquo;</p>
+            <p>For the standalone version of these SMS terms, see our <a href="/sms-terms" className="text-accent-purple hover:text-accent-purple-light transition-colors">SMS Terms &amp; Conditions</a> page.</p>
 
             <h3 className="text-base font-semibold text-white mt-6">Program Description</h3>
             <p>By opting in, you agree to receive text messages from Matrix Advanced Solutions LLC related to account notifications, service updates, appointment reminders, customer support communications, and marketing or promotional messages (only if separately consented).</p>
@@ -137,8 +138,8 @@ export default function TermsPage() {
             <h2 className="text-lg font-semibold text-white">Section 14 &mdash; Contact Information</h2>
             <p>
               <strong className="text-white">Matrix Advanced Solutions LLC</strong><br />
-              951 De Soto Road, 427<br />
-              Boca Raton, FL 33432<br />
+              5830 E 2nd Street, STE 7000 9914<br />
+              Casper, WY 82609<br />
               United States
             </p>
             <p>Email: <a href="mailto:leo@matrixadvancedsolutions.com" className="text-accent-purple hover:text-accent-purple-light transition-colors">leo@matrixadvancedsolutions.com</a></p>

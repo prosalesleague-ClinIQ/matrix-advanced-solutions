@@ -36,9 +36,6 @@ export function RequestCatalogContent() {
       {
         ...data,
         inquiryType: 'catalog_request',
-        smsConsentService: true,
-        smsConsentMarketing: Boolean(data.smsConsentMarketing),
-        smsConsentTimestamp: new Date().toISOString(),
       },
       'request-catalog-funnel'
     )
@@ -133,8 +130,22 @@ export function RequestCatalogContent() {
               {...register('phone')}
             />
 
+            {/* Sample messages — disclosure of what will be sent (A2P/TCR compliance) */}
+            <div className="pt-2 rounded-xl border border-white/5 bg-white/[0.02] p-4 space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-wider text-steel-300">What messages will I receive?</p>
+              <p className="text-xs text-steel-400 leading-relaxed">Example service messages:</p>
+              <ul className="text-xs text-steel-400 leading-relaxed space-y-1.5 pl-4 list-disc">
+                <li>&ldquo;Matrix Advanced Solutions: Your catalog is ready at matrixadvancedsolutions.com/catalog. Reply STOP to opt out, HELP for help.&rdquo;</li>
+                <li>&ldquo;Matrix Advanced Solutions: Your onboarding call is tomorrow at 2pm ET. Reply STOP to opt out.&rdquo;</li>
+              </ul>
+              <p className="text-xs text-steel-400 leading-relaxed pt-1">Example marketing message (optional, only if you opt in separately):</p>
+              <ul className="text-xs text-steel-400 leading-relaxed space-y-1.5 pl-4 list-disc">
+                <li>&ldquo;Matrix Advanced Solutions: New peptide protocols available for Q2. View at matrixadvancedsolutions.com. Reply STOP to opt out.&rdquo;</li>
+              </ul>
+            </div>
+
             {/* SMS Consent — Service / Reminders (Required) */}
-            <div className="pt-2">
+            <div>
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
                   type="checkbox"

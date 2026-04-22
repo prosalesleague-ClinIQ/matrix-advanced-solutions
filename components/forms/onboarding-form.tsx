@@ -58,7 +58,7 @@ export function OnboardingForm() {
     setSubmitState('loading')
     // submitLead() calls trackFormSubmit() on success — don't double-track here.
 
-    const result = await submitLead('/api/clinic-onboarding', { ...data, inquiryType: 'clinic_onboarding', smsConsentService: true, smsConsentMarketing: Boolean(data.smsConsentMarketing), smsConsentTimestamp: new Date().toISOString() }, 'clinic_onboarding')
+    const result = await submitLead('/api/clinic-onboarding', { ...data, inquiryType: 'clinic_onboarding' }, 'clinic_onboarding')
     setSubmitState(result.success ? 'success' : 'error')
     setResultMessage(result.message)
   }

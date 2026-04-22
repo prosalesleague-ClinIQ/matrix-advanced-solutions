@@ -26,6 +26,8 @@ export async function POST(request: NextRequest) {
       smsConsentService: Boolean(data.smsConsentService),
       smsConsentMarketing: Boolean(data.smsConsentMarketing),
       smsConsentTimestamp: new Date().toISOString(),
+      smsConsentIp: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? request.headers.get('x-real-ip') ?? undefined,
+      smsConsentUserAgent: request.headers.get('user-agent') ?? undefined,
     }
 
     const payload = formatWebhookPayload(lead)

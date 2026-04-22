@@ -68,7 +68,7 @@ export function ContactForm({
     setSubmitState('loading')
     // submitLead() calls trackFormSubmit() on success — don't double-track here.
 
-    const result = await submitLead(endpoint, { ...data, inquiryType, smsConsentService: true, smsConsentMarketing: Boolean(data.smsConsentMarketing), smsConsentTimestamp: new Date().toISOString() }, formName)
+    const result = await submitLead(endpoint, { ...data, inquiryType }, formName)
     setSubmitState(result.success ? 'success' : 'error')
     setResultMessage(result.message)
   }
