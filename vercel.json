@@ -1,0 +1,50 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    {
+      "source": "/catalog",
+      "destination": "https://matrix-order-form.vercel.app/shop",
+      "permanent": false
+    },
+    {
+      "source": "/catalog/:path*",
+      "destination": "https://matrix-order-form.vercel.app/shop/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/shop",
+      "destination": "https://matrix-order-form.vercel.app/shop",
+      "permanent": false
+    },
+    {
+      "source": "/shop/:path*",
+      "destination": "https://matrix-order-form.vercel.app/shop/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/bundles",
+      "destination": "https://matrix-order-form.vercel.app/bundles",
+      "permanent": false
+    },
+    {
+      "source": "/bundles/:path*",
+      "destination": "https://matrix-order-form.vercel.app/bundles/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/cart",
+      "destination": "https://matrix-order-form.vercel.app/cart",
+      "permanent": false
+    },
+    {
+      "source": "/checkout",
+      "destination": "https://matrix-order-form.vercel.app/checkout",
+      "permanent": false
+    },
+    {
+      "source": "/checkout/:path*",
+      "destination": "https://matrix-order-form.vercel.app/checkout/:path*",
+      "permanent": false
+    }
+  ]
+}
