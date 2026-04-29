@@ -9,6 +9,10 @@ export const primaryNav: NavItem[] = [
   { label: 'About', href: '/about' },
   { label: 'Solutions', href: '/solutions' },
   { label: 'Products', href: '/products' },
+  // Cross-site nav: /catalog 302s to the matrix-store deployment via
+  // vercel.json. Resources points at the static reference site.
+  { label: 'Shop', href: '/catalog' },
+  { label: 'Resources', href: 'https://matrix-clinic-resource-center.vercel.app/' },
   { label: 'Growth Infrastructure', href: '/growth-infrastructure' },
   { label: 'Peptide Map', href: '/peptide-map' },
   { label: 'MuscleLock', href: '/musclelock' },
@@ -53,6 +57,8 @@ export const footerNav = {
     { label: 'Contact', href: '/contact' },
   ],
   resources: [
+    { label: 'Shop', href: '/catalog' },
+    { label: 'Resource Center', href: 'https://matrix-clinic-resource-center.vercel.app/' },
     { label: 'Products', href: '/products' },
     { label: 'Peptide Map', href: '/peptide-map' },
     { label: 'MuscleLock', href: '/musclelock' },
