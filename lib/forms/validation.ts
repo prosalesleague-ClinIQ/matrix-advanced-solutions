@@ -5,7 +5,8 @@ export const contactSchema = z.object({
   contactName: z.string().min(2, 'Contact name is required'),
   role: z.string().min(2, 'Your role is required'),
   email: z.string().email('Valid email required'),
-  phone: z.string().min(7, 'Phone number is required'),
+  // Phone is optional — A2P/TCR requires that SMS contact info not be a condition of using the service.
+  phone: z.string().optional(),
   state: z.string().min(2, 'State is required'),
   specialty: z.string().optional(),
   clinicType: z.string().optional(),
@@ -15,7 +16,9 @@ export const contactSchema = z.object({
   notes: z.string().optional(),
   referralSource: z.string().optional(),
   inquiryType: z.string().optional(),
-  smsConsentService: z.literal(true, { message: 'You must consent to receive service messages to proceed' }),
+  // Consent checkboxes are optional — TCR requires consent not be a condition of submission.
+  // Server logic only treats the contact as opted in when these are explicitly true.
+  smsConsentService: z.boolean().optional(),
   smsConsentMarketing: z.boolean().optional(),
 })
 
@@ -32,8 +35,8 @@ export const catalogFunnelSchema = z.object({
   contactName: z.string().min(2, 'Your name is required'),
   clinicName: z.string().min(2, 'Clinic name is required'),
   email: z.string().email('Valid email required'),
-  phone: z.string().min(7, 'Phone number is required'),
-  smsConsentService: z.literal(true, { message: 'You must consent to receive service messages to proceed' }),
+  phone: z.string().optional(),
+  smsConsentService: z.boolean().optional(),
   smsConsentMarketing: z.boolean().optional(),
   inquiryType: z.string().optional(),
 })

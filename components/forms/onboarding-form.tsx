@@ -96,7 +96,7 @@ export function OnboardingForm() {
 
       <div className="grid sm:grid-cols-2 gap-5">
         <Input id="email" label="Email" type="email" placeholder="you@clinic.com" error={errors.email?.message} {...register('email')} />
-        <Input id="phone" label="Phone" type="tel" placeholder="(555) 000-0000" error={errors.phone?.message} {...register('phone')} />
+        <Input id="phone" label="Phone (optional)" type="tel" placeholder="(555) 000-0000" error={errors.phone?.message} {...register('phone')} />
       </div>
 
       <div className="grid sm:grid-cols-2 gap-5">
@@ -113,7 +113,7 @@ export function OnboardingForm() {
         {...register('notes')}
       />
 
-      {/* SMS Consent — Service / Reminders (Required) */}
+      {/* SMS Consent — Service / Reminders (Optional) */}
       <div>
         <label className="flex items-start gap-3 cursor-pointer">
           <input
@@ -122,12 +122,9 @@ export function OnboardingForm() {
             {...register('smsConsentService')}
           />
           <span className="text-xs text-steel-400 leading-relaxed">
-            I agree to receive Automated Reminders and Service-Based messages from Matrix Advanced Solutions LLC at the phone number provided above. This agreement is not a condition of any purchase. Msg &amp; data rates may apply. Message frequency varies. Text HELP to 831-298-8933 for assistance. Reply STOP or OUT to opt out at any time.
+            (Optional) I agree to receive Automated Reminders and Service-Based messages from Matrix Advanced Solutions LLC at the phone number provided above. This agreement is not a condition of any purchase. Msg &amp; data rates may apply. Message frequency varies. Text HELP to 831-298-8933 for assistance. Reply STOP or OUT to opt out at any time.
           </span>
         </label>
-        {errors.smsConsentService?.message && (
-          <p className="mt-1.5 text-xs text-red-400">{errors.smsConsentService.message}</p>
-        )}
       </div>
 
       {/* SMS Consent — Marketing / Promotional (Optional) */}
@@ -139,7 +136,7 @@ export function OnboardingForm() {
             {...register('smsConsentMarketing')}
           />
           <span className="text-xs text-steel-400 leading-relaxed">
-            I agree to receive Marketing and Promotional messages from Matrix Advanced Solutions LLC at the phone number provided above. This agreement is not a condition of any purchase. Msg &amp; data rates may apply. Message frequency varies. Text HELP to 831-298-8933 for assistance. Reply STOP or OUT to opt out at any time.
+            (Optional) I agree to receive Marketing and Promotional messages from Matrix Advanced Solutions LLC at the phone number provided above. This agreement is not a condition of any purchase. Msg &amp; data rates may apply. Message frequency varies. Text HELP to 831-298-8933 for assistance. Reply STOP or OUT to opt out at any time.
           </span>
         </label>
       </div>

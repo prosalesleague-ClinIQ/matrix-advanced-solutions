@@ -123,7 +123,7 @@ export function RequestCatalogContent() {
 
             <Input
               id="phone"
-              label="Phone"
+              label="Phone (optional, required only if you want SMS updates)"
               type="tel"
               placeholder="(555) 000-0000"
               error={errors.phone?.message}
@@ -144,7 +144,7 @@ export function RequestCatalogContent() {
               </ul>
             </div>
 
-            {/* SMS Consent — Service / Reminders (Required) */}
+            {/* SMS Consent — Service / Reminders (Optional) */}
             <div>
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
@@ -153,12 +153,9 @@ export function RequestCatalogContent() {
                   {...register('smsConsentService')}
                 />
                 <span className="text-xs text-steel-400 leading-relaxed">
-                  I agree to receive Automated Reminders and Service-Based messages from Matrix Advanced Solutions LLC at the phone number provided above. This agreement is not a condition of any purchase. Msg &amp; data rates may apply. Message frequency varies. Text HELP to 831-298-8933 for assistance. Reply STOP or OUT to opt out at any time.
+                  (Optional) I agree to receive Automated Reminders and Service-Based messages from Matrix Advanced Solutions LLC at the phone number provided above. This agreement is not a condition of any purchase. Msg &amp; data rates may apply. Message frequency varies. Text HELP to 831-298-8933 for assistance. Reply STOP or OUT to opt out at any time.
                 </span>
               </label>
-              {errors.smsConsentService?.message && (
-                <p className="mt-1.5 text-xs text-red-400">{errors.smsConsentService.message}</p>
-              )}
             </div>
 
             {/* SMS Consent — Marketing / Promotional (Optional) */}
@@ -170,7 +167,7 @@ export function RequestCatalogContent() {
                   {...register('smsConsentMarketing')}
                 />
                 <span className="text-xs text-steel-400 leading-relaxed">
-                  I agree to receive Marketing and Promotional messages from Matrix Advanced Solutions LLC at the phone number provided above. This agreement is not a condition of any purchase. Msg &amp; data rates may apply. Message frequency varies. Text HELP to 831-298-8933 for assistance. Reply STOP or OUT to opt out at any time.
+                  (Optional) I agree to receive Marketing and Promotional messages from Matrix Advanced Solutions LLC at the phone number provided above. This agreement is not a condition of any purchase. Msg &amp; data rates may apply. Message frequency varies. Text HELP to 831-298-8933 for assistance. Reply STOP or OUT to opt out at any time.
                 </span>
               </label>
             </div>

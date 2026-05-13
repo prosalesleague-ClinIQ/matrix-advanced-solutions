@@ -6,7 +6,7 @@ export type LeadPayload = {
   contactName: string
   role?: string
   email: string
-  phone: string
+  phone?: string
   state?: string
   specialty?: string
   clinicType?: string
