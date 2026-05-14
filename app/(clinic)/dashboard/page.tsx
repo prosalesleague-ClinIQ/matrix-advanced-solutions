@@ -25,7 +25,45 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single()
 
-  if (!profile?.clinic_id) redirect('/login')
+  if (!profile?.clinic_id) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold text-white">
+            Welcome{profile?.full_name ? `, ${profile.full_name}` : ''}
+          </h1>
+          <p className="mt-1 text-steel-400">
+            Your account isn&apos;t linked to a clinic yet.
+          </p>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Complete your setup</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-steel-400">
+              Matrix is for qualified clinics and providers. To finish onboarding,
+              submit your clinic information for credentialing review. Our team will
+              activate your account once approved.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/request-catalog">
+                <Button variant="primary" size="md">
+                  Start clinic onboarding
+                </Button>
+              </Link>
+              <Link href="/contact">
+                <Button variant="secondary" size="md">
+                  Contact support
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   const { data: clinic } = await supabase
     .from('clinics')

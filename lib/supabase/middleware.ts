@@ -72,13 +72,25 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse;
   }
 
+  // Helper: build a redirect response that preserves any auth cookies the
+  // Supabase client just refreshed onto supabaseResponse. Without copying them
+  // over, a session refresh during a redirected request gets lost and the next
+  // request looks unauthenticated — causing a login → dashboard → login loop.
+  const redirectWithCookies = (url: URL) => {
+    const redirectResponse = NextResponse.redirect(url);
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value, cookie);
+    });
+    return redirectResponse;
+  };
+
   // Redirect unauthenticated users to login
   const isChallengeRoute = pathname.startsWith("/challenge");
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone();
     url.pathname = isChallengeRoute ? "/challenge/login" : "/login";
     url.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(url);
+    return redirectWithCookies(url);
   }
 
   // Redirect authenticated users away from auth-only pages
@@ -87,12 +99,12 @@ export async function updateSession(request: NextRequest) {
   if (user && authOnlyRedirectRoutes.includes(pathname)) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
-    return NextResponse.redirect(url);
+    return redirectWithCookies(url);
   }
   if (user && challengeAuthRoutes.includes(pathname)) {
     const url = request.nextUrl.clone();
     url.pathname = "/challenge/dashboard";
-    return NextResponse.redirect(url);
+    return redirectWithCookies(url);
   }
 
   return supabaseResponse;

@@ -81,10 +81,11 @@ export function LoginForm() {
         data: { user },
       } = await supabase.auth.getUser()
 
+      let target = redirect
       if (user) {
         const { data: profile } = await supabase
           .from('users')
-          .select('*')
+          .select('role')
           .eq('id', user.id)
           .single()
 
@@ -92,13 +93,15 @@ export function LoginForm() {
           profile &&
           ['matrix_admin', 'matrix_staff'].includes(profile.role)
         ) {
-          router.push('/admin/dashboard')
-        } else {
-          router.push(redirect)
+          target = '/admin/dashboard'
         }
       }
 
-      router.refresh()
+      // Hard navigation so the browser sends the freshly-set auth cookie on the
+      // next request. router.push keeps the SPA session and middleware sees the
+      // request as unauthenticated, bouncing the user back to /login.
+      window.location.assign(target)
+      return
     } catch {
       setError('An unexpected error occurred. Please try again.')
     } finally {

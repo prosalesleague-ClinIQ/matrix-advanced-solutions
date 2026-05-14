@@ -17,15 +17,10 @@ export default async function ClinicLayout({
     redirect('/login')
   }
 
-  const { data: profile } = await supabase
-    .from('users')
-    .select('*')
-    .eq('id', user.id)
-    .single()
-
-  if (!profile?.clinic_id) {
-    redirect('/login')
-  }
+  // Note: we intentionally do NOT redirect users with no clinic_id back to
+  // /login here — middleware would just bounce them back, causing a loop.
+  // The dashboard page renders an inline "complete your setup" state for that
+  // case. Other clinic-area pages handle missing profile data themselves.
 
   return (
     <CartProvider>
